@@ -1,0 +1,222 @@
+---
+title: "NOAA Ecosystem Recovery"
+author: "Ian COmbs"
+date: "1/11/2021"
+output:
+  html_document:
+    theme: flatly
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+
+---
+
+
+#### version: `r library(magrittr)` `r Sys.Date() %>% format(format="%B %d, %Y")`
+
+#### [GitHub repository](https://github.com/icombs2017/photogrammetryNOAA.git){target="_blank"}
+
+# About this document
+***
+#### All analyses preformed with R version `r getRversion()`.
+
+
+# Basic setup of R environment
+***
+
+```{r, setup, include = FALSE}
+#setup rmarkdown environment first
+knitr::opts_chunk$set(warning = FALSE, fig.align = 'left')
+knitr::opts_knit$set(root.dir = '../data')
+options(width = 88)
+```
+
+## Loading required packages
+For the following analyses we will require the use of a number of different R packages. We can use the following code to quickly load in the packages and install any packages not previously installed in the R console.
+
+```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+setwd("../data")
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("cowplot", "flextable", "ggrepel", "ggspatial", "lubridate", "officer", "paletteer", "patchwork", "rgdal", "rnaturalearth", "sf", "tidyverse", "gdata", "rgeos", "readxl", "ggstar")
+pacman::p_load_gh("eliocamp/ggnewscale")
+pacman::p_load_gh("ropensci/rnaturalearthhires")
+```
+<br>
+
+# Map of study sites
+
+<br>
+
+```{r, map data}
+sites = read_excel("../data/metadata/nfwfMonitoringSiteCoordinates.xlsx", sheet = 1)
+sites$site <- as.factor(sites$site)
+sites$species <- as.factor(sites$species)
+levels(sites$site)
+#this is a cheap way of doing this, but i just needed a single coordinate for the site as a whole, so subsetting one site from EDR and using that for my "EDR" designation
+edr <- sites %>% filter(site == "T_11")
+
+fknmsBounds <- read_sf("../data/shp/FKNMS_Boundary/FKNMS_Boundary.shp") %>% st_transform(crs = 4326)
+flKeys <- read_sf("../data/shp/flKeys.shp") %>% st_transform(crs = 4326)
+states = st_as_sf(ne_states(country = c("United States of America")), scale = "large")
+countries = st_as_sf(ne_countries(country = c("Cuba", "Mexico", "The Bahamas"), scale = "large"))
+florida = read_sf("../data/shp/flKeys.shp") %>% st_transform(crs = 4326)
+bathy = read_sf("../data/shp/flBathy.shp") %>% st_transform(crs = 4326) %>% subset(subset = DATASET %in% c("fl_shelf", "fl_coast"))
+tortugasBathy = read_sf("../data/shp/tortugasBathy.shp") %>% st_transform(crs = 4326)
+
+```
+<br>
+
+Next we build a hi-res polygon of FL with the study site marked and a zoomed in map of the colony locations. We use `ggspatial` to add a north arrow and scale bar to the main map.
+```{r, maps}
+flPal = paletteer_d("vapoRwave::jazzCup")[c(2:5)]
+boundPal = c("gray30", paletteer_d("vapoRwave::vapoRwave")[10])
+
+floridaMap = ggplot() +
+  geom_sf(data = states, fill = "white", size = 0.25) +
+  geom_sf(data = countries, fill = "white", size = 0.25) +
+  geom_sf(data = fknmsBounds, alpha = 0.1) +
+  geom_rect(aes(xmin = -81.8557, xmax = -81.0535, ymin = 24.4, ymax =24.8947), color = paletteer_d("vapoRwave::vapoRwave")[6], fill = NA, size = 1) +
+  coord_sf(xlim = c(-89, -77), ylim = c(22, 31)) +
+  theme_bw() +
+  theme(legend.title = element_text(size = 9, face = "bold"),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.background = element_rect(fill = "aliceblue"),
+        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+        legend.text = element_text(size = 9),
+        legend.position = "none",
+        plot.background = element_blank())
+
+mainKeys <- ggplot() +
+  geom_sf(data = flKeys$geometry, fill = "white", color = "gray30") +
+    geom_sf(data = fknmsBounds, fill = "black", alpha = 0.1) +
+  geom_sf(data = bathy$geometry, color = "gray75", size = 0.25) +
+  coord_sf(xlim = c(-81.955348, -81.689479), ylim = c(24.448239,  24.616647)) +
+  geom_star(data = edr, aes(x = long_x, y = lat_y, starshape = reef, fill = reef), size = 10)+
+  #geom_point(data = sites, aes(x = long_x, y = lat_y, fill = reef, shape = reef, color = reef), size = 2, alpha = 1, color = "black") +
+  #scale_shape_manual(values = c(21,22), name = "Species", labels = c("ACER", "APAL")) +
+    #scale_fill_manual(values = c("#5A6F80FF", "#278B9AFF", "#E75B64FF", "#DE7862FF", "#D8AF39FF", "#E8C4A2FF", "pink","orange"), name = "Site", labels = c("Z1", "Z2", "C1", "C2", "U1", "U2")) +
+  geom_segment(aes(x = -81.509995, y = 24.515, xend = -81.685, yend = 24.427), size = 0.25) +
+  geom_segment(aes(x = -81.420055, y = 24.515, xend = -81.3255, yend = 24.427), size = 0.25) +
+  geom_rect(aes(xmin = -81.509995, xmax = -81.420055, ymin =24.515, ymax =24.557089), color = paletteer_d("vapoRwave::vapoRwave")[6], fill = NA, size = 1) +
+  annotation_scale(location = "bl") +
+  annotation_north_arrow(location = "br", which_north = "true", style = north_arrow_minimal()) +
+  guides(fill = guide_legend(override.aes = list(shape = 22, color = NA, size = 4), ncol = 2, order = 1), shape = guide_legend(override.aes = list(size = 3), order = 2), color = guide_legend(override.aes = list(fill = "black", alpha = 0.1), order = 3)) +
+  #guides(fill = guide_legend(colour = guide_legend(override.aes = list(shape = NA))) +
+  scale_x_continuous(breaks = c(seq(-82, -80, by = .2))) +
+  scale_y_continuous(breaks = c(seq(24, 25, by = .2))) +
+theme_bw() +
+  theme(panel.background = element_rect(fill = "aliceblue"),
+        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+        plot.background = element_blank(),
+        axis.title = element_blank(),
+        axis.ticks = element_line(color = "black"),
+        axis.text = element_text(color = "black"),
+        legend.position = "bottom",
+        legend.direction = "vertical",
+        legend.box = "horizontal")
+  
+edrSites <- ggplot() +
+  geom_sf(data = flKeys$geometry, fill = "white", color = "gray30") +
+    geom_sf(data = fknmsBounds, fill = "black", alpha = 0.2) +
+  geom_sf(data = bathy$geometry, color = "grey30", size = 0.25) +
+  geom_point(data = sites, aes(x = long_x, y = lat_y, fill = site, shape = species, color = site), size = 2, alpha = 1) +
+  scale_fill_manual(values = c("#5A6F80FF", "#278B9AFF", "#E75B64FF", "#DE7862FF", "#D8AF39FF", "#E8C4A2FF", "orange", "pink"), name = "Site", labels = c("T_11", "T_12a", "T_13a", "T_AP_2", "T_AP_3a", "T_AP_4", "T_AP_5", "T_AP_6")) +
+  scale_color_manual(values = c("black", "black", "black", "black", "black", "black", "black", "black"), name = NULL, label = NULL) +
+  scale_shape_manual(values = c(21,22,23), name = NULL, labels = NULL) +
+  guides(fill = guide_legend(override.aes = list(shape = 22, color = NA, size = 4), ncol = 2, order = 1), shape = guide_legend(override.aes = list(size = 3), order = 2), color = guide_legend(override.aes = list(fill = "black", alpha = 0.1), order = 3)) +
+  coord_sf(xlim = c(-81.846, -81.842), ylim = c(24.457,  24.46)) +
+  annotation_scale(location = "br") +
+  theme_bw() +
+  theme(legend.title = element_text(size = 9, face = "bold"),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.background = element_rect(fill = "aliceblue"),
+        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+        legend.text = element_text(size = 9),
+        legend.position = "none",
+        plot.background = element_blank())
+
+fknmsMap = ggdraw() +
+  draw_plot(mainKeys) +
+  draw_plot(floridaMap, x = .75, y = 0.7, width = 0.25, height = 0.25) +
+  draw_plot(noaaSites, x =.28, y = .22, width = 0.4, height = 0.4)
+  
+ggsave("../figures/figure1.png", plot = fknmsMap, width = 16, height = 16, units = "cm", dpi = 600)
+
+ggsave("../figures/figure1.eps", plot = fknmsMap, width = 16, height = 16, units = "cm", dpi = 600)
+
+
+
+# Main theme
+# theme_bw() +
+#   theme(panel.background = element_rect(fill = "aliceblue"),
+#         panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+#         plot.background = element_blank(),
+#         axis.title = element_blank(),
+#         axis.ticks = element_line(color = "black"),
+#         axis.text = element_text(color = "black"),
+#         legend.position = "bottom",
+#         legend.direction = "vertical",
+#         legend.box = "horizontal")
+
+
+
+
+zReef = noaaSites +
+  annotation_scale(location = "br") +
+  coord_sf(xlim = c(-81.502520, -81.494495), ylim = c(24.524996, 24.530332)) +
+  scale_x_continuous(breaks = c(seq(-81.50, -81.49, by = .01))) +
+  scale_y_continuous(breaks = c(seq(24.52,  24.531, by = .01))) +
+  theme_bw() +
+  theme(legend.title = element_text(size = 9, face = "bold"),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.background = element_rect(fill = "aliceblue"),
+        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+        legend.text = element_text(size = 9),
+        legend.position = "none",
+        plot.background = element_blank())
+
+cReef = noaaSites +
+  annotation_scale(location = "br") +
+  coord_sf(xlim = c(-81.491366, -81.479634), ylim = c(24.527698, 24.536844)) +
+  scale_x_continuous(breaks = c(seq(-81.49, -81.47, by = .01))) +
+  scale_y_continuous(breaks = c(seq(24.52,  24.54, by = .01))) +
+  theme_bw() +
+  theme(legend.title = element_text(size = 9, face = "bold"),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.background = element_rect(fill = "aliceblue"),
+        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+        legend.text = element_text(size = 9),
+        legend.position = "none",
+        plot.background = element_blank())
+uReef = noaaSites +
+  annotation_scale(location = "br") +
+  coord_sf(xlim = c(-81.450888, -81.437326), ylim = c(24.537522, 24.545171)) +
+  scale_x_continuous(breaks = c(seq(-81.45, -81.43, by = .01))) +
+  scale_y_continuous(breaks = c(seq(24.53,  24.55, by = .01))) +
+  theme_bw() +
+  theme(legend.title = element_text(size = 9, face = "bold"),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.background = element_rect(fill = "aliceblue"),
+        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+        legend.text = element_text(size = 9),
+        legend.position = "none",
+        plot.background = element_blank())
+
+
+```
+![](../figures/figure1.png)
+<br>

@@ -1,0 +1,107 @@
+---
+title: "Report Writing Template"
+author: "Ian Combs -- icombs@mote.org"
+output:
+  html_document:
+    theme: flatly
+    code_folding: show
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_doctument:
+      toc: yes
+      toc_depth: 3
+---
+```{r, setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, fig.align = 'left')
+library(magrittr)
+```
+
+### version: `r Sys.Date() %>% format(format="%B %d, %Y")`
+
+<!--[![DOI](https://zenodo.org/badge/255665897.svg)](https://zenodo.org/badge/latestdoi/255665897)
+-->
+
+
+<!--#### [GitHub repository](https://github.com/icombs2017/analysisOf3dModels.git){target="_blank"}
+-->
+
+```{r,packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("ggplot2", "googlesheets4", "dplyr", "officer","reshape2", "stringr", "dplyr", "flextable", "gridExtra", "ggpubr", "Rmisc", "rcompanion", "RColorBrewer", "vegan", "googledrive", "gdata", "readxl", "DescTools", "tidyverse")
+
+
+
+
+```
+
+
+# Importing Data
+***
+## We are downloading this dataset from our GoogleDrive folder. We will be using the package `googledrive`. Each GoogleDrive file has a unique ID that does not change throughout the lifespan of the document, even if the file name is changed. This ID is housed in the file's URL. 
+Example: docs.google.com/spreadsheets/d/FILE_ID_GOES_HERE/other_information/. Below you will copy and paste that into the function `drive_download` within `as_id`. This will save the file locally in the specified path (in this case our data folder) and you will import the folder as you normally would. Downloading it this way decreases the potential human error when downloading, moving folders, renaming etc and ensures that the most up to date file is being utilized. 
+
+
+
+```{r, loadingData, include = TRUE}
+
+drive_download(
+  as_id("1b4IWK7tfSt3n8o8NlgJKSDoqj_QkHvKcaJBNz85RBv4"),
+  path = "../data/outPlantData.xlsx", 
+  overwrite = TRUE)
+
+restOutplants <- read_excel("../data/outPlantData.xlsx", sheet = 1)
+restOutplants
+rest_deliv_sum <- read_excel("../data/outPlantData.xlsx", sheet = 2)
+rest_deliv_sum
+rest_deliv_sched <- read_excel("../data/outPlantData.xlsx", sheet = 3)
+insitu_acer_outplants <- read_excel("../data/outPlantData.xlsx", sheet = 4)
+exsitu_apal_outplants <- read_excel("../data/outPlantData.xlsx", sheet = 5)
+exsitu_massive_outplants <- read_excel("../data/outPlantData.xlsx", sheet = 6)
+exsitu_acer_outplants <- read_excel("../data/outPlantData.xlsx", sheet = 7)
+insitu_apal_outplants <- read_excel("../data/outPlantData.xlsx", sheet = 8)
+insitu_massive_outplants <- read_excel("../data/outPlantData.xlsx", sheet = 9)
+
+exsitu_apal_outplants_2021 <- exsitu_apal_outplants %>% filter(Year == 2021)
+exsitu_apal_outplants_2021 <- exsitu_apal_outplants_2021 %>% unite("Genotypes", "Genotypes represented at the Site" : "...51", remove = TRUE, na.rm = TRUE, sep = ",")
+exsitu_apal_outplants_2021$Genotypes <- as.vector(exsitu_apal_outplants_2021$Genotypes)
+```
+
+
+```{r, summaryTable, include = TRUE, ft.align = "left}
+sumTab = data.frame("Species" = "Acropora Palmata", "Total Number Outplanted" = sum(exsitu_apal_outplants_2021$`# plugs`), "Number of Genotypes Outplanted" = fried.total[["statistic"]][["Friedman chi-squared"]], "New Genotypes Outplanted" = fried.total$p.value[1]) %>% 
+  add_row("Test" = " ", "Comparison" = c("T1 - T2", "T1 - T3", "T1 - T4", "T2 - T3", "T2 - T4", "T3 - T4"), "Statistic" = post.total.statistic.melt$value, "p.value" = p.total.melt$value) %>% 
+  add_row("Test" = "Healthy Tissue Area", "Comparison" = " ", "Statistic" =  fried.healthy[["statistic"]][["Friedman chi-squared"]], "p.value" = fried.healthy$p.value[1]) %>% 
+  add_row("Test" = " ", "Comparison" = c("T1 - T2", "T1 - T3", "T1 - T4", "T2 - T3", "T2 - T4", "T3 - T4"), "Statistic" = post.healthy.statistic.melt$value, "p.value" = p.healthy.melt$value) %>% 
+  add_row("Comparison" = " ", "Test" = "Disease Lesion Area", "Statistic" =  fried.disease[["statistic"]][["Friedman chi-squared"]], "p.value" = fried.disease$p.value[1]) %>% 
+  add_row("Test" = " ", "Comparison" = c("T1 - T2", "T1 - T3", "T1 - T4", "T2 - T3", "T2 - T4", "T3 - T4"), "Statistic" = post.disease.statistic.melt$value, "p.value" = p.disease.melt$value) %>% 
+
+mutate_if(is.numeric, round, digits = 3) %>%     
+mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>% 
+mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–") %>%
+flextable() %>%
+set_header_labels(Data.set = "Data set") %>% 
+flextable::compose(part = "header", j = "Statistic", value = as_paragraph("Test Statistic")) %>%
+flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+autofit() %>%
+font(fontname = "Times New Roman", part = "all") %>%
+fontsize(size = 12, part = "all") %>%
+bold(part = "header") %>% 
+colformat_num(j = "Statistic", digits = 2) %>%
+colformat_num(j = "p.value", digits = 4, na_str = "ns") %>% 
+align_nottext_col(align = "center", header = TRUE, footer = TRUE) %>% 
+align(align = "center", j = "p.value")
+
+friedDoc = read_docx()
+friedDoc = body_add_flextable(friedDoc, value = friedTab)
+print(friedDoc, target = "../tables/Table2.docx")
+friedTab
+```
+
+
+
+
+
+
+
