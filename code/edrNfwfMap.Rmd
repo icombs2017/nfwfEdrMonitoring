@@ -41,7 +41,7 @@ For the following analyses we will require the use of a number of different R pa
 setwd("../data")
 
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("cowplot", "flextable", "ggrepel", "ggspatial", "lubridate", "officer", "paletteer", "patchwork", "rgdal", "rnaturalearth", "sf", "tidyverse", "gdata", "rgeos", "readxl", "ggstar")
+pacman::p_load("cowplot", "flextable", "ggrepel", "ggspatial", "lubridate", "officer", "paletteer", "patchwork", "rgdal", "rnaturalearth", "sf", "tidyverse", "gdata", "rgeos", "readxl", "ggstar", "cowplot", "ggpubr")
 pacman::p_load_gh("eliocamp/ggnewscale")
 pacman::p_load_gh("ropensci/rnaturalearthhires")
 ```
@@ -79,7 +79,7 @@ floridaMap = ggplot() +
   geom_sf(data = states, fill = "white", size = 0.25) +
   geom_sf(data = countries, fill = "white", size = 0.25) +
   geom_sf(data = fknmsBounds, alpha = 0.1) +
-  geom_rect(aes(xmin = -81.8557, xmax = -81.0535, ymin = 24.4, ymax =24.8947), color = paletteer_d("vapoRwave::vapoRwave")[6], fill = NA, size = 1) +
+  geom_rect(aes(xmin = -82.216, xmax = -81.3464, ymin = 24.2806, ymax =24.8452), color = paletteer_d("vapoRwave::vapoRwave")[6], fill = NA, size = 1) +
   coord_sf(xlim = c(-89, -77), ylim = c(22, 31)) +
   theme_bw() +
   theme(legend.title = element_text(size = 9, face = "bold"),
@@ -101,15 +101,15 @@ mainKeys <- ggplot() +
   #geom_point(data = sites, aes(x = long_x, y = lat_y, fill = reef, shape = reef, color = reef), size = 2, alpha = 1, color = "black") +
   #scale_shape_manual(values = c(21,22), name = "Species", labels = c("ACER", "APAL")) +
     #scale_fill_manual(values = c("#5A6F80FF", "#278B9AFF", "#E75B64FF", "#DE7862FF", "#D8AF39FF", "#E8C4A2FF", "pink","orange"), name = "Site", labels = c("Z1", "Z2", "C1", "C2", "U1", "U2")) +
-  geom_segment(aes(x = -81.509995, y = 24.515, xend = -81.685, yend = 24.427), size = 0.25) +
-  geom_segment(aes(x = -81.420055, y = 24.515, xend = -81.3255, yend = 24.427), size = 0.25) +
-  geom_rect(aes(xmin = -81.509995, xmax = -81.420055, ymin =24.515, ymax =24.557089), color = paletteer_d("vapoRwave::vapoRwave")[6], fill = NA, size = 1) +
+  geom_segment(aes(x = -81.86, y = 24.47, xend = -81.901, yend = 24.495), size = 0.25) +
+  geom_segment(aes(x = -81.825, y = 24.47, xend = -81.782, yend = 24.495), size = 0.25) +
+  geom_rect(aes(xmin = -81.86, xmax = -81.825, ymin =24.449, ymax =24.47), color = paletteer_d("vapoRwave::vapoRwave")[6], fill = NA, size = 1) +
   annotation_scale(location = "bl") +
   annotation_north_arrow(location = "br", which_north = "true", style = north_arrow_minimal()) +
   guides(fill = guide_legend(override.aes = list(shape = 22, color = NA, size = 4), ncol = 2, order = 1), shape = guide_legend(override.aes = list(size = 3), order = 2), color = guide_legend(override.aes = list(fill = "black", alpha = 0.1), order = 3)) +
-  #guides(fill = guide_legend(colour = guide_legend(override.aes = list(shape = NA))) +
-  scale_x_continuous(breaks = c(seq(-82, -80, by = .2))) +
-  scale_y_continuous(breaks = c(seq(24, 25, by = .2))) +
+  #guides(fill = guide_legend(colour = guide_legend(override.aes = list(shape = NA)))) +
+  scale_x_continuous(breaks = c(seq(-82, -80, by = .05))) +
+  scale_y_continuous(breaks = c(seq(24, 25, by = .05))) +
 theme_bw() +
   theme(panel.background = element_rect(fill = "aliceblue"),
         panel.border = element_rect(color = "black", size = 0.75, fill = NA),
@@ -117,21 +117,20 @@ theme_bw() +
         axis.title = element_blank(),
         axis.ticks = element_line(color = "black"),
         axis.text = element_text(color = "black"),
-        legend.position = "bottom",
-        legend.direction = "vertical",
-        legend.box = "horizontal")
+        legend.position = "none")
   
 edrSites <- ggplot() +
   geom_sf(data = flKeys$geometry, fill = "white", color = "gray30") +
     geom_sf(data = fknmsBounds, fill = "black", alpha = 0.2) +
   geom_sf(data = bathy$geometry, color = "grey30", size = 0.25) +
-  geom_point(data = sites, aes(x = long_x, y = lat_y, fill = site, shape = species, color = site), size = 2, alpha = 1) +
+  geom_point(data = sites, aes(x = long_x, y = lat_y, fill = site, shape = species), size = 4, alpha = 1) +
   scale_fill_manual(values = c("#5A6F80FF", "#278B9AFF", "#E75B64FF", "#DE7862FF", "#D8AF39FF", "#E8C4A2FF", "orange", "pink"), name = "Site", labels = c("T_11", "T_12a", "T_13a", "T_AP_2", "T_AP_3a", "T_AP_4", "T_AP_5", "T_AP_6")) +
-  scale_color_manual(values = c("black", "black", "black", "black", "black", "black", "black", "black"), name = NULL, label = NULL) +
-  scale_shape_manual(values = c(21,22,23), name = NULL, labels = NULL) +
+  #scale_color_manual(values = c("black", "black", "black", "black", "black", "black", "black", "black"), name = NULL, label = NULL) +
+    #guides(fill = guide_legend(colour = guide_legend(override.aes = list(shape = NA)))) +
+  scale_shape_manual(values = c(21,22), name = "Species", labels = c("APAL", "ACER")) +
   guides(fill = guide_legend(override.aes = list(shape = 22, color = NA, size = 4), ncol = 2, order = 1), shape = guide_legend(override.aes = list(size = 3), order = 2), color = guide_legend(override.aes = list(fill = "black", alpha = 0.1), order = 3)) +
-  coord_sf(xlim = c(-81.846, -81.842), ylim = c(24.457,  24.46)) +
-  annotation_scale(location = "br") +
+  coord_sf(xlim = c(-81.846, -81.843), ylim = c(24.4588,  24.46)) +
+  annotation_scale(location = "bl") +
   theme_bw() +
   theme(legend.title = element_text(size = 9, face = "bold"),
         axis.ticks = element_blank(),
@@ -139,18 +138,29 @@ edrSites <- ggplot() +
         axis.title = element_blank(),
         panel.background = element_rect(fill = "aliceblue"),
         panel.border = element_rect(color = "black", size = 0.75, fill = NA),
-        legend.text = element_text(size = 9),
         legend.position = "none",
+        legend.direction = "vertical",
+        legend.box = "horizontal",
         plot.background = element_blank())
 
-fknmsMap = ggdraw() +
-  draw_plot(mainKeys) +
-  draw_plot(floridaMap, x = .75, y = 0.7, width = 0.25, height = 0.25) +
-  draw_plot(noaaSites, x =.28, y = .22, width = 0.4, height = 0.4)
-  
-ggsave("../figures/figure1.png", plot = fknmsMap, width = 16, height = 16, units = "cm", dpi = 600)
+# edr_legend <- cowplot::get_legend(edrSites)
+# edr_legend <- ggpubr::as_ggplot(edr_legend)
 
-ggsave("../figures/figure1.eps", plot = fknmsMap, width = 16, height = 16, units = "cm", dpi = 600)
+leg <- get_legend(edrSites)
+edrLeg <- as_ggplot(leg)
+
+edrMap = ggdraw() +
+  draw_plot(mainKeys) +
+  draw_plot(floridaMap, x = .08, y = 0.6, width = 0.25, height = 0.25) +
+  draw_plot(edrSites, x =.28, y = .265, width = 0.4, height = 0.4)
+
+#edrNew <- edrMap / edrLeg + plot_layout(heights = unit(c(5,1), c('cm')))
+
+
+ggsave("../figures/figure1.png", plot = edrMap, width = 16, height = 16, units = "cm", dpi = 600)
+ggsave("../figures/figure1Legend.png", plot = edrLeg, width = 16, height = 16, units = "cm", dpi = 600)
+# 
+# ggsave("../figures/figure1.eps", plot = fknmsMap, width = 16, height = 16, units = "cm", dpi = 600)
 
 
 
@@ -169,52 +179,52 @@ ggsave("../figures/figure1.eps", plot = fknmsMap, width = 16, height = 16, units
 
 
 
-zReef = noaaSites +
-  annotation_scale(location = "br") +
-  coord_sf(xlim = c(-81.502520, -81.494495), ylim = c(24.524996, 24.530332)) +
-  scale_x_continuous(breaks = c(seq(-81.50, -81.49, by = .01))) +
-  scale_y_continuous(breaks = c(seq(24.52,  24.531, by = .01))) +
-  theme_bw() +
-  theme(legend.title = element_text(size = 9, face = "bold"),
-        axis.ticks = element_blank(),
-        axis.text = element_blank(),
-        axis.title = element_blank(),
-        panel.background = element_rect(fill = "aliceblue"),
-        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
-        legend.text = element_text(size = 9),
-        legend.position = "none",
-        plot.background = element_blank())
-
-cReef = noaaSites +
-  annotation_scale(location = "br") +
-  coord_sf(xlim = c(-81.491366, -81.479634), ylim = c(24.527698, 24.536844)) +
-  scale_x_continuous(breaks = c(seq(-81.49, -81.47, by = .01))) +
-  scale_y_continuous(breaks = c(seq(24.52,  24.54, by = .01))) +
-  theme_bw() +
-  theme(legend.title = element_text(size = 9, face = "bold"),
-        axis.ticks = element_blank(),
-        axis.text = element_blank(),
-        axis.title = element_blank(),
-        panel.background = element_rect(fill = "aliceblue"),
-        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
-        legend.text = element_text(size = 9),
-        legend.position = "none",
-        plot.background = element_blank())
-uReef = noaaSites +
-  annotation_scale(location = "br") +
-  coord_sf(xlim = c(-81.450888, -81.437326), ylim = c(24.537522, 24.545171)) +
-  scale_x_continuous(breaks = c(seq(-81.45, -81.43, by = .01))) +
-  scale_y_continuous(breaks = c(seq(24.53,  24.55, by = .01))) +
-  theme_bw() +
-  theme(legend.title = element_text(size = 9, face = "bold"),
-        axis.ticks = element_blank(),
-        axis.text = element_blank(),
-        axis.title = element_blank(),
-        panel.background = element_rect(fill = "aliceblue"),
-        panel.border = element_rect(color = "black", size = 0.75, fill = NA),
-        legend.text = element_text(size = 9),
-        legend.position = "none",
-        plot.background = element_blank())
+# zReef = noaaSites +
+#   annotation_scale(location = "br") +
+#   coord_sf(xlim = c(-81.502520, -81.494495), ylim = c(24.524996, 24.530332)) +
+#   scale_x_continuous(breaks = c(seq(-81.50, -81.49, by = .01))) +
+#   scale_y_continuous(breaks = c(seq(24.52,  24.531, by = .01))) +
+#   theme_bw() +
+#   theme(legend.title = element_text(size = 9, face = "bold"),
+#         axis.ticks = element_blank(),
+#         axis.text = element_blank(),
+#         axis.title = element_blank(),
+#         panel.background = element_rect(fill = "aliceblue"),
+#         panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+#         legend.text = element_text(size = 9),
+#         legend.position = "none",
+#         plot.background = element_blank())
+# 
+# cReef = noaaSites +
+#   annotation_scale(location = "br") +
+#   coord_sf(xlim = c(-81.491366, -81.479634), ylim = c(24.527698, 24.536844)) +
+#   scale_x_continuous(breaks = c(seq(-81.49, -81.47, by = .01))) +
+#   scale_y_continuous(breaks = c(seq(24.52,  24.54, by = .01))) +
+#   theme_bw() +
+#   theme(legend.title = element_text(size = 9, face = "bold"),
+#         axis.ticks = element_blank(),
+#         axis.text = element_blank(),
+#         axis.title = element_blank(),
+#         panel.background = element_rect(fill = "aliceblue"),
+#         panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+#         legend.text = element_text(size = 9),
+#         legend.position = "none",
+#         plot.background = element_blank())
+# uReef = noaaSites +
+#   annotation_scale(location = "br") +
+#   coord_sf(xlim = c(-81.450888, -81.437326), ylim = c(24.537522, 24.545171)) +
+#   scale_x_continuous(breaks = c(seq(-81.45, -81.43, by = .01))) +
+#   scale_y_continuous(breaks = c(seq(24.53,  24.55, by = .01))) +
+#   theme_bw() +
+#   theme(legend.title = element_text(size = 9, face = "bold"),
+#         axis.ticks = element_blank(),
+#         axis.text = element_blank(),
+#         axis.title = element_blank(),
+#         panel.background = element_rect(fill = "aliceblue"),
+#         panel.border = element_rect(color = "black", size = 0.75, fill = NA),
+#         legend.text = element_text(size = 9),
+#         legend.position = "none",
+#         plot.background = element_blank())
 
 
 ```
