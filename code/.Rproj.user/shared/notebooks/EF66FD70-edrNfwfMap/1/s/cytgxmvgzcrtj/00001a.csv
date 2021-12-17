@@ -1,0 +1,58 @@
+"0","ggsave
+"
+"1","function (filename, plot = last_plot(), device = NULL, path = NULL, 
+"
+"1","    scale = 1, width = NA, height = NA, units = c(""in"", 
+"
+"1","        ""cm"", ""mm"", ""px""), dpi = 300, limitsize = TRUE, 
+"
+"1","    bg = NULL, ...) 
+"
+"1","{
+"
+"1","    dpi <- parse_dpi(dpi)
+"
+"1","    dev <- plot_dev(device, filename, dpi = dpi)
+"
+"1","    dim <- plot_dim(c(width, height), scale = scale, units = units, 
+"
+"1","        limitsize = limitsize, dpi = dpi)
+"
+"1","    if (!is.null(path)) {
+"
+"1","        filename <- file.path(path, filename)
+"
+"1","    }
+"
+"1","    if (is_null(bg)) {
+"
+"1","        bg <- calc_element(""plot.background"", plot_theme(plot))$fill %||% 
+"
+"1","            ""transparent""
+"
+"1","    }
+"
+"1","    old_dev <- grDevices::dev.cur()
+"
+"1","    dev(filename = filename, width = dim[1], height = dim[2], 
+"
+"1","        bg = bg, ...)
+"
+"1","    on.exit(utils::capture.output({
+"
+"1","        grDevices::dev.off()
+"
+"1","        if (old_dev > 1) grDevices::dev.set(old_dev)
+"
+"1","    }))
+"
+"1","    grid.draw(plot)
+"
+"1","    invisible(filename)
+"
+"1","}
+"
+"1","<bytecode: 0x0000024a29d25a10>
+"
+"1","<environment: namespace:ggplot2>
+"
