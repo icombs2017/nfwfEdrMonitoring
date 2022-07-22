@@ -236,6 +236,11 @@ Once you have designated all points, data can be exported using the web applet
 MAKING NEW QUAD
 
 Currently viscore doesn't have the ability to make multiple quads within the VPI. To work around this, go to the .pq folder and make a new folder with an appropriate name (e.g. array 1). Drag and drop all of the current folders within the vpi with the exception of the qbox.json file. This will just retain the same dimensions of your quad.
+
+
+
+
+
   ------------------------------
   Rugosity
 
