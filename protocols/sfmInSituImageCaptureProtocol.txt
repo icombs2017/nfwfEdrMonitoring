@@ -30,4 +30,16 @@ Once you have finished capturing your scene, simply press the Capture button aga
 
 Note: You will see the screen illuminate and it will display "Powering off"
 
-A. ACER: ACER outplant events are typically conducted on reef habitat that contains a highly rugose ledge which transitions to more monotypic hardpan. We will refer to this ledge as the “front” of the outplant area while the hardpan is the “back”.
+A. Swim 1-1.5m from the bottom
+
+B. Use the floats and markers as guides, for the floats, make sure you swim to the floats before you turn around. Doing so ensures that you capture all of the outplanted coral. 
+
+C. Hold the frame level
+
+D. When turning around, rotate around the inner most GoPro, this ensures overlap between passes. 
+
+E. Maintain a slow swimming speed, this ensures sufficient overlap between images
+
+F. Swimming pattern should consist of swimming from the front of the outplant area to the back, turning around (as described in step D) and swimming from the back to the front. Repeat this throughout the outplant area. Once completed, rotate 90 degrees and swim two or three passes in the other direction.
+
+G. Record the depth of your scale bars as well as the marker number they are comprised of. It is also helpful if you draw a map of how the area was set up (this is particularly helpful for APAL outplants). Note: this can be done before, after, or during image capture depending on the buddy team and other work being conducted that day. 
