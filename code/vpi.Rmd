@@ -1,0 +1,687 @@
+---
+title: "NFWF VPI"
+author: "Ian Combs -- icombs@mote.org"
+output:
+  html_document:
+    theme: flatly
+    code_folding: show
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_doctument:
+      toc: yes
+      toc_depth: 3
+---
+
+```{r, setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, fig.align = 'left')
+library(magrittr)
+```
+
+### version: `r Sys.Date() %>% format(format="%B %d, %Y")`
+
+<!-- this is where the DOI would go  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3675991.svg)](https://doi.org/10.5281/zenodo.3675991)
+-->
+
+
+#### [GitHub repository](https://github.com/icombs2017/photogrammetryNOAA.git){target="_blank"}
+
+###
+***
+This is the analysis pipeline for data generated from TagLab annotations of our EDR outplant sites as part of the NWFW project.
+
+
+***
+### All analyses performed with R verion `r getRversion()`
+# Basic setup of R environment
+***
+## Loading required packages
+
+For the following analyses we will require the use of a number of different R packages. Most of which can be sourced from CRAN, but some must be downloaded from GitHub. We can use the following code to load in the packages and install any packages not previously installed in the R console. 
+
+```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr")
+pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+```
+
+<br><br>
+
+# Loading Data
+***
+
+Data is exported from Viscore's VPI scriplet as a .csv file and named according to the file. 
+Since Viscore puts the "percent" column as a percentage sign (**%**) R cannot read it in  we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data. Before we manipulate the data I am first making a vector called **myColors** using the function `gg_color_hue()` from the package `metafolio` that will save a vector of colors to the number of factors I have, this is so in our later plots, all the color palettes will be the same. I am also adding **site** and **time** columns to each subset, combining all subsets into one large dataframe using `bind_rows()`, adding a **treatment** column and using the `gsub()` to rename some 
+```{r, load data, include = TRUE, results = 'hide'}
+
+setwd("../data/vpiData")
+
+read_plus <- function(flnm) {
+    read_csv(flnm) %>% 
+        mutate(filename = flnm)
+}
+
+vpiData1 <-
+    list.files(pattern = "*.csv", 
+               full.names = T) %>% 
+    map_df(~read_plus(.))
+
+
+#Sort out data to have proper columns for all the info i want, this might need to be changed to figure out the Marks vs Plot thing
+
+vpiData <- vpiData1 %>% 
+      tidyr::separate(filename, into=c("Date", "Site"),extra = 'merge',sep = "(?=T)") %>%
+      tidyr::separate(Date, into=c("remove", "Date"),sep = "/") %>% 
+      tidyr::separate(Site, into = c("Site", "delete"),sep = ".pqs") %>% 
+      dplyr::select(-c(remove, delete)) %>% 
+      mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
+      tidyr::separate(Date, into = c("Date", "remove"), sep = 10) %>% 
+      dplyr::select(-remove) %>% 
+      tidyr::separate(Site, into = c("Site", "Plot"), sep = "(?=plot)", extra = "merge") %>% 
+      tidyr::separate(Site, into = c("Site", "Mark"), sep = "(?=mark)", extra = "merge") %>% 
+      tidyr::separate(Plot, into = c("Plot", "Mark"), sep = "(?=mark)", extra = "merge" ) %>% 
+      dplyr::rename(abundance = `%`) %>%
+      tidyr::drop_na(abundance) %>% 
+      arrange(desc(abundance))
+
+#Changing the Date to factors
+vpiData$Date<-as.factor(vpiData$Date)
+vpiData$Date<-strptime(vpiData$Date,format="%Y-%m-%d") #defining what is the original format of your date
+vpiData$Date<-as.Date(vpiData$Date,format="%Y-%m-%d")
+
+vpiData$Site <- as.factor(vpiData$Site)
+
+#Making some corrections in the naming
+vpiData$class <- gsub("Crustose coralline algae natans","Crustose coralline algae",vpiData$class)
+vpiData$class <- gsub("Rubble", "Bare Substrate", vpiData$class)
+vpiData$class <- as.factor(vpiData$class)
+vpiData$Site <- as.factor(vpiData$Site)
+
+
+
+TAP3a1 <- vpiData %>% 
+        dplyr::filter(Site == "T-AP-3a")
+TAP41 <- vpiData %>% 
+        dplyr::filter(Site == "T-AP-4")
+TAP51 <- vpiData %>% 
+        dplyr::filter(Site == "T-AP-5")
+TAP61 <- vpiData %>% 
+        dplyr::filter(Site == "T-AP-6")
+```
+
+```{r, TAP3a, include = TRUE}
+
+TAP3a <- TAP3a1 %>% 
+        select(Date, Site, class, count, abundance) %>% 
+        group_by(Date,class) %>% 
+        add_count() %>% 
+        summarise(count = sum(count)) %>% 
+        ungroup() %>% 
+        group_by(class, Date) %>% 
+        droplevels()
+
+  
+TAP3astart <- TAP3a %>% 
+  filter(Date == "2021-04-21
+") %>% 
+  group_by(class) 
+  
+total <- sum(TAP4start$count)
+
+TAP4start$abundance <- TAP4start$count/total
+
+
+TAP4end <- TAP4 %>% 
+  filter(Date == "2022-04-28") %>% 
+  group_by(class) 
+  
+total <- sum(TAP4end$count)
+
+TAP4end$abundance <- TAP4end$count/total
+
+TAP4 <- bind_rows(TAP4start, TAP4end)
+
+TAP4_2P <- TAP4 %>%
+  filter(abundance > .02) %>%
+  droplevels()
+
+myColors <- gg_color_hue(length(TAP4$class), c = 50)
+
+
+
+
+TAP4Stack1 <- ggplot(TAP4, aes(x = Date, y = abundance))+
+  geom_bar(aes(fill = class), position = position_fill(reverse = TRUE), stat = 'identity', color = "black")+
+  scale_fill_manual(values = myColors)
+
+
+TAP4Stack <- TAP4Stack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "bottom")
+TAP4Stack
+
+     
+
+TAP4Stack1 <- ggplot(TAP4, aes(x = Date, y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,1)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+This is subsetting for TAP4 only
+
+```{r, include = TRUE}
+TAP4 <- TAP41 %>% 
+        select(Date, Site, class, count, abundance) %>% 
+        group_by(Date,class) %>% 
+        add_count() %>% 
+        summarise(count = sum(count)) %>% 
+        ungroup() %>% 
+        group_by(class, Date) %>% 
+        droplevels()
+
+  
+TAP4start <- TAP4 %>% 
+  filter(Date == "2021-05-27") %>% 
+  group_by(class) 
+  
+total <- sum(TAP4start$count)
+
+TAP4start$abundance <- TAP4start$count/total
+
+
+TAP4end <- TAP4 %>% 
+  filter(Date == "2022-04-28") %>% 
+  group_by(class) 
+  
+total <- sum(TAP4end$count)
+
+TAP4end$abundance <- TAP4end$count/total
+
+TAP4 <- bind_rows(TAP4start, TAP4end)
+
+TAP4_2P <- TAP4 %>%
+  filter(abundance > .02) %>%
+  droplevels()
+
+myColors <- gg_color_hue(length(TAP4$class), c = 50)
+
+
+
+TAP4Stack1 <- ggplot(TAP4, aes(x = as.factor(Date), y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,1)+
+                      # scale_fill_manual(values = myColors)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-4")
+
+TAP4Stack <- TAP4Stack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+TAP4Stack
+
+```
+
+This is subsetting for TAP5 only
+
+```{r, TAP5, include = TRUE}
+
+
+TAP5 <- TAP51 %>% 
+        select(Date, Site, class, count, abundance) %>% 
+        group_by(Date,class) %>% 
+        add_count() %>% 
+        summarise(count = sum(count)) %>% 
+        ungroup() %>% 
+        group_by(class, Date) %>% 
+        droplevels()
+
+  
+TAP5start <- TAP5 %>% 
+  filter(Date == "2021-06-02") %>% 
+  group_by(class) 
+  
+total <- sum(TAP5start$count)
+
+TAP5start$abundance <- TAP5start$count/total
+
+
+TAP5end <- TAP5 %>% 
+  filter(Date == "2022-06-10") %>% 
+  group_by(class) 
+  
+total <- sum(TAP5end$count)
+
+TAP5end$abundance <- TAP5end$count/total
+
+TAP5 <- bind_rows(TAP5start, TAP5end)
+
+TAP5_2P <- TAP5 %>%
+  filter(abundance > .02) %>%
+  droplevels()
+
+# myColors <- gg_color_hue(length(TAP5$class), c = 50)
+
+
+
+
+TAP5Stack1 <- ggplot(TAP5, aes(x = as.factor(Date), y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,1)+
+                      # scale_fill_manual(values = myColors)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-5")
+
+TAP5Stack <- TAP5Stack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+TAP5Stack
+
+
+
+```
+
+
+This is subsetting for TAP6 only
+
+```{r, TAP6, include = TRUE}
+
+TAP6 <- TAP61 %>% 
+        select(Date, Site, class, count, abundance) %>% 
+        group_by(Date,class) %>% 
+        add_count() %>% 
+        summarise(count = sum(count)) %>% 
+        ungroup() %>% 
+        group_by(class, Date) %>% 
+        droplevels()
+
+  
+TAP6start <- TAP6 %>% 
+  filter(Date == "2021-06-15") %>% 
+  group_by(class) 
+  
+total <- sum(TAP6start$count)
+
+TAP6start$abundance <- TAP6start$count/total
+
+
+TAP6end <- TAP6 %>% 
+  filter(Date == "2022-06-10") %>% 
+  group_by(class) 
+  
+total <- sum(TAP6end$count)
+
+TAP6end$abundance <- TAP6end$count/total
+
+TAP6 <- bind_rows(TAP6start, TAP6end)
+
+TAP6_2P <- TAP6 %>%
+  filter(abundance > .02) %>%
+  droplevels()
+
+# myColors <- gg_color_hue(length(TAP6$class), c = 50)
+
+
+
+
+TAP6Stack1 <- ggplot(TAP6, aes(x = as.factor(Date), y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,1)+
+                      # scale_fill_manual(values = myColors)+
+                     labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-6")
+
+TAP6Stack <- TAP6Stack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+TAP6Stack
+
+```
+Adding TAP4, TAP5, and TAP6 plots together.
+
+
+```{r, comboPlot, include = TRUE}
+
+comboPlot <- TAP4Stack / TAP5Stack / TAP6Stack +   plot_annotation(title = 'Relative Abundance',
+                  theme = theme(plot.title = element_text(size = 60)))
+
+
+ggsave("../figures/comboPlot.png", plot = comboPlot, width = 20, height = 35, units = 'in', dpi = 600)
+
+```
+This is subsetting for TAP4 with Relative Abundance > 2% only
+
+```{r, TAP42P, include = TRUE}
+
+TAP4_2P <- TAP4 %>%
+  filter(abundance > .02) %>%
+  droplevels()
+
+myColors <- gg_color_hue(length(TAP4$class), c = 50)
+
+
+
+TAP4_2PStack1 <- ggplot(TAP4_2P, aes(x = as.factor(Date), y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,1)+
+                      # scale_fill_manual(values = myColors)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-4")
+
+TAP4_2PStack <- TAP4_2PStack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+TAP4_2PStack
+
+```
+
+This is subsetting for TAP5 with Relative Abundance > 2% only
+
+```{r, TAP52P, include = TRUE}
+
+
+
+
+TAP5_2P <- TAP5 %>%
+  filter(abundance > .02) %>%
+  droplevels()
+
+# myColors <- gg_color_hue(length(TAP5$class), c = 50)
+
+
+
+
+TAP5_2PStack1 <- ggplot(TAP5_2P, aes(x = as.factor(Date), y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,1)+
+                      # scale_fill_manual(values = myColors)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-5")
+
+TAP5_2PStack <- TAP5_2PStack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+TAP5_2PStack
+
+
+
+```
+
+
+This is subsetting for TAP6  with Relative Abundance > 2% only
+
+```{r, TAP6, include = TRUE}
+
+
+TAP6_2P <- TAP6 %>%
+  filter(abundance > .02) %>%
+  droplevels()
+
+# myColors <- gg_color_hue(length(TAP5$class), c = 50)
+
+
+
+
+TAP6_2PStack1 <- ggplot(TAP6_2P, aes(x = as.factor(Date), y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,1)+
+                      # scale_fill_manual(values = myColors)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-6")
+
+TAP6_2PStack <- TAP6_2PStack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+TAP6_2PStack
+
+```
+
+
+```{r, combo2pPlot, include = TRUE}
+
+
+
+comboPlot2P <- TAP4_2PStack / TAP5_2PStack / TAP6_2PStack +   plot_annotation(title = 'Relative Abundance > 2%',
+                  theme = theme(plot.title = element_text(size = 60)))
+
+
+ggsave("../figures/comboPlot2P.png", plot = comboPlot2P, width = 20, height = 35, units = 'in', dpi = 600)
+
+
+
+```
+
+
+
+
+
+<br><br>
+# Plotting the data
+***
+
+To visualize the data and what our species composition looks like at our sites, we are going to plot the data in a few different ways. First we are going to just plot those with >2% abundance at our sites.
+
+
+
+
+```{r}
+# myColors <- paletteer_c("harrypotter::gryffindor", 6, direction = 1 )
+#myColors <- paletteer_c("pals::ocean.balance", 6, direction = 1)
+#Color Palette using a selection of Mote's preferred colors
+myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
+
+# Using this just to plot the top 2% of species
+vpiData1 <- vpiData %>%
+  filter(abundance > 2) %>%
+  droplevels()
+vpiData1$class = factor(vpiData1$class, levels(vpiData1$class)[c(2,6,3,4,5,1)])
+
+
+
+
+vpiStack1 <- ggplot(vpiData1, aes(x = Date, y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,100)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
+                      scale_fill_manual(values = myColors)+
+                      facet_wrap(.~Site, scales = 'free')
+                    
+
+
+
+
+vpiStack <- vpiStack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "bottom")
+vpiStack
+
+ggsave("../figures/vpiStackBar.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/noaaReportFig2.jpeg", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
+
+
+
+
+
+```
+
+
+<br><br>
+
+# Normality Test
+***
+
+Conducting a few normality tests to see whether or not the data violates the assumptions of normality. And then running the appropriate statistical test. In this case we are running a single-factor Kruskal-Wallis (for non-normally distributed data) and then a multi-factor Permuational Analysis of Variance (PERMANOVA) using the function `adonis` in the package `vegan` looking at abundance across treatment (control vs outplanted) and functional groups (gorgonians, corals, etc). The factors and variables are likely to change as we add in variables from other data sets (potentially) and timepoints (definitely). 
+
+```{r}
+set.seed(999)
+vpiPerm <- adonis(formula = abundance ~ class*time*treatment, data = vpi, method = "euclidian", permutations = 999)
+
+set.seed(999)
+vpiPairwise1 <- pairwise.adonis(vpi[c(3)], factors = vpi$class, sim.method = 'euclidian', p.adjust.m = 'bonferroni', perm = 999)
+
+vpiPairwise <- vpiPairwise1 %>% filter(p.adjusted < 0.05)
+
+```
+
+
+```{r, PERMANOVAtable, include = TRUE, results = hide}
+
+vpiPermTab = data.frame("Test" = "PERMANOVA", "Comparison" = "Class", "df" = vpiPerm[["aov.tab"]][["Df"]][[1]],"Pseudo.F" = vpiPerm[["aov.tab"]][["F.Model"]][[1]], "p.value" = vpiPerm[["aov.tab"]][["Pr(>F)"]][[1]]) %>% 
+  add_row("Test" = " ", "Comparison" = "Time", "df" = vpiPerm[["aov.tab"]][["Df"]][[2]], "Pseudo.F" = vpiPerm[["aov.tab"]][["F.Model"]][[2]], "p.value" = vpiPerm[["aov.tab"]][["Pr(>F)"]][[2]]) %>% 
+  add_row("Test" = " ", "Comparison" = "Treatment", "df" = vpiPerm[["aov.tab"]][["Df"]][[3]], "Pseudo.F" = vpiPerm[["aov.tab"]][["F.Model"]][[3]], "p.value" = vpiPerm[["aov.tab"]][["Pr(>F)"]][[3]]) %>% 
+  add_row("Test" = " ", "Comparison" = "Class:Time", "df" = vpiPerm[["aov.tab"]][["Df"]][[4]], "Pseudo.F" = vpiPerm[["aov.tab"]][["F.Model"]][[4]], "p.value" = vpiPerm[["aov.tab"]][["Pr(>F)"]][[4]]) %>% 
+  add_row("Test" = " ", "Comparison" = "Class:Treatment", "df" = vpiPerm[["aov.tab"]][["Df"]][[5]], "Pseudo.F" = vpiPerm[["aov.tab"]][["F.Model"]][[5]], "p.value" = vpiPerm[["aov.tab"]][["Pr(>F)"]][[5]]) %>% 
+  add_row("Test" = " ", "Comparison" = "Time:Treatment", "df" = vpiPerm[["aov.tab"]][["Df"]][[6]], "Pseudo.F" = vpiPerm[["aov.tab"]][["F.Model"]][[6]], "p.value" = vpiPerm[["aov.tab"]][["Pr(>F)"]][[6]]) %>% 
+  add_row("Test" = " ", "Comparison" = "Class:Time:Treatment", "df" = vpiPerm[["aov.tab"]][["Df"]][[7]], "Pseudo.F" = vpiPerm[["aov.tab"]][["F.Model"]][[7]], "p.value" = vpiPerm[["aov.tab"]][["Pr(>F)"]][[7]]) %>% 
+
+
+mutate_if(is.numeric, round, digits = 3) %>%     
+mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>% 
+mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–") %>%
+flextable() %>%
+set_header_labels(Data.set = "Data set") %>% 
+flextable::compose(part = "header", j = "df", value = as_paragraph("df")) %>% 
+flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
+flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+autofit() %>%
+font(fontname = "Times New Roman", part = "all") %>%
+fontsize(size = 12, part = "all") %>%
+bold(part = "header") %>%
+colformat_num(j = 'df', digits = 2) %>% 
+colformat_num(j = "Pseudo.F", digits = 2) %>%
+colformat_num(j = "p.value", digits = 4, na_str = "ns") %>% 
+align_nottext_col(align = "center", header = TRUE, footer = TRUE) %>% 
+align(align = "center", j = "p.value")
+
+vpiDoc = read_docx()
+vpiDoc = body_add_flextable(vpiDoc, value = vpiPermTab)
+print(vpiDoc, target = "../tables/vpiTable.docx")
+vpiPermTab
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+```{r, subsetDate, include = TRUE, }
+
+
+post <- vpi %>% filter(time == '1 Year')
+coolStuff <- vpi %>% filter(class != "Bare Substrate") %>% filter(class != "Turf algae")
+
+
+adonis(count ~ time*treatment*class, data = coolStuff, method = 'euclidian', permutation = 9999)
+
+
+
+
+
+```
+

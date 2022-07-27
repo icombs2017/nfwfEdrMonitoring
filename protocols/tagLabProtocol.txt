@@ -1,0 +1,41 @@
+Mote Marine Laboratory – TagLab Orthomosaic/Orthoprojection segmentation protocol
+
+By: Ian Combs
+Last updated: 7/25/2022
+
+1. Open TagLab
+2. Go to Project > Add New Map	
+a. Name the map as follows YYYY_MM_DD_Site
+b. Navigate to the folder where the orthomosaic/orthoprojection is located
+c. Enter the Acquisition Date 
+d. Press OK.
+3. Once map is loaded, select the measure tool and input scale by selecting the center points of each scale bar
+a. Insert the proper size (500mm)
+b. Select “Set new pixel size”
+c. Select “Ok”
+d. Save the file by navigating to File > Save Project
+Note: It is usually helpful to measure a few more scale bars using the measure tool to ensure your scaling worked
+4.  Go to Project > Labels Dictionary Editor
+a. Using “New” or “Load” select the proper dictionary for your project (in most cases, this will be the “Mote Dictionary” or simply “Mote”
+5. Go to Project > Set Working Area
+a. Select the left most button that looks like a dotted square with a cursor
+b. Draw a square that will be your working area
+i. Make sure this encompasses the entirety of the outplant area, if this is impossible due to irregular outplanting shapes, you may need to work in batches
+c. Select “Set”
+6. On the tool bar, select the grid
+a. Enter grid settings so you have roughly 1m x 1m boxes within your grid
+i. This will change depending on the size and shape of your outplant and working area.
+7. Begin segmenting
+a. TagLab comes equipped with multiple tools to aid in segmentation
+b. The decision hierarchy for tool selection should be:
+i. Positive and negative clicks tool (3)
+ii. 4-clicks tool (2)
+iii. Free Hand Tool	(4)
+8. Once a coral has been segmented, refine as needed using the Refine Border function (R), the Edit Border Tool (6) or the Cut Tool (7)
+9. Once you are confident with the selection, press space to finalize the selection
+10. Double click the segmented coral, then double click to assign the Class
+Note: this is usually to species but can be modified depending on the objectives 
+11. Once segmentation is completed, export your data
+a. Navigate to File > Export > Export Annotations as Data Table
+b. Name the file appropriately and save it in the appropriate, project-specific folder
+

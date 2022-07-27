@@ -1,6 +1,6 @@
 Setting up GoPros for in-situ SfM Photogrammetry
 Written By: Ian Combs (icombs@mote.org)
-Last Updated: Ian Combs 12/22/21
+Last Updated: Ian Combs 7/22/22
 
 Raceway Image Capture
 
@@ -10,18 +10,17 @@ https://gopro.com/content/dam/help/hero8-black/manuals/HERO8Black_UM_ENG_REVB.pd
 2. Check that batteries are sufficiently charged and memory card is empty.
 
 3. Ensure that the date and time is accurate.
-  a. If time is not correct, navigate to Preferences > General  > Time and set the correct time
-  b. If date is not correct, navigate to Preferences > General > Date and set the correct date
+  a. If time is not correct, navigate to Preferences > General  > Time, and set the correct time
+  b. If date is not correct, navigate to Preferences > General > Date, and set the correct date
 
-4. Check to see if the memory card is empty, if not reformat the memory card. Navigate to Preferences > Reset > Format SD card
-  Note: Make sure the data that is on the SD card has already been downloaded somewhere else, once you reformat the SD card the data is lost forever
-
+4. Check to see if the memory card is empty. If not, reformat the memory card. Navigate to Preferences > Reset > Format SD card
+  Note: Make sure the data that is on the SD card has already been downloaded somewhere else. Once you reformat the SD card, the data is lost forever.
 
 5. Check to see that QuickCapture is on, navigate to Preferences > General > QuickCapture
   Note: This ensures that you only have to hold the capture button to start TimeLapse (interval)
 
 6. Now ensure that your interval settings are correct. Navigate to Time Lapse and Press the Time Lapse button in the middle bottom of the screen. Click the pencil next to the Time Lapse setting and make sure the you have the following settings selected:
-    a. Lens = Linear
+    a. Lens = Wide
     b. Interval = 1s
     c. Format = Photo
     d. Output = Standard
