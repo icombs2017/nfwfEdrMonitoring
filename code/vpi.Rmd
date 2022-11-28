@@ -54,7 +54,6 @@ Data is exported from Viscore's VPI scriplet as a .csv file and named according 
 Since Viscore puts the "percent" column as a percentage sign (**%**) R cannot read it in  we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data. Before we manipulate the data I am first making a vector called **myColors** using the function `gg_color_hue()` from the package `metafolio` that will save a vector of colors to the number of factors I have, this is so in our later plots, all the color palettes will be the same. I am also adding **site** and **time** columns to each subset, combining all subsets into one large dataframe using `bind_rows()`, adding a **treatment** column and using the `gsub()` to rename some 
 ```{r, load data, include = TRUE, results = 'hide'}
 
-setwd("../data/vpiData")
 
 read_plus <- function(flnm) {
     read_csv(flnm) %>% 
@@ -62,7 +61,7 @@ read_plus <- function(flnm) {
 }
 
 vpiData1 <-
-    list.files(pattern = "*.csv", 
+    list.files(path = "../data/vpiData", pattern = "*.csv", 
                full.names = T) %>% 
     map_df(~read_plus(.))
 
@@ -71,7 +70,7 @@ vpiData1 <-
 
 vpiData <- vpiData1 %>% 
       tidyr::separate(filename, into=c("Date", "Site"),extra = 'merge',sep = "(?=T)") %>%
-      tidyr::separate(Date, into=c("remove", "Date"),sep = "/") %>% 
+      tidyr::separate(Date, into=c("remove", "Date"),sep = "../data/vpiData/") %>% 
       tidyr::separate(Site, into = c("Site", "delete"),sep = ".pqs") %>% 
       dplyr::select(-c(remove, delete)) %>% 
       mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
@@ -144,6 +143,7 @@ TAP4 <- bind_rows(TAP4start, TAP4end)
 TAP4_2P <- TAP4 %>%
   filter(abundance > .02) %>%
   droplevels()
+
 
 myColors <- gg_color_hue(length(TAP4$class), c = 50)
 

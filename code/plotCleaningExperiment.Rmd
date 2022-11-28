@@ -28,7 +28,7 @@ library(magrittr)
 
 ###
 ***
-This is the analysis pipeline for data generated from TagLab annotations of our EDR outplant sites as part of the NWFW project.
+This is the analysis pipeline for data generated from Virtual Point Intercept annotations of our EDR plot cleaning experiment outplant sites as part of the Mission: Iconic Reefs funded project.
 
 
 ***
@@ -50,13 +50,11 @@ pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 # Loading Data
 ***
 
-Data is exported from Viscore's VPI scriplet as a .csv file and named according to the file. 
-Since Viscore puts the "percent" column as a percentage sign (**%**) R cannot read it in  we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data. Before we manipulate the data I am first making a vector called **myColors** using the function `gg_color_hue()` from the package `metafolio` that will save a vector of colors to the number of factors I have, this is so in our later plots, all the color palettes will be the same. I am also adding **site** and **time** columns to each subset, combining all subsets into one large dataframe using `bind_rows()`, adding a **treatment** column and using the `gsub()` to rename some 
+Data is exported from Viscore's VPI scriplet as a .csv file and named according to the file. Because we have a large number of csv files (from each individual model/project) we need a way to batch upload them and separate them. Here we created a function `read_plus` to pull the file names of each file, and download each .csv and include their file name as a column into a single dataframe. Since the file names have relevant information in them (like date and site), we are splitting the column of file name using the function `separate` into relevant factors like "date" and "site" and removing the irrelevant information. This is so we don't have to go into the original .csv files and manually split and add new columns. Since Viscore puts the "percent" column as a percentage sign (**%**) R cannot read it in  we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data.
 
 
 
-
-```{r, load data, include = TRUE, results = 'hide'}
+```{r, load data, include = TRUE, results = 'hide', message = 'hide'}
 
 
 read_plus <- function(flnm) {
@@ -74,15 +72,15 @@ vpiData1 <-
 
 vpiData <- vpiData1 %>% 
       tidyr::separate(filename, into=c("Date", "Site"),extra = 'merge',sep = "(?=T)") %>%
-      tidyr::separate(Date, into=c("remove", "Date"),sep = "/") %>% 
+      tidyr::separate(Date, into=c("remove", "Date"),sep = "../data/vpiData/") %>% 
       tidyr::separate(Site, into = c("Site", "delete"),sep = ".pqs") %>% 
       dplyr::select(-c(remove, delete)) %>% 
       mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
       tidyr::separate(Date, into = c("Date", "remove"), sep = 10) %>% 
       dplyr::select(-remove) %>% 
       tidyr::separate(Site, into = c("Site", "Plot"), sep = "(?=plot)", extra = "merge") %>% 
-      tidyr::separate(Site, into = c("Site", "Mark"), sep = "(?=mark)", extra = "merge") %>% 
-      tidyr::separate(Plot, into = c("Plot", "Mark"), sep = "(?=mark)", extra = "merge" ) %>% 
+      tidyr::separate(Site, into = c("Site", "Marker"), sep = "(?=mark)", extra = "merge") %>% 
+      tidyr::separate(Plot, into = c("Plot", "Marker"), sep = "(?=mark)", extra = "merge" ) %>% 
       dplyr::rename(abundance = `%`) %>%
       tidyr::drop_na(abundance) %>% 
       arrange(desc(abundance))
@@ -90,9 +88,7 @@ vpiData <- vpiData1 %>%
 #Changing the Date to factors
 vpiData$Date<-as.factor(vpiData$Date)
 vpiData$Date<-strptime(vpiData$Date,format="%Y-%m-%d") #defining what is the original format of your date
-vpiData$Date<-as.Date(vpiData$Date,format="%Y-%m-%d")
-
-vpiData$Site <- as.factor(vpiData$Site)
+vpiData$Date<-as.Date.factor(vpiData$Date,format="%Y-%m-%d")
 
 #Making some corrections in the naming
 vpiData$class <- gsub("Crustose coralline algae natans","Crustose coralline algae",vpiData$class)
@@ -102,12 +98,98 @@ vpiData$Site <- as.factor(vpiData$Site)
 
 
 
-TAP3a1 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-3a")
-TAP41 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-4")
-TAP51 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-5")
-TAP61 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-6")
+
+
+
+
 ```
+
+<br><br>
+
+# Filtering Data
+***
+
+Only subsetting the data for the plot cleaning experiment. This will consist of sites **T-12**, **T-13**, and **T-AP-3**. 
+
+
+```{r, filter, include = TRUE}
+
+edr <- vpiData %>% 
+  dplyr::select(Date, Site, Plot, Marker, class, count) %>%
+  dplyr::filter(Site %in% c("T-13a", "T-12a", "T-AP-3a", "T-13b", "T-12b", "T-AP-3b"))
+
+```
+
+# Plotting Data
+***
+
+We are filtering the data once more to exclude anything with an abundance lower than 2%. This makes our graphs much cleaner.  
+
+
+```{r, plotting, include = TRUE}
+
+
+# edr_2p <- edr_2p1 %>% 
+#   select(Date, Site, class, count) %>%
+#   filter(class != "Review") %>% 
+#   group_by(Date, Site, class) %>% 
+#   add_count() %>% 
+#   rename(tally = 'count') %>% 
+#   # ungroup() %>% 
+#   # group_by(Date, Site, class) %>% 
+#   summarise(count = sum(tally), n = max(n), abundance = ((count/n)))
+
+edr_2p1 <- edr %>%
+  select(Date, Site, Plot, Marker, class, count) %>% 
+  group_by(Date, Site, class) %>%
+  filter(class != "Review") %>% 
+  summarise(count = sum(count)) %>% 
+  group_by(Date, Site) %>% 
+  mutate(totalObservations = sum(count, na.rm = TRUE)) %>% 
+  group_by(Date, Site, class) %>% 
+  summarise(abundance = ((count/totalObservations)*100))
+  
+
+
+edr_2p <- edr_2p1 %>%
+  filter(abundance > 0.5) %>%
+  droplevels()
+
+
+
+
+
+edr_2p$Date <- as.factor(edr_2p$Date)
+edr_2p$Date <- droplevels(edr_2p$Date)
+edr_2p$Date <- as.Date.factor(edr_2p$Date)
+
+myColors <- gg_color_hue(length(edr_2p$class), c = 50)
+
+
+
+edrStack1 <- ggplot(edr_2p, aes(x = as.factor(Date), y = abundance))+
+  geom_bar(aes(fill = class), position = position_fill(reverse = TRUE), stat = 'identity', color = "black")+
+  # scale_fill_manual(values = myColors)+
+  facet_wrap(~ Site, scales = 'free')
+
+
+edrStack <- edrStack1+theme(
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+edrStack
+
+
+
+```
+
