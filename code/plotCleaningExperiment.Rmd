@@ -2,15 +2,18 @@
 title: "Plot Cleaning Experiment"
 author: "Ian Combs -- icombs@mote.org"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+  pdf_doctument:
+    toc: yes
+    toc_depth: 3
   html_document:
     theme: flatly
     code_folding: show
     toc: yes
     toc_depth: 3
     toc_float: yes
-  pdf_doctument:
-      toc: yes
-      toc_depth: 3
 ---
 
 ```{r, setup, include = FALSE}
@@ -24,7 +27,7 @@ library(magrittr)
 -->
 
 
-#### [GitHub repository](https://github.com/icombs2017/photogrammetryNOAA.git){target="_blank"}
+#### [GitHub repository](https://github.com/icombs2017/nfwfEdrMonitoring.git){target="_blank"}
 
 ###
 ***
@@ -41,7 +44,7 @@ For the following analyses we will require the use of a number of different R pa
 
 ```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr")
+pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "data.table", "purrr", "formatR")
 pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 ```
 
@@ -50,11 +53,11 @@ pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 # Loading Data
 ***
 
-Data is exported from Viscore's VPI scriplet as a .csv file and named according to the file. Because we have a large number of csv files (from each individual model/project) we need a way to batch upload them and separate them. Here we created a function `read_plus` to pull the file names of each file, and download each .csv and include their file name as a column into a single dataframe. Since the file names have relevant information in them (like date and site), we are splitting the column of file name using the function `separate` into relevant factors like "date" and "site" and removing the irrelevant information. This is so we don't have to go into the original .csv files and manually split and add new columns. Since Viscore puts the "percent" column as a percentage sign (**%**) R cannot read it in  we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data.
+Data is exported from Viscore's VPI scriplet as a .csv file and named according to the file. Because we have a large number of csv files (from each individual model/project) we need a way to batch upload them and separate them. Here we created a function `read_plus` to pull the file names of each file, and download each .csv and include their file name as a column into a single dataframe. Since the file names have relevant information in them (like date and site), we are splitting the column of file name using the function `separate` into relevant factors like "date" and "site" and removing the irrelevant information. This is so we don't have to go into the original .csv files and manually split and add new columns. Since Viscore puts the "percent" column as a percentage sign (**%**) R cannot read it, we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data.
 
 
 
-```{r, load data, include = TRUE, results = 'hide', message = 'hide'}
+```{r, load data, include = TRUE, results = 'hide', message = FALSE, tidy = TRUE}
 
 
 read_plus <- function(flnm) {
@@ -112,32 +115,24 @@ vpiData$Site <- as.factor(vpiData$Site)
 Only subsetting the data for the plot cleaning experiment. This will consist of sites **T-12**, **T-13**, and **T-AP-3**. 
 
 
-```{r, filter, include = TRUE}
+```{r, filter, include = TRUE, tidy = TRUE}
 
 edr <- vpiData %>% 
   dplyr::select(Date, Site, Plot, Marker, class, count) %>%
   dplyr::filter(Site %in% c("T-13a", "T-12a", "T-AP-3a", "T-13b", "T-12b", "T-AP-3b"))
 
+head(edr)
+
 ```
 
-# Plotting Data
+# More Filtering
 ***
 
-We are filtering the data once more to exclude anything with an abundance lower than 2%. This makes our graphs much cleaner.  
+We are filtering the data once more to exclude anything with an abundance lower than 2%. This makes our graphs much cleaner. 
 
 
-```{r, plotting, include = TRUE}
+```{r, moreFiltering, include = TRUE, tidy = TRUE, warning = FALSE}
 
-
-# edr_2p <- edr_2p1 %>% 
-#   select(Date, Site, class, count) %>%
-#   filter(class != "Review") %>% 
-#   group_by(Date, Site, class) %>% 
-#   add_count() %>% 
-#   rename(tally = 'count') %>% 
-#   # ungroup() %>% 
-#   # group_by(Date, Site, class) %>% 
-#   summarise(count = sum(tally), n = max(n), abundance = ((count/n)))
 
 edr_2p1 <- edr %>%
   select(Date, Site, Plot, Marker, class, count) %>% 
@@ -155,9 +150,9 @@ edr_2p <- edr_2p1 %>%
   filter(abundance > 0.5) %>%
   droplevels()
 
-
-
-
+#reordering factor levels so they're ranked by abundance levels using the package "data table" 
+edr_2p = data.table(edr_2p)
+edr_2p[, class := reorder(class, abundance)]
 
 edr_2p$Date <- as.factor(edr_2p$Date)
 edr_2p$Date <- droplevels(edr_2p$Date)
@@ -167,14 +162,28 @@ myColors <- gg_color_hue(length(edr_2p$class), c = 50)
 
 
 
+
+
+
+```
+
+# Plotting the Data
+***
+
+Plotting the data as a stacked bargraph. 
+
+
+```{r, plotting, include = TRUE, tidy = TRUE, message = FALSE, eval = FALSE}
 edrStack1 <- ggplot(edr_2p, aes(x = as.factor(Date), y = abundance))+
   geom_bar(aes(fill = class), position = position_fill(reverse = TRUE), stat = 'identity', color = "black")+
   # scale_fill_manual(values = myColors)+
+  scale_x_discrete(labels = c("T0", "T12"))+
+  scale_y_reverse()+
   facet_wrap(~ Site, scales = 'free')
 
 
 edrStack <- edrStack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5,face= "bold"), 
     axis.title.x = element_blank(),
     axis.title.y = element_text(size = 40, face = "bold"), 
     axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
@@ -189,7 +198,10 @@ edrStack <- edrStack1+theme(
     legend.position = "right")
 edrStack
 
+ggsave("../figures/plotCleaningStudyGraph.png", plot = edrStack, width = 20, height = 20, units = 'in', dpi = 600)
 
 
 ```
+![ ](../figures/plotCleaningStudyGraph.png)
+
 
