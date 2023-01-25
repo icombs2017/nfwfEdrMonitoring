@@ -65,6 +65,9 @@ sites$site <- as.factor(sites$Site)
 sites$species <- as.factor(sites$Species)
 levels(sites$site)
 sites$`Date Collected` <- as.Date(sites$`Date Collected` )
+sites <- sites %>% 
+  filter(`Date Collected` > "2022-06-30")
+
 
 
 # Now I'm making sure I'm just including the EDR sites
@@ -156,7 +159,7 @@ edrSites <- ggplot() +
         axis.title = element_blank(),
         panel.background = element_rect(fill = "aliceblue"),
         panel.border = element_rect(color = "black", size = 0.75, fill = NA),
-        legend.position = "right",
+        legend.position = "none",
         legend.direction = "vertical",
         legend.box = "horizontal",
         plot.background = element_blank())

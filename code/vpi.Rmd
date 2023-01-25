@@ -41,7 +41,7 @@ For the following analyses we will require the use of a number of different R pa
 
 ```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr")
+pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr", "data.table")
 pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 ```
 
@@ -76,7 +76,7 @@ vpiData <- vpiData1 %>%
       mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
       tidyr::separate(Date, into = c("Date", "remove"), sep = 10) %>% 
       dplyr::select(-remove) %>% 
-      tidyr::separate(Site, into = c("Site", "Plot"), sep = "(?=Plot)", extra = "merge") %>% 
+      tidyr::separate(Site, into = c("Site", "Plot"), sep = "(?=plot)", extra = "merge") %>% 
       tidyr::separate(Site, into = c("Site", "Mark"), sep = "(?=mark)", extra = "merge") %>% 
       tidyr::separate(Plot, into = c("Plot", "Mark"), sep = "(?=mark)", extra = "merge" ) %>% 
       dplyr::rename(abundance = `%`) %>%
@@ -95,17 +95,22 @@ vpiData$class <- gsub("Crustose coralline algae natans","Crustose coralline alga
 vpiData$class <- gsub("Rubble", "Bare Substrate", vpiData$class)
 vpiData$class <- as.factor(vpiData$class)
 vpiData$Site <- as.factor(vpiData$Site)
+vpiData$timePoint <- as.factor(vpiData$timePoint)
+
+vpiData$timePoint = factor(vpiData$timePoint, levels(vpiData$timePoint)[c(2,1)])
+vpiData
 
 
 
-TAP3a1 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-3a")
-TAP41 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-4")
-TAP51 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-5")
-TAP61 <- vpiData %>% 
-        dplyr::filter(Site == "T-AP-6")
+
+# TAP3a1 <- vpiData %>% 
+#         dplyr::filter(Site == "T-AP-3a")
+# TAP41 <- vpiData %>% 
+#         dplyr::filter(Site == "T-AP-4")
+# TAP51 <- vpiData %>% 
+#         dplyr::filter(Site == "T-AP-5")
+# TAP61 <- vpiData %>% 
+#         dplyr::filter(Site == "T-AP-6")
 ```
 
 ```{r, TAP3a, include = TRUE}
@@ -520,6 +525,7 @@ TAP6_2PStack
 ```
 
 
+
 ```{r, combo2pPlot, include = TRUE}
 
 
@@ -534,7 +540,27 @@ ggsave("../figures/comboPlot2P.png", plot = comboPlot2P, width = 20, height = 35
 
 ```
 
+Combining the plot cleaning sites to one singular site
+```{r}
 
+vpiData2 <- vpiData %>% 
+  group_by(Site,timePoint, class) %>% 
+  summarise(count = sum(count)) %>% 
+  group_by(Site,timePoint) %>% 
+  mutate(totalObservations = sum(count, na.rm = TRUE)) %>% 
+  group_by(Site,timePoint, class) %>% 
+  mutate(abundance = ((count/totalObservations)*100)) %>% 
+  select(-c(totalObservations))
+
+vpiData2 <- data.table(vpiData2)
+vpiData2[, `:=`(class, reorder(class, abundance))]
+
+
+
+
+```
+
+Combining the newly combined plot cleaning data with the rest of the data set
 
 
 
@@ -551,33 +577,36 @@ To visualize the data and what our species composition looks like at our sites, 
 # myColors <- paletteer_c("harrypotter::gryffindor", 6, direction = 1 )
 #myColors <- paletteer_c("pals::ocean.balance", 6, direction = 1)
 #Color Palette using a selection of Mote's preferred colors
-myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
+# myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
 
 # Using this just to plot the top 2% of species
-vpiData1 <- vpiData %>%
-  filter(abundance > 2) %>%
-  droplevels()
-vpiData1$class = factor(vpiData1$class, levels(vpiData1$class)[c(2,6,3,4,5,1)])
+vpiData3 <- vpiData2 %>%
+  filter(abundance > 1) %>%
+  droplevels() %>% 
+  arrange(desc(abundance))
+
+# vpiData1$class = factor(vpiData1$class, levels(vpiData1$class)[c(2,6,3,4,5,1)])
 
 
 
 
-vpiStack1 <- ggplot(vpiData1, aes(x = Date, y = abundance))+
+vpiStack3<- ggplot(vpiData3, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
-                      scale_fill_manual(values = myColors)+
+  scale_x_discrete(labels = c("Baseline", "12 Month"))+
+                      scale_y_reverse()+
                       facet_wrap(.~Site, scales = 'free')
-                    
 
 
 
 
-vpiStack <- vpiStack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+
+vpiStack <- vpiStack3+theme(
+    axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
     axis.title.x = element_blank(),
     axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
+    axis.text.y = element_text(colour = "black", size = 30, face = "bold"),
     legend.title = element_text(size = 40, face = "bold"), 
     legend.text = element_text(size = 36, face = "bold", colour = "black"), 
     panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
@@ -586,11 +615,11 @@ vpiStack <- vpiStack1+theme(
     axis.line = element_line(colour = "black"), 
     axis.ticks = element_line(color="black"), 
     text = element_text(size=40, color="black"), 
-    legend.position = "bottom")
+    legend.position = "right")
 vpiStack
 
 ggsave("../figures/vpiStackBar.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
-ggsave("../figures/noaaReportFig2.jpeg", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
+ggsave("../figures/nfwfReportFig2.png", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
 
 
 
@@ -608,7 +637,7 @@ Conducting a few normality tests to see whether or not the data violates the ass
 
 ```{r}
 set.seed(999)
-vpiPerm <- adonis(formula = abundance ~ class*time*treatment, data = vpi, method = "euclidian", permutations = 999)
+vpiPerm <- adonis2(vpiData2$abundance ~ Site*timePoint, data = vpiData2)
 
 set.seed(999)
 vpiPairwise1 <- pairwise.adonis(vpi[c(3)], factors = vpi$class, sim.method = 'euclidian', p.adjust.m = 'bonferroni', perm = 999)
@@ -684,4 +713,34 @@ adonis(count ~ time*treatment*class, data = coolStuff, method = 'euclidian', per
 
 
 ```
+
+```{r, NFWFreportSubset, include = TRUE}
+report <- vpiData %>% 
+  filter(Date > "2022-07-01", Date < "2023-01-31") %>% 
+  droplevels()
+levels(report$Site)
+
+report <- vpiData %>% 
+  filter(Site == c("T-14", "T-AP-10", "T-AP-9"))
+
+# reporting period 7/1/2022     to   1/31/2023
+```
+
+```{r}
+
+test <- vpiData %>% 
+  select(Date, Site) %>% 
+  group_by(Date,Site) %>% 
+  unique()
+n_occur <- data.frame(table(test$Site))
+n_occur[n_occur$Freq > 1,]
+
+
+
+
+
+
+
+```
+
 
