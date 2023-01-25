@@ -76,7 +76,7 @@ vpiData <- vpiData1 %>%
       mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
       tidyr::separate(Date, into = c("Date", "remove"), sep = 10) %>% 
       dplyr::select(-remove) %>% 
-      tidyr::separate(Site, into = c("Site", "Plot"), sep = "(?=plot)", extra = "merge") %>% 
+      tidyr::separate(Site, into = c("Site", "Plot"), sep = "(?=Plot)", extra = "merge") %>% 
       tidyr::separate(Site, into = c("Site", "Mark"), sep = "(?=mark)", extra = "merge") %>% 
       tidyr::separate(Plot, into = c("Plot", "Mark"), sep = "(?=mark)", extra = "merge" ) %>% 
       dplyr::rename(abundance = `%`) %>%
