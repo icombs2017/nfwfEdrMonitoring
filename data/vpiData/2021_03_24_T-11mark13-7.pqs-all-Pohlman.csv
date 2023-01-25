@@ -1,176 +1,79 @@
 id,class,count,%,timePoint
 -1,None,,,baseline
 ,Review,,,baseline
-1,Turf,,,baseline
-2,Turf_rubble,,,baseline
-3,Lobophora variegata,,,baseline
-4,Peyssonnelia,,,baseline
-5,CCA,,,baseline
-6,CCA_rubble,2,0.126262626,baseline
-7,CCA_sick,,,baseline
-8,Halimeda,,,baseline
-9,Cyano,4,0.252525253,baseline
-10,Neomeris,,,baseline
-11,Tydemania,,,baseline
-12,Avrainvillea,,,baseline
-13,Brillo spike pad,,,baseline
-14,Caulerpa,,,baseline
-15,Chlorodesmis,,,baseline
-16,Codium,,,baseline
-17,Microdictyon,,,baseline
-18,Palmophyllum,,,baseline
-19,Rhipilia,,,baseline
-20,Ulva,9,0.568181818,baseline
-21,Valonia,,,baseline
-22,Padina,1,0.063131313,baseline
-23,Dictyosphaeria,2,0.126262626,baseline
-24,Dictyota,,,baseline
-25,Dictyopteris,,,baseline
-26,Sargassum,1,0.063131313,baseline
-27,Turbinaria,,,baseline
-28,Galaxaura,,,baseline
-29,Acanthophora,,,baseline
-30,Asparagopsis,,,baseline
-31,Hypnea,,,baseline
-32,Liagora,,,baseline
-33,Seagrass,,,baseline
-34,Green crust,,,baseline
-35,Green_macro,,,baseline
-36,Brown crust,,,baseline
-37,Brn_mac,,,baseline
-38,Red_calc_mac,,,baseline
-39,Red fleshy macro,,,baseline
-40,Black crust,,,baseline
-41,Acro_branch,,,baseline
-42,Acro_tab,,,baseline
-43,Acropora spp,,,baseline
-44,Montipora capitata branching,,,baseline
-45,Montipora capitata encrusting,,,baseline
-46,Montipora capitata foliose,,,baseline
-47,Monti_crust,,,baseline
-48,Monti_crust,,,baseline
-49,Montipora patula,,,baseline
-50,Monti_branch,,,baseline
-51,Monti_crust,,,baseline
-52,Monti_foliose,,,baseline
-53,Montipora spp,,,baseline
-54,Pavona_cactus,,,baseline
-55,Pavona_chiriq,,,baseline
-56,Pavona_clavus,,,baseline
-57,Pavona_duerdeni,,,baseline
-58,Pavona_explanulata,,,baseline
-59,Pavona_maldive,,,baseline
-60,Pavona_varians,23,1.452020202,baseline
-61,Unk_Pavona_crust,,,baseline
-62,Unk_Pavona_foliose,,,baseline
-63,Unk_Pavona_massive,,,baseline
-64,Pavona spp,,,baseline
-65,Pocillopora damicornis,,,baseline
-66,Pocillopora eydouxi,,,baseline
-67,Pocillopora ligulata,29,1.830808081,baseline
-68,Pocillopora meandrina/verrucosa,,,baseline
-69,Pocillopora zelli,,,baseline
-70,Pocillopora spp.,,,baseline
-71,Porites arnaudi foliose,,,baseline
-72,Porites arnoudi massive,36,2.272727273,baseline
-73,Porites compressa,783,49.43181818,baseline
-74,Porites cylindrica,683,43.11868687,baseline
-75,Porites evermanni,4,0.252525253,baseline
-76,Porites lichen,7,0.441919192,baseline
-77,Porites lichen,,,baseline
-78,Porites lobata crust,,,baseline
-79,Porites lobata mass,,,baseline
-80,Porites rus branch,,,baseline
-81,Porites rus encrusting,,,baseline
-82,Porites rus foliose,,,baseline
-83,Porites superfusa,,,baseline
-84,Porites spp_branching,,,baseline
-85,Porites spp_encrusting,,,baseline
-86,Porites spp_foliose,,,baseline
-87,Porites spp_massive,,,baseline
-88,Porites spp,,,baseline
-89,Acanthast,,,baseline
-90,Astreopora,,,baseline
-91,Isopora,,,baseline
-92,Coeloseris,,,baseline
-93,Gardineroseris,,,baseline
-94,Leptoseris,,,baseline
-95,Pachyseris,,,baseline
-96,Stylocoeniella,,,baseline
-97,Turbinaria,,,baseline
-98,Diploastrea,,,baseline
-99,Euphyllia,,,baseline
-100,Plerogyra,,,baseline
-101,Barabattoia,,,baseline
-102,Cyphastrea,,,baseline
-103,Favia,,,baseline
-104,Favites,,,baseline
-105,Leptastrea,,,baseline
-106,Montastraea,,,baseline
-107,Plesiastrea,,,baseline
-108,Podabacia,,,baseline
-109,Ctenactis,,,baseline
-110,Cycloseris,,,baseline
-111,Diaseris,,,baseline
-112,Fungia,,,baseline
-113,Halomitra,,,baseline
-114,Herpolitha,,,baseline
-115,Sandalolitha,,,baseline
-116,Lobophyllia,,,baseline
-117,Caulastrea,,,baseline
-118,Echinopora,,,baseline
-119,Goniastrea,,,baseline
-120,Hydnophora,,,baseline
-121,Leptoria,,,baseline
-122,Merulina,,,baseline
-123,Oulophyllia,,,baseline
-124,Paraclavarina,,,baseline
-125,Platygyra,,,baseline
-126,Scapophyllia,,,baseline
-127,Scolymia,,,baseline
-128,Symphyllia,,,baseline
-129,Galaxea,,,baseline
-130,Echinophyllia,,,baseline
-131,Mycedium,,,baseline
-132,Oxypora,,,baseline
-133,Pectinia,,,baseline
-134,Seriatopora,,,baseline
-135,Stylophora,,,baseline
-136,Alveopora,,,baseline
-137,Goniopora,,,baseline
-138,Coscinaraea,,,baseline
-139,Psammocora,,,baseline
-140,Tubastraea,,,baseline
-141,Millepora,,,baseline
-142,Heliopora,,,baseline
-143,Lace coral,,,baseline
-144,Unk_fungiid,,,baseline
-145,Hydro_coral,,,baseline
-146,Unk_branch,,,baseline
-147,Unk_columnar,,,baseline
-148,Unk_encrusting,,,baseline
-149,Unk_foliose,,,baseline
-150,Unk_massive,,,baseline
-151,Unk_table,,,baseline
-152,Sand,,,baseline
-153,Fine sediment,,,baseline
-154,Limestone,,,baseline
-155,Basalt,,,baseline
-156,Instrument,,,baseline
-157,Giant clam,,,baseline
-158,Anemone,,,baseline
-159,Corallimorph,,,baseline
-160,Sponge,,,baseline
-161,Tunicate,,,baseline
-162,Zoanthid,,,baseline
-163,Leather coral,,,baseline
-164,Octocoral,,,baseline
-165,Soft_coral,,,baseline
-166,Gorgonian,,,baseline
-167,Hydroid,,,baseline
-168,Bivalve,,,baseline
-169,Bryozoan,,,baseline
-170,Green Diplosoma,,,baseline
-171,Black_coral,,,baseline
-172,Unk_Octocorallia,,,baseline
-173,Unk_soft_coral,,,baseline
+1,Unknown,,,baseline
+2,Acropora spp.,,,baseline
+3,Acropora cervicornis,,,baseline
+4,Acropora palmata,,,baseline
+5,Porites spp.,,,baseline
+6,Porites porites,2,0.126262626,baseline
+7,Porites furcata,,,baseline
+8,Porites divaricata,,,baseline
+9,Porites astreoides,4,0.252525253,baseline
+10,Oculina spp.,,,baseline
+11,Oculina robusta,,,baseline
+12,Oculina varicosa,,,baseline
+13,Oculina diffusa,,,baseline
+14,Madracis spp.,,,baseline
+15,Madracis auretenra,,,baseline
+16,Madracis formosa,,,baseline
+17,Madracis decactis,,,baseline
+18,Dendrogyra cylindrus,,,baseline
+19,Siderastrea spp.,,,baseline
+20,Siderastrea siderea,9,0.568181818,baseline
+21,Siderastrea radians,,,baseline
+22,Stephanocoenia intersepta,1,0.063131313,baseline
+23,Montastraea cavernosa,2,0.126262626,baseline
+24,Orbicella spp.,,,baseline
+25,Orbicella annularis,,,baseline
+26,Orbicella faveolata,1,0.063131313,baseline
+27,Orbicella franksi,,,baseline
+28,Favia fragum,,,baseline
+29,Dichocoenia stokesii,,,baseline
+30,Solenastraea bournoni,,,baseline
+31,Solenastraea hyades,,,baseline
+32,Colpophyllia natans,,,baseline
+33,Pseudodiploria spp.,,,baseline
+34,Pseudodiploria strigosa,,,baseline
+35,Pseudodiploria clivosa,,,baseline
+36,Diploria labyrinthiformis,,,baseline
+37,Manicina areolata,,,baseline
+38,Meandrina spp.,,,baseline
+39,Meandrina meandrites,,,baseline
+40,Meandrina danae,,,baseline
+41,Meandrina jacksoni,,,baseline
+42,Helioseris cucullata,,,baseline
+43,Agaricia spp.,,,baseline
+44,Agaricia fragilis,,,baseline
+45,Agaricia lamarcki,,,baseline
+46, Agaricia agaricites,,,baseline
+47,Mycetophyllia spp.,,,baseline
+48,Mycetophyllia lamarckiana,,,baseline
+49,Mycetophyllia aliciae,,,baseline
+50,Mycetophyllia ferox,,,baseline
+51,Mycetophyllia reesi,,,baseline
+52,Isophyllia spp.,,,baseline
+53,Isophyllia sinuosa,,,baseline
+54,Isophyllia rigida,,,baseline
+55,Scolymia spp.,,,baseline
+56,Scolymia cubensis,,,baseline
+57,Scolymia wellsi,,,baseline
+58,Mussa angulosa,,,baseline
+59,Eusmilia fastigiata,,,baseline
+60,Octocorallia,23,1.452020202,baseline
+61,Gorgonia ventalina,,,baseline
+62,Xestospongia muta,,,baseline
+63,Thalassia testudinum,,,baseline
+64,Halimeda,,,baseline
+65,Dictyota spp.,,,baseline
+66,Crustose coralline algae,,,baseline
+67,Porifera,29,1.830808081,baseline
+68,Cnidaria,,,baseline
+69,Red algae,,,baseline
+70,Green algae,,,baseline
+71,Brown algae,,,baseline
+72,Palythoa,36,2.272727273,baseline
+73,Rubble,783,49.43181818,baseline
+74,Turf algae,683,43.11868687,baseline
+75,Other,4,0.252525253,baseline
+76,Millepora spp.,7,0.441919192,baseline
