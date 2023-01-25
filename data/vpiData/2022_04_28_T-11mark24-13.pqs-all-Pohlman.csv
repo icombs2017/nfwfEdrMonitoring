@@ -1,176 +1,80 @@
 id,class,count,%,timePoint
 -1,None,,,1 year
 ,Review,,,1 year
-1,Turf,,,1 year
-2,Turf_rubble,,,1 year
-3,Lobophora variegata,33,1.201310521,1 year
-4,Peyssonnelia,,,1 year
-5,CCA,,,1 year
-6,CCA_rubble,,,1 year
-7,CCA_sick,,,1 year
-8,Halimeda,,,1 year
-9,Cyano,6,0.218420095,1 year
-10,Neomeris,,,1 year
-11,Tydemania,,,1 year
-12,Avrainvillea,,,1 year
-13,Brillo spike pad,,,1 year
-14,Caulerpa,,,1 year
-15,Chlorodesmis,,,1 year
-16,Codium,,,1 year
-17,Microdictyon,1,0.036403349,1 year
-18,Palmophyllum,,,1 year
-19,Rhipilia,,,1 year
-20,Ulva,4,0.145613396,1 year
-21,Valonia,,,1 year
-22,Padina,,,1 year
-23,Dictyosphaeria,1,0.036403349,1 year
-24,Dictyota,,,1 year
-25,Dictyopteris,,,1 year
-26,Sargassum,,,1 year
-27,Turbinaria,,,1 year
-28,Galaxaura,,,1 year
-29,Acanthophora,,,1 year
-30,Asparagopsis,,,1 year
-31,Hypnea,,,1 year
-32,Liagora,,,1 year
-33,Seagrass,,,1 year
-34,Green crust,,,1 year
-35,Green_macro,,,1 year
-36,Brown crust,,,1 year
-37,Brn_mac,,,1 year
-38,Red_calc_mac,,,1 year
-39,Red fleshy macro,,,1 year
-40,Black crust,,,1 year
-41,Acro_branch,,,1 year
-42,Acro_tab,,,1 year
-43,Acropora spp,,,1 year
-44,Montipora capitata branching,,,1 year
-45,Montipora capitata encrusting,,,1 year
-46,Montipora capitata foliose,,,1 year
-47,Monti_crust,,,1 year
-48,Monti_crust,,,1 year
-49,Montipora patula,,,1 year
-50,Monti_branch,,,1 year
-51,Monti_crust,,,1 year
-52,Monti_foliose,,,1 year
-53,Montipora spp,,,1 year
-54,Pavona_cactus,,,1 year
-55,Pavona_chiriq,,,1 year
-56,Pavona_clavus,,,1 year
-57,Pavona_duerdeni,,,1 year
-58,Pavona_explanulata,,,1 year
-59,Pavona_maldive,,,1 year
-60,Pavona_varians,54,1.965780852,1 year
-61,Unk_Pavona_crust,,,1 year
-62,Unk_Pavona_foliose,,,1 year
-63,Unk_Pavona_massive,,,1 year
-64,Pavona spp,,,1 year
-65,Pocillopora damicornis,,,1 year
-66,Pocillopora eydouxi,,,1 year
-67,Pocillopora ligulata,72,2.621041136,1 year
-68,Pocillopora meandrina/verrucosa,,,1 year
-69,Pocillopora zelli,,,1 year
-70,Pocillopora spp.,,,1 year
-71,Porites arnaudi foliose,,,1 year
-72,Porites arnoudi massive,60,2.184200946,1 year
-73,Porites compressa,1149,41.82744813,1 year
-74,Porites cylindrica,1350,49.1445213,1 year
-75,Porites evermanni,6,0.218420095,1 year
-76,Porites lichen,11,0.40043684,1 year
-77,Porites lichen,,,1 year
-78,Porites lobata crust,,,1 year
-79,Porites lobata mass,,,1 year
-80,Porites rus branch,,,1 year
-81,Porites rus encrusting,,,1 year
-82,Porites rus foliose,,,1 year
-83,Porites superfusa,,,1 year
-84,Porites spp_branching,,,1 year
-85,Porites spp_encrusting,,,1 year
-86,Porites spp_foliose,,,1 year
-87,Porites spp_massive,,,1 year
-88,Porites spp,,,1 year
-89,Acanthast,,,1 year
-90,Astreopora,,,1 year
-91,Isopora,,,1 year
-92,Coeloseris,,,1 year
-93,Gardineroseris,,,1 year
-94,Leptoseris,,,1 year
-95,Pachyseris,,,1 year
-96,Stylocoeniella,,,1 year
-97,Turbinaria,,,1 year
-98,Diploastrea,,,1 year
-99,Euphyllia,,,1 year
-100,Plerogyra,,,1 year
-101,Barabattoia,,,1 year
-102,Cyphastrea,,,1 year
-103,Favia,,,1 year
-104,Favites,,,1 year
-105,Leptastrea,,,1 year
-106,Montastraea,,,1 year
-107,Plesiastrea,,,1 year
-108,Podabacia,,,1 year
-109,Ctenactis,,,1 year
-110,Cycloseris,,,1 year
-111,Diaseris,,,1 year
-112,Fungia,,,1 year
-113,Halomitra,,,1 year
-114,Herpolitha,,,1 year
-115,Sandalolitha,,,1 year
-116,Lobophyllia,,,1 year
-117,Caulastrea,,,1 year
-118,Echinopora,,,1 year
-119,Goniastrea,,,1 year
-120,Hydnophora,,,1 year
-121,Leptoria,,,1 year
-122,Merulina,,,1 year
-123,Oulophyllia,,,1 year
-124,Paraclavarina,,,1 year
-125,Platygyra,,,1 year
-126,Scapophyllia,,,1 year
-127,Scolymia,,,1 year
-128,Symphyllia,,,1 year
-129,Galaxea,,,1 year
-130,Echinophyllia,,,1 year
-131,Mycedium,,,1 year
-132,Oxypora,,,1 year
-133,Pectinia,,,1 year
-134,Seriatopora,,,1 year
-135,Stylophora,,,1 year
-136,Alveopora,,,1 year
-137,Goniopora,,,1 year
-138,Coscinaraea,,,1 year
-139,Psammocora,,,1 year
-140,Tubastraea,,,1 year
-141,Millepora,,,1 year
-142,Heliopora,,,1 year
-143,Lace coral,,,1 year
-144,Unk_fungiid,,,1 year
-145,Hydro_coral,,,1 year
-146,Unk_branch,,,1 year
-147,Unk_columnar,,,1 year
-148,Unk_encrusting,,,1 year
-149,Unk_foliose,,,1 year
-150,Unk_massive,,,1 year
-151,Unk_table,,,1 year
-152,Sand,,,1 year
-153,Fine sediment,,,1 year
-154,Limestone,,,1 year
-155,Basalt,,,1 year
-156,Instrument,,,1 year
-157,Giant clam,,,1 year
-158,Anemone,,,1 year
-159,Corallimorph,,,1 year
-160,Sponge,,,1 year
-161,Tunicate,,,1 year
-162,Zoanthid,,,1 year
-163,Leather coral,,,1 year
-164,Octocoral,,,1 year
-165,Soft_coral,,,1 year
-166,Gorgonian,,,1 year
-167,Hydroid,,,1 year
-168,Bivalve,,,1 year
-169,Bryozoan,,,1 year
-170,Green Diplosoma,,,1 year
-171,Black_coral,,,1 year
-172,Unk_Octocorallia,,,1 year
-173,Unk_soft_coral,,,1 year
+1,Unknown,,,1 year
+2,Acropora spp.,,,1 year
+3,Acropora cervicornis,33,1.201310521,1 year
+4,Acropora palmata,,,1 year
+5,Porites spp.,,,1 year
+6,Porites porites,,,1 year
+7,Porites furcata,,,1 year
+8,Porites divaricata,,,1 year
+9,Porites astreoides,6,0.218420095,1 year
+10,Oculina spp.,,,1 year
+11,Oculina robusta,,,1 year
+12,Oculina varicosa,,,1 year
+13,Oculina diffusa,,,1 year
+14,Madracis spp.,,,1 year
+15,Madracis auretenra,,,1 year
+16,Madracis formosa,,,1 year
+17,Madracis decactis,1,0.036403349,1 year
+18,Dendrogyra cylindrus,,,1 year
+19,Siderastrea spp.,,,1 year
+20,Siderastrea siderea,4,0.145613396,1 year
+21,Siderastrea radians,,,1 year
+22,Stephanocoenia intersepta,,,1 year
+23,Montastraea cavernosa,1,0.036403349,1 year
+24,Orbicella spp.,,,1 year
+25,Orbicella annularis,,,1 year
+26,Orbicella faveolata,,,1 year
+27,Orbicella franksi,,,1 year
+28,Favia fragum,,,1 year
+29,Dichocoenia stokesii,,,1 year
+30,Solenastraea bournoni,,,1 year
+31,Solenastraea hyades,,,1 year
+32,Colpophyllia natans,,,1 year
+33,Pseudodiploria spp.,,,1 year
+34,Pseudodiploria strigosa,,,1 year
+35,Pseudodiploria clivosa,,,1 year
+36,Diploria labyrinthiformis,,,1 year
+37,Manicina areolata,,,1 year
+38,Meandrina spp.,,,1 year
+39,Meandrina meandrites,,,1 year
+40,Meandrina danae,,,1 year
+41,Meandrina jacksoni,,,1 year
+42,Helioseris cucullata,,,1 year
+43,Agaricia spp.,,,1 year
+44,Agaricia fragilis,,,1 year
+45,Agaricia lamarcki,,,1 year
+46, Agaricia agaricites,,,1 year
+47,Mycetophyllia spp.,,,1 year
+48,Mycetophyllia lamarckiana,,,1 year
+49,Mycetophyllia aliciae,,,1 year
+50,Mycetophyllia ferox,,,1 year
+51,Mycetophyllia reesi,,,1 year
+52,Isophyllia spp.,,,1 year
+53,Isophyllia sinuosa,,,1 year
+54,Isophyllia rigida,,,1 year
+55,Scolymia spp.,,,1 year
+56,Scolymia cubensis,,,1 year
+57,Scolymia wellsi,,,1 year
+58,Mussa angulosa,,,1 year
+59,Eusmilia fastigiata,,,1 year
+60,Octocorallia,54,1.965780852,1 year
+61,Gorgonia ventalina,,,1 year
+62,Xestospongia muta,,,1 year
+63,Thalassia testudinum,,,1 year
+64,Halimeda,,,1 year
+65,Dictyota spp.,,,1 year
+66,Crustose coralline algae,,,1 year
+67,Porifera,72,2.621041136,1 year
+68,Cnidaria,,,1 year
+69,Red algae,,,1 year
+70,Green algae,,,1 year
+71,Brown algae,,,1 year
+72,Palythoa,60,2.184200946,1 year
+73,Rubble,1149,41.82744813,1 year
+74,Turf algae,1350,49.1445213,1 year
+75,Other,6,0.218420095,1 year
+76,Millepora spp.,11,0.40043684,1 year
+77,Cordata,,,1 year
