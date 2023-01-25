@@ -1,79 +1,79 @@
-id,class,count,%
--1,None,,
-,Review,,
-1,Unknown,,
-2,Acropora spp.,,
-3,Acropora cervicornis,,
-4,Acropora palmata,,
-5,Porites spp.,,
-6,Porites porites,,
-7,Porites furcata,,
-8,Porites divaricata,,
-9,Porites astreoides,2,0.37593984962406013
-10,Oculina spp.,,
-11,Oculina robusta,,
-12,Oculina varicosa,,
-13,Oculina diffusa,,
-14,Madracis spp.,,
-15,Madracis auretenra,,
-16,Madracis formosa,,
-17,Madracis decactis,,
-18,Dendrogyra cylindrus,,
-19,Siderastrea spp.,,
-20,Siderastrea siderea,,
-21,Siderastrea radians,,
-22,Stephanocoenia intersepta,,
-23,Montastraea cavernosa,1,0.18796992481203006
-24,Orbicella spp.,,
-25,Orbicella annularis,,
-26,Orbicella faveolata,,
-27,Orbicella franksi,,
-28,Favia fragum,,
-29,Dichocoenia stokesii,,
-30,Solenastraea bournoni,,
-31,Solenastraea hyades,,
-32,Colpophyllia natans,,
-33,Pseudodiploria spp.,,
-34,Pseudodiploria strigosa,,
-35,Pseudodiploria clivosa,,
-36,Diploria labyrinthiformis,,
-37,Manicina areolata,,
-38,Meandrina spp.,,
-39,Meandrina meandrites,,
-40,Meandrina danae,,
-41,Meandrina jacksoni,,
-42,Helioseris cucullata,,
-43,Agaricia spp.,,
-44,Agaricia fragilis,,
-45,Agaricia lamarcki,,
-46, Agaricia agaricites,,
-47,Mycetophyllia spp.,,
-48,Mycetophyllia lamarckiana,,
-49,Mycetophyllia aliciae,,
-50,Mycetophyllia ferox,,
-51,Mycetophyllia reesi,,
-52,Isophyllia spp.,,
-53,Isophyllia sinuosa,,
-54,Isophyllia rigida,,
-55,Scolymia spp.,,
-56,Scolymia cubensis,,
-57,Scolymia wellsi,,
-58,Mussa angulosa,,
-59,Eusmilia fastigiata,,
-60,Octocorallia,20,3.7593984962406015
-61,Gorgonia ventalina,,
-62,Xestospongia muta,,
-63,Thalassia testudinum,,
-64,Halimeda,,
-65,Dictyota spp.,,
-66,Crustose coralline algae,,
-67,Porifera,,
-68,Cnidaria,,
-69,Red algae,,
-70,Green algae,,
-71,Brown algae,,
-72,Palythoa,13,2.443609022556391
-73,Rubble,429,80.6390977443609
-74,Turf algae,57,10.714285714285714
-75,Other,1,0.18796992481203006
-76,Millepora spp.,9,1.6917293233082706
+id,class,count,%,timePoint
+-1,None,,,baseline
+,Review,,,baseline
+1,Unknown,,,baseline
+2,Acropora spp.,,,baseline
+3,Acropora cervicornis,,,baseline
+4,Acropora palmata,,,baseline
+5,Porites spp.,,,baseline
+6,Porites porites,,,baseline
+7,Porites furcata,,,baseline
+8,Porites divaricata,,,baseline
+9,Porites astreoides,2,0.37593985,baseline
+10,Oculina spp.,,,baseline
+11,Oculina robusta,,,baseline
+12,Oculina varicosa,,,baseline
+13,Oculina diffusa,,,baseline
+14,Madracis spp.,,,baseline
+15,Madracis auretenra,,,baseline
+16,Madracis formosa,,,baseline
+17,Madracis decactis,,,baseline
+18,Dendrogyra cylindrus,,,baseline
+19,Siderastrea spp.,,,baseline
+20,Siderastrea siderea,,,baseline
+21,Siderastrea radians,,,baseline
+22,Stephanocoenia intersepta,,,baseline
+23,Montastraea cavernosa,1,0.187969925,baseline
+24,Orbicella spp.,,,baseline
+25,Orbicella annularis,,,baseline
+26,Orbicella faveolata,,,baseline
+27,Orbicella franksi,,,baseline
+28,Favia fragum,,,baseline
+29,Dichocoenia stokesii,,,baseline
+30,Solenastraea bournoni,,,baseline
+31,Solenastraea hyades,,,baseline
+32,Colpophyllia natans,,,baseline
+33,Pseudodiploria spp.,,,baseline
+34,Pseudodiploria strigosa,,,baseline
+35,Pseudodiploria clivosa,,,baseline
+36,Diploria labyrinthiformis,,,baseline
+37,Manicina areolata,,,baseline
+38,Meandrina spp.,,,baseline
+39,Meandrina meandrites,,,baseline
+40,Meandrina danae,,,baseline
+41,Meandrina jacksoni,,,baseline
+42,Helioseris cucullata,,,baseline
+43,Agaricia spp.,,,baseline
+44,Agaricia fragilis,,,baseline
+45,Agaricia lamarcki,,,baseline
+46, Agaricia agaricites,,,baseline
+47,Mycetophyllia spp.,,,baseline
+48,Mycetophyllia lamarckiana,,,baseline
+49,Mycetophyllia aliciae,,,baseline
+50,Mycetophyllia ferox,,,baseline
+51,Mycetophyllia reesi,,,baseline
+52,Isophyllia spp.,,,baseline
+53,Isophyllia sinuosa,,,baseline
+54,Isophyllia rigida,,,baseline
+55,Scolymia spp.,,,baseline
+56,Scolymia cubensis,,,baseline
+57,Scolymia wellsi,,,baseline
+58,Mussa angulosa,,,baseline
+59,Eusmilia fastigiata,,,baseline
+60,Octocorallia,20,3.759398496,baseline
+61,Gorgonia ventalina,,,baseline
+62,Xestospongia muta,,,baseline
+63,Thalassia testudinum,,,baseline
+64,Halimeda,,,baseline
+65,Dictyota spp.,,,baseline
+66,Crustose coralline algae,,,baseline
+67,Porifera,,,baseline
+68,Cnidaria,,,baseline
+69,Red algae,,,baseline
+70,Green algae,,,baseline
+71,Brown algae,,,baseline
+72,Palythoa,13,2.443609023,baseline
+73,Rubble,429,80.63909774,baseline
+74,Turf algae,57,10.71428571,baseline
+75,Other,1,0.187969925,baseline
+76,Millepora spp.,9,1.691729323,baseline
