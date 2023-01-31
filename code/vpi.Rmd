@@ -103,444 +103,13 @@ vpiData
 
 
 
-# TAP3a1 <- vpiData %>% 
-#         dplyr::filter(Site == "T-AP-3a")
-# TAP41 <- vpiData %>% 
-#         dplyr::filter(Site == "T-AP-4")
-# TAP51 <- vpiData %>% 
-#         dplyr::filter(Site == "T-AP-5")
-# TAP61 <- vpiData %>% 
-#         dplyr::filter(Site == "T-AP-6")
-```
-
-```{r, TAP3a, include = TRUE}
-
-TAP3a <- TAP3a1 %>% 
-        select(Date, Site, class, count, abundance) %>% 
-        group_by(Date,class) %>% 
-        add_count() %>% 
-        summarise(count = sum(count)) %>% 
-        ungroup() %>% 
-        group_by(class, Date) %>% 
-        droplevels()
-
-  
-TAP3astart <- TAP3a %>% 
-  filter(Date == "2021-04-21
-") %>% 
-  group_by(class) 
-  
-total <- sum(TAP4start$count)
-
-TAP4start$abundance <- TAP4start$count/total
-
-
-TAP4end <- TAP4 %>% 
-  filter(Date == "2022-04-28") %>% 
-  group_by(class) 
-  
-total <- sum(TAP4end$count)
-
-TAP4end$abundance <- TAP4end$count/total
-
-TAP4 <- bind_rows(TAP4start, TAP4end)
-
-TAP4_2P <- TAP4 %>%
-  filter(abundance > .02) %>%
-  droplevels()
-
-
-myColors <- gg_color_hue(length(TAP4$class), c = 50)
-
-
-
-
-TAP4Stack1 <- ggplot(TAP4, aes(x = Date, y = abundance))+
-  geom_bar(aes(fill = class), position = position_fill(reverse = TRUE), stat = 'identity', color = "black")+
-  scale_fill_manual(values = myColors)
-
-
-TAP4Stack <- TAP4Stack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
-    legend.position = "bottom")
-TAP4Stack
-
-     
-
-TAP4Stack1 <- ggplot(TAP4, aes(x = Date, y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
-                      ylim(0,1)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")
-
-
-
-
-
-
-
-
 ```
 
 
-
-
-
-This is subsetting for TAP4 only
-
-```{r, include = TRUE}
-TAP4 <- TAP41 %>% 
-        select(Date, Site, class, count, abundance) %>% 
-        group_by(Date,class) %>% 
-        add_count() %>% 
-        summarise(count = sum(count)) %>% 
-        ungroup() %>% 
-        group_by(class, Date) %>% 
-        droplevels()
-
-  
-TAP4start <- TAP4 %>% 
-  filter(Date == "2021-05-27") %>% 
-  group_by(class) 
-  
-total <- sum(TAP4start$count)
-
-TAP4start$abundance <- TAP4start$count/total
-
-
-TAP4end <- TAP4 %>% 
-  filter(Date == "2022-04-28") %>% 
-  group_by(class) 
-  
-total <- sum(TAP4end$count)
-
-TAP4end$abundance <- TAP4end$count/total
-
-TAP4 <- bind_rows(TAP4start, TAP4end)
-
-TAP4_2P <- TAP4 %>%
-  filter(abundance > .02) %>%
-  droplevels()
-
-myColors <- gg_color_hue(length(TAP4$class), c = 50)
-
-
-
-TAP4Stack1 <- ggplot(TAP4, aes(x = as.factor(Date), y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
-                      ylim(0,1)+
-                      # scale_fill_manual(values = myColors)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-4")
-
-TAP4Stack <- TAP4Stack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
-    legend.position = "right")
-TAP4Stack
-
-```
-
-This is subsetting for TAP5 only
-
-```{r, TAP5, include = TRUE}
-
-
-TAP5 <- TAP51 %>% 
-        select(Date, Site, class, count, abundance) %>% 
-        group_by(Date,class) %>% 
-        add_count() %>% 
-        summarise(count = sum(count)) %>% 
-        ungroup() %>% 
-        group_by(class, Date) %>% 
-        droplevels()
-
-  
-TAP5start <- TAP5 %>% 
-  filter(Date == "2021-06-02") %>% 
-  group_by(class) 
-  
-total <- sum(TAP5start$count)
-
-TAP5start$abundance <- TAP5start$count/total
-
-
-TAP5end <- TAP5 %>% 
-  filter(Date == "2022-06-10") %>% 
-  group_by(class) 
-  
-total <- sum(TAP5end$count)
-
-TAP5end$abundance <- TAP5end$count/total
-
-TAP5 <- bind_rows(TAP5start, TAP5end)
-
-TAP5_2P <- TAP5 %>%
-  filter(abundance > .02) %>%
-  droplevels()
-
-# myColors <- gg_color_hue(length(TAP5$class), c = 50)
-
-
-
-
-TAP5Stack1 <- ggplot(TAP5, aes(x = as.factor(Date), y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
-                      ylim(0,1)+
-                      # scale_fill_manual(values = myColors)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-5")
-
-TAP5Stack <- TAP5Stack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
-    legend.position = "right")
-TAP5Stack
-
-
-
-```
-
-
-This is subsetting for TAP6 only
-
-```{r, TAP6, include = TRUE}
-
-TAP6 <- TAP61 %>% 
-        select(Date, Site, class, count, abundance) %>% 
-        group_by(Date,class) %>% 
-        add_count() %>% 
-        summarise(count = sum(count)) %>% 
-        ungroup() %>% 
-        group_by(class, Date) %>% 
-        droplevels()
-
-  
-TAP6start <- TAP6 %>% 
-  filter(Date == "2021-06-15") %>% 
-  group_by(class) 
-  
-total <- sum(TAP6start$count)
-
-TAP6start$abundance <- TAP6start$count/total
-
-
-TAP6end <- TAP6 %>% 
-  filter(Date == "2022-06-10") %>% 
-  group_by(class) 
-  
-total <- sum(TAP6end$count)
-
-TAP6end$abundance <- TAP6end$count/total
-
-TAP6 <- bind_rows(TAP6start, TAP6end)
-
-TAP6_2P <- TAP6 %>%
-  filter(abundance > .02) %>%
-  droplevels()
-
-# myColors <- gg_color_hue(length(TAP6$class), c = 50)
-
-
-
-
-TAP6Stack1 <- ggplot(TAP6, aes(x = as.factor(Date), y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
-                      ylim(0,1)+
-                      # scale_fill_manual(values = myColors)+
-                     labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-6")
-
-TAP6Stack <- TAP6Stack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
-    legend.position = "right")
-TAP6Stack
-
-```
-Adding TAP4, TAP5, and TAP6 plots together.
-
-
-```{r, comboPlot, include = TRUE}
-
-comboPlot <- TAP4Stack / TAP5Stack / TAP6Stack +   plot_annotation(title = 'Relative Abundance',
-                  theme = theme(plot.title = element_text(size = 60)))
-
-
-ggsave("../figures/comboPlot.png", plot = comboPlot, width = 20, height = 35, units = 'in', dpi = 600)
-
-```
-This is subsetting for TAP4 with Relative Abundance > 2% only
-
-```{r, TAP42P, include = TRUE}
-
-TAP4_2P <- TAP4 %>%
-  filter(abundance > .02) %>%
-  droplevels()
-
-myColors <- gg_color_hue(length(TAP4$class), c = 50)
-
-
-
-TAP4_2PStack1 <- ggplot(TAP4_2P, aes(x = as.factor(Date), y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
-                      ylim(0,1)+
-                      # scale_fill_manual(values = myColors)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-4")
-
-TAP4_2PStack <- TAP4_2PStack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
-    legend.position = "right")
-TAP4_2PStack
-
-```
-
-This is subsetting for TAP5 with Relative Abundance > 2% only
-
-```{r, TAP52P, include = TRUE}
-
-
-
-
-TAP5_2P <- TAP5 %>%
-  filter(abundance > .02) %>%
-  droplevels()
-
-# myColors <- gg_color_hue(length(TAP5$class), c = 50)
-
-
-
-
-TAP5_2PStack1 <- ggplot(TAP5_2P, aes(x = as.factor(Date), y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
-                      ylim(0,1)+
-                      # scale_fill_manual(values = myColors)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-5")
-
-TAP5_2PStack <- TAP5_2PStack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
-    legend.position = "right")
-TAP5_2PStack
-
-
-
-```
-
-
-This is subsetting for TAP6  with Relative Abundance > 2% only
-
-```{r, TAP6, include = TRUE}
-
-
-TAP6_2P <- TAP6 %>%
-  filter(abundance > .02) %>%
-  droplevels()
-
-# myColors <- gg_color_hue(length(TAP5$class), c = 50)
-
-
-
-
-TAP6_2PStack1 <- ggplot(TAP6_2P, aes(x = as.factor(Date), y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(vjust = 0, reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
-                      ylim(0,1)+
-                      # scale_fill_manual(values = myColors)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "T-AP-6")
-
-TAP6_2PStack <- TAP6_2PStack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
-    legend.position = "right")
-TAP6_2PStack
-
-```
-
-
-
-```{r, combo2pPlot, include = TRUE}
-
-
-
-comboPlot2P <- TAP4_2PStack / TAP5_2PStack / TAP6_2PStack +   plot_annotation(title = 'Relative Abundance > 2%',
-                  theme = theme(plot.title = element_text(size = 60)))
-
-
-ggsave("../figures/comboPlot2P.png", plot = comboPlot2P, width = 20, height = 35, units = 'in', dpi = 600)
-
-
-
-```
-
-Combining the plot cleaning sites to one singular site
+<br><br>
+# Combining Data
+***
+Multiple VPI surveys were conducted in each site, so we are combinging all of the sites and creating a new abundance column from that
 ```{r}
 
 vpiData2 <- vpiData %>% 
@@ -626,6 +195,54 @@ ggsave("../figures/nfwfReportFig2.png", plot = vpiStack, width = 20, height = 15
 
 
 ```
+```{r, subsetPlot, include = TRUE}
+
+vpiData4 <- vpiData2 %>%
+  filter(abundance > 1) %>% 
+  filter(Site %in% c("T-AP-5", "T-14")) %>%
+  droplevels() %>% 
+  arrange(desc(abundance))
+
+# vpiData1$class = factor(vpiData1$class, levels(vpiData1$class)[c(2,6,3,4,5,1)])
+
+
+
+
+vpiStack3<- ggplot(vpiData4, aes(x = timePoint, y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,100)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%", x = "Time Point")+
+  scale_x_discrete(labels = c("Baseline", "12 Month"))+
+                      scale_y_reverse()+
+                      facet_wrap(.~Site, scales = 'free')
+
+
+
+
+
+vpiStack <- vpiStack3+theme(
+    axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 30, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"), 
+    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 40, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+vpiStack
+
+ggsave("../figures/vpiStackBarSubset.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+
+
+
+
+```
+
 
 
 <br><br>
