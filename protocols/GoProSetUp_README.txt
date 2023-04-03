@@ -1,11 +1,11 @@
-Setting up GoPros for in-situ SfM Photogrammetry
+GoPros Configuration for in-situ Structure-from-Motion Photogrammetry Standard Operating Procedure
 Written By: Ian Combs (icombs@mote.org)
-Last Updated: Ian Combs 7/22/22
+Last Updated: Ian Combs 03/13/2023
 
 Raceway Image Capture
 
 1. You will be using the GoPro Hero 8 Black. The User Manual can be found here:
-https://gopro.com/content/dam/help/hero8-black/manuals/HERO8Black_UM_ENG_REVB.pdf
+https://gopro.com/content/dam/help/hero-2018/HERO_UM_ENG_REVA.pdf
 
 2. Check that batteries are sufficiently charged and memory card is empty.
 
