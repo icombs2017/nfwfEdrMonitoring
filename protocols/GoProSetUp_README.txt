@@ -32,7 +32,7 @@ https://gopro.com/content/dam/help/hero-2018/HERO_UM_ENG_REVA.pdf
   c. ISO Min = 400
   d. ISO Max = 1600
   e. Sharpness = High
-  f. Color = Natural
+  f. Color = GoPro
 
 8. Place the GoPro in the underwater housing. Now you are ready to begin image capture.
 
