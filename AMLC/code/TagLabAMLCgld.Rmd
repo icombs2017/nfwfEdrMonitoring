@@ -53,9 +53,47 @@ pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patc
 # Loading and Manipulating data
 ***
 
-We have loaded a lot of individual data into R and we want to combine the data and create one cohesive dataframe with which to work. In order to do that we have to add a few identifiers to our data frames to hwen combining we can differentiate between the two, but this is also a good time to add other columsn like **treatment** and **time** as well. The majority of this is done using various functions from the package `dplyr`. 
+We have loaded a lot of individual data into R and we want to combine the data and create one cohesive dataframe with which to work. In order to do that we have to add a few identifiers to our data frames to when combining we can differentiate between the two, but this is also a good time to add other columns like **treatment** and **time** as well. The majority of this is done using various functions from the package `dplyr`. 
 
 ```{r, loading, include = TRUE, message = FALSE}
+read_plus <- function(flnm) {
+    read_csv(flnm) %>% 
+      mutate_all(as.character) %>% 
+        mutate(filename = flnm)
+}
+
+tagData1 <-
+    list.files(path = "../../data/TagLab", pattern = "*.csv", 
+               full.names = T) %>% 
+    map_df(~read_plus(.)) %>% 
+  as.tibble()
+
+tagData <- tagData1 %>% 
+      tidyr::separate(filename, into=c("remove", "Site"),extra = 'merge',sep = 18) %>%
+      tidyr::separate(Site, into=c("Site", "remove"),sep = "TagLab.csv") %>% 
+      dplyr::select(-c(remove)) %>%  
+      mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
+      dplyr::rename(abundance = `%`) %>%
+      tidyr::drop_na(abundance) %>% 
+      mutate(Date = factor(Date), Site = factor(Site), timePoint = factor(timePoint), year = factor(year))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 sitec1 <- as.factor("c1")
 sitec2 <- as.factor("c2")
 siteu1 <- as.factor("u1")
