@@ -83,25 +83,28 @@ vpiData <- vpiData1 %>%
       tidyr::drop_na(abundance) %>% 
       arrange(desc(abundance))
 
+
+# Making a column for Species using the length of each character in our Site Column. Note: we are doing this here before we turn that colum into a factor below.
+
+vpiData$species <- if_else(nchar(vpiData$Site) <= 5, "ACER", "APAL" )
+
 #Changing the Date to factors
 vpiData$Date<-as.factor(vpiData$Date)
 vpiData$Date<-strptime(vpiData$Date,format="%Y-%m-%d") #defining what is the original format of your date
 vpiData$Date<-as.Date(vpiData$Date,format="%Y-%m-%d")
 
-vpiData$Site <- as.factor(vpiData$Site)
+# Changing other columns to factors
 
-#Making some corrections in the naming
-vpiData$class <- gsub("Crustose coralline algae natans","Crustose coralline algae",vpiData$class)
-vpiData$class <- gsub("Rubble", "Bare Substrate", vpiData$class)
-vpiData$class <- as.factor(vpiData$class)
-vpiData$Site <- as.factor(vpiData$Site)
-vpiData$timePoint <- as.factor(vpiData$timePoint)
+vpiData <- vpiData %>% mutate(Site = factor(Site), class = factor(class), timePoint = factor(timePoint), species = factor(species)) %>% 
+  select(Date, Site, timePoint, species, class, count)
+
 
 vpiData$timePoint = factor(vpiData$timePoint, levels(vpiData$timePoint)[c(2,1)])
 vpiData
 
-
-
+#Making some corrections in the naming
+vpiData$class <- gsub("Crustose coralline algae natans","Crustose coralline algae",vpiData$class)
+vpiData$class <- gsub("Rubble", "Bare Substrate", vpiData$class)
 
 ```
 
@@ -109,11 +112,11 @@ vpiData
 <br><br>
 # Combining Data
 ***
-Multiple VPI surveys were conducted in each site, so we are combinging all of the sites and creating a new abundance column from that
+Multiple VPI surveys were conducted in each site, so we are combining all of the sites and creating a new abundance column from that
 ```{r}
 
 vpiData2 <- vpiData %>% 
-  group_by(Site,timePoint, class) %>% 
+  group_by(Site,timePoint, species, class) %>% 
   summarise(count = sum(count)) %>% 
   group_by(Site,timePoint) %>% 
   mutate(totalObservations = sum(count, na.rm = TRUE)) %>% 

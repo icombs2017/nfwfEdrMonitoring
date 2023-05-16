@@ -61,7 +61,7 @@ read_plus <- function(flnm) {
 }
 
 vpiData1 <-
-    list.files(path = "C:/Users/gdalonzo/Documents/GitHub/nfwfEdrMonitoring/data/vpiData", pattern = "*.csv", 
+    list.files(path = "../../data/vpiData", pattern = "*.csv", 
                full.names = T) %>% 
     map_df(~read_plus(.))
 
