@@ -41,7 +41,7 @@ For the following analyses we will require the use of a number of different R pa
 
 ```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr", "data.table")
+pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr", "data.table", "ecodist", "glue")
 pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 ```
 
@@ -88,16 +88,21 @@ vpiData$Date<-as.factor(vpiData$Date)
 vpiData$Date<-strptime(vpiData$Date,format="%Y-%m-%d") #defining what is the original format of your date
 vpiData$Date<-as.Date(vpiData$Date,format="%Y-%m-%d")
 
+vpiData$Species <- if_else(nchar(vpiData$Site) <= 5, "ACER", "APAL")
+
 vpiData$Site <- as.factor(vpiData$Site)
 
 #Making some corrections in the naming
 vpiData$class <- gsub("Crustose coralline algae natans","Crustose coralline algae",vpiData$class)
 vpiData$class <- gsub("Rubble", "Bare Substrate", vpiData$class)
+vpiData$timePoint <- gsub("1 year", "Y1", vpiData$timePoint)
 vpiData$class <- as.factor(vpiData$class)
 vpiData$Site <- as.factor(vpiData$Site)
 vpiData$timePoint <- as.factor(vpiData$timePoint)
 
-vpiData$timePoint = factor(vpiData$timePoint, levels(vpiData$timePoint)[c(2,1)])
+
+
+# vpiData$timePoint = factor(vpiData$timePoint, levels(vpiData$timePoint)[c(2,1)])
 vpiData
 
 
@@ -113,11 +118,11 @@ Multiple VPI surveys were conducted in each site, so we are combinging all of th
 ```{r}
 
 vpiData2 <- vpiData %>% 
-  group_by(Site,timePoint, class) %>% 
+  group_by(Site,timePoint, Species, class) %>% 
   summarise(count = sum(count)) %>% 
-  group_by(Site,timePoint) %>% 
+  group_by(Site,timePoint, Species) %>% 
   mutate(totalObservations = sum(count, na.rm = TRUE)) %>% 
-  group_by(Site,timePoint, class) %>% 
+  group_by(Site,timePoint, Species, class) %>% 
   mutate(abundance = ((count/totalObservations)*100)) %>% 
   select(-c(totalObservations))
 
@@ -142,7 +147,7 @@ Conducting a few normality tests to see whether or not the data violates the ass
 
 vpiMat <- vpiData2 %>% 
   select(-c(abundance)) %>%
-  tidyr::unite(sample, 1:6) %>% 
+  tidyr::unite(sample, 1:3) %>% 
   spread(class,count) %>%
   replace(is.na(.), 0) %>%
   # mutate_at(c('sample'), as.character) %>% 
@@ -160,7 +165,7 @@ samples <- dist_tbl %>%
 
  samples_lookup <- dist_tbl %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("timePoint", "Site", "class", "count", "abundance"), sep = "_", remove = FALSE)
+   separate(col = samples, into = c("timePoint", "Site", "Species"), sep = "_", remove = FALSE)
  
 ```
 
@@ -175,30 +180,33 @@ Running a PERMANOVA since the data does not meet the assumptions of normality. W
 
 set.seed(9999)
 
-vpiMat1 <- vpiMat %>% 
-  select(-c(`Bare Substrate`))
 
+
+vpiMat1 <- vpiMat %>% 
+  select(-c(`Bare Substrate`)) 
+  # filter(Site == -c("T-12a", "T-13a", "T-AP-3a"))
 
 
  samplesLookupPerm <- vpiMat1 %>% 
    rownames_to_column(var = "samples") %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("date", "timePoint", "year", "site", "treatment", "reef"), sep = "_", remove = FALSE) %>% 
-   column_to_rownames(var = "samples")
+   separate(col = samples, into = c("Site", "timePoint", "Species"), sep = "_", remove = FALSE) %>% 
+   column_to_rownames(var = "samples") %>% 
+   mutate_at(c("Site", "timePoint", "Species"), as.factor) 
  
 vpiDist <- vegdist(vpiMat1, method = 'bray')
 
-distPerm <- adonis2(vpiDist ~ treatment*year*reef*timePoint, data = samplesLookupPerm, permutations = 9999, method = 'bray')
+set.seed(9999)
+
+distPerm <- adonis2(vpiDist ~ timePoint*Species, data = samplesLookupPerm, permutations = 9999, method = 'bray')
 
 # strata = $Site
 distPerm
 
-# vpiPerm <- adonis2(count ~ treatment*reef*timePoint, data = vpiData, method = "bray", permutations = 9999)
-# 
-# set.seed(999)
-# vpiPairwise1 <- pairwise.adonis(vpi[c(3)], factors = vpi$class, sim.method = 'euclidian', p.adjust.m = 'bonferroni', perm = 999)
-# 
-# vpiPairwise <- vpiPairwise1 %>% filter(p.adjusted < 0.05)
+distPermSite <- adonis2(vpiDist ~ Site, data = samplesLookupPerm, permutations = 9999, method = 'bray')
+distPermSite
+
+
 
 ```
 
