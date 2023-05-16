@@ -71,169 +71,47 @@ tagData1 <-
 tagData <- tagData1 %>% 
       tidyr::separate(filename, into=c("remove", "Site"),extra = 'merge',sep = 18) %>%
       tidyr::separate(Site, into=c("Site", "remove"),sep = "TagLab.csv") %>% 
-      dplyr::select(-c(remove)) %>%  
-      mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
-      dplyr::rename(abundance = `%`) %>%
-      tidyr::drop_na(abundance) %>% 
-      mutate(Date = factor(Date), Site = factor(Site), timePoint = factor(timePoint), year = factor(year))
+      dplyr::select(-c(remove)) %>%
+    mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
+  rename(Species = `TagLab Class name`, Date = `TagLab Date`, Area = `TagLab Area`) %>% 
+      mutate_at(c("Date", "Site", "Species"), as.factor) %>% 
+      mutate_at(c("Area"), as.numeric) %>%
+      select(Date, Site, Species, Area) %>% 
+  group_by(Date, Site) %>% 
+  filter(Species == c("Acropora cervicornis", "Acropora palmata")) %>% 
+  droplevels()
 
+tagApal <- tagData %>% 
+  filter(Species == "Acropora palmata") %>% 
+  droplevels() %>% 
+  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 7) %>% 
+  mutate_at(c("Site"), as.factor) %>% 
+  select(-c("remove"))
 
+tagAcer <- tagData %>% 
+  filter(Species == "Acropora cervicornis") %>% 
+  droplevels() %>% 
+  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 5) %>% 
+  mutate_at(c("Site"), as.factor) %>% 
+  select(-c("remove"))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-sitec1 <- as.factor("c1")
-sitec2 <- as.factor("c2")
-siteu1 <- as.factor("u1")
-siteu2 <- as.factor("u2")
-sitez1 <- as.factor("z1")
-sitez2 <- as.factor("z2")
-pre <- as.factor("Baseline")
-post <- as.factor("1 Year")
-
-
-tagC1Pre <- read.csv("../data/TagLab/2020_08_18_IC-C1.csv", header = T)
-tagC1Pre$TagLab.Class.name <- as.factor(tagC1Pre$TagLab.Class.name)
-tagC1Pre$TagLab.Date <- as.Date.factor(tagC1Pre$TagLab.Date) 
-
-tagC1Pre <- tagC1Pre %>% 
-  select(TagLab.Date, TagLab.Class.name) %>% 
-  add_column(sitec1) %>% 
-  rename(site = sitec1) %>%
-  add_column(pre) %>% 
-  rename(time = pre) %>% 
-  na.omit() %>%
-  group_by(TagLab.Date, TagLab.Class.name, site, time) %>% 
-  summarise(TagLab.Class.name, n()) %>% 
-  rename(count = `n()`) %>% 
-  distinct()
-  tagC1Pre$abundance <- (tagC1Pre$count/sum(tagC1Pre$count)*100)
-  tagC1Pre <- tagC1Pre %>% arrange(desc(abundance))
- 
- 
-tagC1Post <- read.csv("../data/TagLab/2021_12_08_IC-C1.csv", header = T)
-tagC1Post$TagLab.Class.name <- as.factor(tagC1Post$TagLab.Class.name)
-tagC1Post$TagLab.Date <- as.Date.factor(tagC1Post$TagLab.Date) 
-
-tagC1Post <- tagC1Post %>% 
-  select(TagLab.Date, TagLab.Class.name) %>% 
-  add_column(sitec1) %>% 
-  rename(site = sitec1) %>%
-  add_column(post) %>% 
-  rename(time = post) %>% 
-  na.omit() %>%
-  group_by(TagLab.Date, TagLab.Class.name, site, time) %>% 
-  summarise(TagLab.Class.name, n()) %>% 
-  rename(count = `n()`) %>%
-  distinct()
-tagC1Post$abundance <- (tagC1Post$count/sum(tagC1Post$count)*100) 
-tagC1Post <- tagC1Post %>% arrange(desc(abundance))
-
-
-tagU1Pre <- read.csv("../data/TagLab/2020_08_19_IC-U1.csv", header = T)
-tagU1Pre$TagLab.Class.name <- as.factor(tagU1Pre$TagLab.Class.name)
-tagU1Pre$TagLab.Date <- as.Date.factor(tagU1Pre$TagLab.Date) 
-
-tagU1Pre <- tagU1Pre %>% 
-  select(TagLab.Date, TagLab.Class.name) %>% 
-  add_column(siteu1) %>% 
-  rename(site = siteu1) %>%
-  add_column(pre) %>% 
-  rename(time = pre) %>% 
-  na.omit() %>%
-  group_by(TagLab.Date, TagLab.Class.name, site, time) %>% 
-  summarise(TagLab.Class.name, n()) %>% 
-  rename(count = `n()`) %>%
-  distinct()
-tagU1Pre$abundance <- (tagU1Pre$count/sum(tagU1Pre$count)*100) 
-tagU1Pre <- tagU1Pre %>% arrange(desc(abundance))
-
-
-tagU1Post <- read.csv("../data/TagLab/2021_12_08_IC-U1.csv", header = T)
-tagU1Post$TagLab.Class.name <- as.factor(tagU1Post$TagLab.Class.name)
-tagU1Post$TagLab.Date <- as.Date.factor(tagU1Post$TagLab.Date) 
-
-tagU1Post <- tagU1Post %>% 
-  select(TagLab.Date, TagLab.Class.name) %>% 
-  add_column(siteu1) %>% 
-  rename(site = siteu1) %>%
-  add_column(post) %>% 
-  rename(time = post) %>% 
-  na.omit() %>%
-  group_by(TagLab.Date, TagLab.Class.name, site, time) %>% 
-  summarise(TagLab.Class.name, n()) %>% 
-  rename(count = `n()`) %>%
-  distinct()
-tagU1Post$abundance <- (tagU1Post$count/sum(tagU1Post$count)*100) 
-tagU1Post <- tagU1Post %>% arrange(desc(abundance))
-
-
-
-
-tag <- bind_rows(tagC1Pre,tagU1Pre,tagC1Post,tagU1Post)
-tag <- as_tibble(tag)
-
-tag$treatment = if_else(tag$site %in% c("c2", "z1", "u1"), "Control","Outplanted") 
-tag$reef = if_else(tag$site %in% c("c1", "c2"), "Site C",
-                   if_else(tag$site %in% c("u1", "u2"), "Site U", "Site Z"))
-tag$reef <- as.factor(tag$reef)
-
+tagData2 <- rbind(tagApal, tagAcer)
 
 
 ```
 
-<br><br>
-
-# Checking for Normality
-***
-
-Now that we have the data all in one place with the appropriate columns added, we are going to check to see if our data is normally distributed. 
+here we are providing some summary stats about the growth and percent cover changes of APAL and ACER. We're assuming APAL spurs are 50m2 and ACER are 200m2
 
 
+```{r, summaryStats, include = TRUE}
 
-```{r, normality, include = TRUE}
 
-hist(tag$abundance)
-qqnorm(tag$abundance)
-shapiro.test(tag$abundance)
 
 
 
 
 ```
 
-
-<br><br>
-
-# PERMANOVA
-***
-
-Since our data violates the assumptions of normality and is not normally distributed we will carry out non-parametric statistical analyses. This includes a Permuational Analysis of Variance (PERMANOVA) suing the `adonis` function from the package `vegan`. We are using **abundance** as the variable and **treatment** and **time** as the factors as well as the interaction between the two.
-
-```{r, permanova, include = TRUE}
-
-tagPerm <- adonis(formula = count ~ time*treatment, data = tag, method = "euclidian", permutations = 9999)
-
-
-kruskal.test(abundance ~ treatment, data = tag)
-
-oneYear <- subset(tag, time = "1 Year")
-
-
-
-```
 
 <br><br>
 
