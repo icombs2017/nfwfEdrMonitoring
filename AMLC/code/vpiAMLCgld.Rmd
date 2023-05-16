@@ -272,6 +272,12 @@ Combining the newly combined plot cleaning data with the rest of the data set
 
 To visualize the data and what our species composition looks like at our sites, we are going to plot the data in a few different ways. First we are going to just plot those with >2% abundance at our sites.
 
+```{r}
+vpiData2.1 <- vpiData2 %>% filter(class != "Bare Substrate")
+vpiData2.acer <- vpiData2.1 %>% filter(Species == "ACER")
+vpiData2.apal <- vpiData2.1 %>% filter(Species == "APAL")
+
+```
 
 
 
@@ -282,17 +288,19 @@ To visualize the data and what our species composition looks like at our sites, 
 # myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
 
 # Using this just to plot the top 2% of species
-vpiData3 <- vpiData2 %>%
+vpiData3.1 <- vpiData2.1 %>%
   filter(abundance > 1) %>%
   droplevels() %>%
   arrange(desc(abundance))
+
+# vpiData2.1 <- vpiData2 %>% filter(class != "Bare Substrate")
 
 # vpiData1$class = factor(vpiData1$class, levels(vpiData1$class)[c(2,6,3,4,5,1)])
 
 
 
 
-vpiStack3<- ggplot(vpiData3, aes(x = timePoint, y = abundance))+
+vpiStack3<- ggplot(vpiData3.1, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
@@ -320,7 +328,7 @@ vpiStack <- vpiStack3+theme(
     legend.position = "right")
 vpiStack
 
-ggsave("C:/Users/gdalonzo/Documents/AMLC/figures/VPIstackplot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+# ggsave("C:/Users/gdalonzo/Documents/AMLC/figures/VPIstackplot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
 # ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
 
 
@@ -328,6 +336,121 @@ ggsave("C:/Users/gdalonzo/Documents/AMLC/figures/VPIstackplot.png", plot = vpiSt
 
 
 ```
+
+```{r}
+# myColors <- paletteer_c("harrypotter::gryffindor", 6, direction = 1 )
+#myColors <- paletteer_c("pals::ocean.balance", 6, direction = 1)
+#Color Palette using a selection of Mote's preferred colors
+# myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
+
+# Using this just to plot the top 2% of species
+vpiData3.acer <- vpiData2.acer %>%
+  filter(abundance > 1) %>%
+  droplevels() %>%
+  arrange(desc(abundance))
+
+# vpiData2.1 <- vpiData2 %>% filter(class != "Bare Substrate")
+
+# vpiData1$class = factor(vpiData1$class, levels(vpiData1$class)[c(2,6,3,4,5,1)])
+
+
+
+
+vpiStack3<- ggplot(vpiData3.acer, aes(x = timePoint, y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,100)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
+  scale_x_discrete(labels = c("Baseline", "12 Month"))+
+                      scale_y_reverse()+
+                      facet_wrap(.~Site, scales = 'free')
+
+
+
+
+
+vpiStack <- vpiStack3+theme(
+    axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"),
+    axis.text.y = element_text(colour = "black", size = 30, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"),
+    legend.text = element_text(size = 36, face = "bold", colour = "black"),
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'),
+    plot.title = element_text(size = 40, face = "bold"),
+    axis.line = element_line(colour = "black"),
+    axis.ticks = element_line(color="black"),
+    text = element_text(size=40, color="black"),
+    legend.position = "right")
+vpiStack
+
+ggsave("../figures/acerStackPlot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+# ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
+
+
+
+
+
+```
+
+
+
+```{r}
+# myColors <- paletteer_c("harrypotter::gryffindor", 6, direction = 1 )
+#myColors <- paletteer_c("pals::ocean.balance", 6, direction = 1)
+#Color Palette using a selection of Mote's preferred colors
+# myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
+
+# Using this just to plot the top 2% of species
+vpiData3.apal <- vpiData2.apal %>%
+  filter(abundance > 1) %>%
+  droplevels() %>%
+  arrange(desc(abundance))
+
+# vpiData2.1 <- vpiData2 %>% filter(class != "Bare Substrate")
+
+# vpiData1$class = factor(vpiData1$class, levels(vpiData1$class)[c(2,6,3,4,5,1)])
+
+
+
+
+vpiStack<- ggplot(vpiData3.apal, aes(x = timePoint, y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      ylim(0,100)+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
+  scale_x_discrete(labels = c("Baseline", "12 Month"))+
+                      scale_y_reverse()+
+                      facet_wrap(.~Site, scales = 'free')
+
+
+
+
+
+vpiStack <- vpiStack3+theme(
+    axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 40, face = "bold"),
+    axis.text.y = element_text(colour = "black", size = 30, face = "bold"),
+    legend.title = element_text(size = 40, face = "bold"),
+    legend.text = element_text(size = 36, face = "bold", colour = "black"),
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'),
+    plot.title = element_text(size = 40, face = "bold"),
+    axis.line = element_line(colour = "black"),
+    axis.ticks = element_line(color="black"),
+    text = element_text(size=40, color="black"),
+    legend.position = "right")
+vpiStack
+
+ggsave("../figures/apalStackPlot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+# ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
+
+
+
+
+
+```
+
 
 ```{r, subsetPlot, include = TRUE}
 
