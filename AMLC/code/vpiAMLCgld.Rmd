@@ -113,7 +113,7 @@ Multiple VPI surveys were conducted in each site, so we are combinging all of th
 ```{r}
 
 vpiData2 <- vpiData %>% 
-  group_by(Site,timePoint, class) %>% 
+  group_by(Site, timePoint, class) %>% 
   summarise(count = sum(count)) %>% 
   group_by(Site,timePoint) %>% 
   mutate(totalObservations = sum(count, na.rm = TRUE)) %>% 
@@ -142,7 +142,7 @@ Conducting a few normality tests to see whether or not the data violates the ass
 
 vpiMat <- vpiData2 %>% 
   select(-c(abundance)) %>%
-  tidyr::unite(sample, 1:6) %>% 
+  tidyr::unite(sample, 1:3) %>% 
   spread(class,count) %>%
   replace(is.na(.), 0) %>%
   # mutate_at(c('sample'), as.character) %>% 
@@ -160,7 +160,7 @@ samples <- dist_tbl %>%
 
  samples_lookup <- dist_tbl %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("timePoint", "Site", "class", "count", "abundance"), sep = "_", remove = FALSE)
+   separate(col = samples, into = c("Site", "timePoint", "class"), sep = "_", remove = FALSE)
  
 ```
 
