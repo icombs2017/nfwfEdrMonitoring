@@ -278,9 +278,10 @@ vpiData2.acer <- vpiData2.1 %>% filter(Species == "ACER")
 vpiData2.apal <- vpiData2.1 %>% filter(Species == "APAL")
 # vpiData2.bis <- vpiData2.apal %>% filter(Site == c("T-AP-5", "T-AP-10"))
 
-vpiData2.bis <- filter(vpiData2.apal, Site == "T-AP-5", Site == "T-AP-10")
-
-view(vpiData2.bis)
+vpiData2.bis <- vpiData2.apal %>% 
+  filter(Site %in% c("T-AP-5", "T-AP-10"))
+  
+  
 ```
 
 
@@ -309,8 +310,8 @@ vpiStackC<- ggplot(vpiData3.bis, aes(x = timePoint, y = abundance))+
                       ylim(0,100)+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
-                      scale_y_reverse()+
-                      facet_wrap(.~Site, scales = 'free')
+                      #scale_y_reverse()+
+                      facet_wrap(.~Site, scales = 'free_x')
 
 
 
@@ -332,10 +333,8 @@ vpiStackC <- vpiStackC+theme(
     legend.position = "right")
 vpiStackC
 
-# ggsave("C:/Users/gdalonzo/Documents/AMLC/figures/VPIstackplot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/apalBISStackPlot2.png", plot = vpiStackC, width = 20, height = 15, units = 'in', dpi = 600)
 # ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
-
-
 
 
 
@@ -388,7 +387,7 @@ vpiStackA <- vpiStackA+theme(
     legend.position = "right")
 vpiStackA
 
-ggsave("../figures/acerStackPlot2.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/acerStackPlot2.png", plot = vpiStackA, width = 20, height = 15, units = 'in', dpi = 600)
 # ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
 
 
