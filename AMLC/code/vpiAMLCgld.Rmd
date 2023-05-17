@@ -276,7 +276,11 @@ To visualize the data and what our species composition looks like at our sites, 
 vpiData2.1 <- vpiData2 %>% filter(class != "Bare Substrate")
 vpiData2.acer <- vpiData2.1 %>% filter(Species == "ACER")
 vpiData2.apal <- vpiData2.1 %>% filter(Species == "APAL")
+# vpiData2.bis <- vpiData2.apal %>% filter(Site == c("T-AP-5", "T-AP-10"))
 
+vpiData2.bis <- filter(vpiData2.apal, Site == "T-AP-5", Site == "T-AP-10")
+
+view(vpiData2.bis)
 ```
 
 
@@ -288,7 +292,7 @@ vpiData2.apal <- vpiData2.1 %>% filter(Species == "APAL")
 # myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
 
 # Using this just to plot the top 2% of species
-vpiData3.1 <- vpiData2.1 %>%
+vpiData3.bis <- vpiData2.bis %>%
   filter(abundance > 1) %>%
   droplevels() %>%
   arrange(desc(abundance))
@@ -300,10 +304,10 @@ vpiData3.1 <- vpiData2.1 %>%
 
 
 
-vpiStack3<- ggplot(vpiData3.1, aes(x = timePoint, y = abundance))+
+vpiStackC<- ggplot(vpiData3.bis, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       scale_y_reverse()+
                       facet_wrap(.~Site, scales = 'free')
@@ -312,7 +316,7 @@ vpiStack3<- ggplot(vpiData3.1, aes(x = timePoint, y = abundance))+
 
 
 
-vpiStack <- vpiStack3+theme(
+vpiStackC <- vpiStackC+theme(
     axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_text(size = 40, face = "bold"),
@@ -326,7 +330,7 @@ vpiStack <- vpiStack3+theme(
     axis.ticks = element_line(color="black"),
     text = element_text(size=40, color="black"),
     legend.position = "right")
-vpiStack
+vpiStackC
 
 # ggsave("C:/Users/gdalonzo/Documents/AMLC/figures/VPIstackplot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
 # ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
@@ -356,19 +360,19 @@ vpiData3.acer <- vpiData2.acer %>%
 
 
 
-vpiStack3<- ggplot(vpiData3.acer, aes(x = timePoint, y = abundance))+
+vpiStackA<- ggplot(vpiData3.acer, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
-                      scale_y_reverse()+
-                      facet_wrap(.~Site, scales = 'free')
+                      # scale_y_reverse(limits = c(0,100))+
+                      facet_wrap(.~Site, scales = 'free_x')
 
 
 
 
 
-vpiStack <- vpiStack3+theme(
+vpiStackA <- vpiStackA+theme(
     axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_text(size = 40, face = "bold"),
@@ -382,9 +386,9 @@ vpiStack <- vpiStack3+theme(
     axis.ticks = element_line(color="black"),
     text = element_text(size=40, color="black"),
     legend.position = "right")
-vpiStack
+vpiStackA
 
-ggsave("../figures/acerStackPlot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/acerStackPlot2.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
 # ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
 
 
@@ -414,10 +418,10 @@ vpiData3.apal <- vpiData2.apal %>%
 
 
 
-vpiStack<- ggplot(vpiData3.apal, aes(x = timePoint, y = abundance))+
+vpiStackB<- ggplot(vpiData3.apal, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       scale_y_reverse()+
                       facet_wrap(.~Site, scales = 'free')
@@ -426,7 +430,7 @@ vpiStack<- ggplot(vpiData3.apal, aes(x = timePoint, y = abundance))+
 
 
 
-vpiStack <- vpiStack3+theme(
+vpiStackB <- vpiStackB+theme(
     axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
     axis.title.x = element_blank(),
     axis.title.y = element_text(size = 40, face = "bold"),
@@ -440,7 +444,7 @@ vpiStack <- vpiStack3+theme(
     axis.ticks = element_line(color="black"),
     text = element_text(size=40, color="black"),
     legend.position = "right")
-vpiStack
+vpiStackB
 
 ggsave("../figures/apalStackPlot.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
 # ggsave("C:/Users/gdalonzo/Documents/AMLC/figures", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
