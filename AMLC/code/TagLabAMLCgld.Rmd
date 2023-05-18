@@ -40,7 +40,7 @@ This is the analysis pipeline for data generated from TagLab annotations of our 
 ***
 ## Loading required packages
 
-For the following analyses we will require the use of a number of different R packages. Most of which can be sourced from CRAN, but some must be downloaded from GitHub. We can use the following code to load in the packages and install any packages not previously installed in the R console. 
+For the following analyses we will require the use of a number of different R packages. Most of which can be sourced from CRAN, but some must be downloaded from GitHub. We can use the following code to load in the packages and install any packages not previously installed in the R console.
 
 ```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
 if (!require("pacman")) install.packages("pacman")
@@ -48,51 +48,51 @@ pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patc
 ```
 
 
-<br><br> 
+<br><br>
 
 # Loading and Manipulating data
 ***
 
-We have loaded a lot of individual data into R and we want to combine the data and create one cohesive dataframe with which to work. In order to do that we have to add a few identifiers to our data frames to when combining we can differentiate between the two, but this is also a good time to add other columns like **treatment** and **time** as well. The majority of this is done using various functions from the package `dplyr`. 
+We have loaded a lot of individual data into R and we want to combine the data and create one cohesive dataframe with which to work. In order to do that we have to add a few identifiers to our data frames to when combining we can differentiate between the two, but this is also a good time to add other columns like **treatment** and **time** as well. The majority of this is done using various functions from the package `dplyr`.
 
 ```{r, loading, include = TRUE, message = FALSE}
 read_plus <- function(flnm) {
-    read_csv(flnm) %>% 
-      mutate_all(as.character) %>% 
+    read_csv(flnm) %>%
+      mutate_all(as.character) %>%
         mutate(filename = flnm)
 }
 
 tagData1 <-
-    list.files(path = "../../data/TagLab", pattern = "*.csv", 
-               full.names = T) %>% 
-    map_df(~read_plus(.)) %>% 
+    list.files(path = "../../data/TagLab", pattern = "*.csv",
+               full.names = T) %>%
+    map_df(~read_plus(.)) %>%
   as.tibble()
 
-tagData <- tagData1 %>% 
+tagData <- tagData1 %>%
       tidyr::separate(filename, into=c("remove", "Site"),extra = 'merge',sep = 18) %>%
-      tidyr::separate(Site, into=c("Site", "remove"),sep = "TagLab.csv") %>% 
+      tidyr::separate(Site, into=c("Site", "remove"),sep = "TagLab.csv") %>%
       dplyr::select(-c(remove)) %>%
     mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
-  rename(Species = `TagLab Class name`, Date = `TagLab Date`, Area = `TagLab Area`) %>% 
-      mutate_at(c("Date", "Site", "Species"), as.factor) %>% 
+  rename(Species = `TagLab Class name`, Date = `TagLab Date`, Area = `TagLab Area`) %>%
+      mutate_at(c("Date", "Site", "Species"), as.factor) %>%
       mutate_at(c("Area"), as.numeric) %>%
-      select(Date, Site, Species, Area) %>% 
-  group_by(Date, Site) %>% 
-  filter(Species == c("Acropora cervicornis", "Acropora palmata")) %>% 
+      select(Date, Site, Species, Area) %>%
+  group_by(Date, Site) %>%
+  filter(Species == c("Acropora cervicornis", "Acropora palmata")) %>%
   droplevels()
 
-tagApal <- tagData %>% 
-  filter(Species == "Acropora palmata") %>% 
-  droplevels() %>% 
-  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 7) %>% 
-  mutate_at(c("Site"), as.factor) %>% 
+tagApal <- tagData %>%
+  filter(Species == "Acropora palmata") %>%
+  droplevels() %>%
+  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 7) %>%
+  mutate_at(c("Site"), as.factor) %>%
   select(-c("remove"))
 
-tagAcer <- tagData %>% 
-  filter(Species == "Acropora cervicornis") %>% 
-  droplevels() %>% 
-  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 5) %>% 
-  mutate_at(c("Site"), as.factor) %>% 
+tagAcer <- tagData %>%
+  filter(Species == "Acropora cervicornis") %>%
+  droplevels() %>%
+  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 5) %>%
+  mutate_at(c("Site"), as.factor) %>%
   select(-c("remove"))
 
 tagData2 <- rbind(tagApal, tagAcer)
@@ -110,18 +110,30 @@ sizeOfAPAL <- 100
 
 
 tagData3 <- tagData2 %>%
-  group_by(Site, Species) %>% 
+  group_by(Site, Species) %>%
   summarise(biomass = sum(Area)/10000)
 
-tagData3AP <- tagData3 %>% 
-  filter(Species == "Acropora palmata") %>% 
+tagData3AP <- tagData3 %>%
+  filter(Species == "Acropora palmata") %>%
   mutate(percentCover = (biomass/sizeOfAPAL)*100)
 
-tagData3AC <- tagData3 %>% 
-  filter(Species == "Acropora cervicornis") %>% 
+tagData3AC <- tagData3 %>%
+  filter(Species == "Acropora cervicornis") %>%
   mutate(percentCover = (biomass/sizeOfACER)*100)
 
 tagData4 <- rbind(tagData3AP, tagData3AC)
+
+
+
+%>%
+
+
+
+
+  group_by(Species) %>%
+  summarise(avgArea = mean(biomass))
+
+
 
 ```
 
@@ -130,12 +142,12 @@ tagData4 <- rbind(tagData3AP, tagData3AC)
 
 # Visualizing Data
 ***
-We are visualizing the data we just tested for. 
+We are visualizing the data we just tested for.
 
 ```{r, include = TRUE, eval = FALSE}
 
 myColors <-c("#00798c", "#352f6d", "#FFC107", "#ff0fff", "#ff5758")
-  
+
   # paletteer_c("pals::ocean.balance", 10, direction = 1)
 
 
@@ -143,25 +155,24 @@ myColors <-c("#00798c", "#352f6d", "#FFC107", "#ff0fff", "#ff5758")
 
 tagStack1 <- ggplot(tagData4, aes(x = Species, y = percentCover, fill = Species))+
                       geom_bar(stat = 'identity', color = 'black', position = position_stack(reverse = TRUE), alpha = 0.8)+
-                      ylim(0,1)+
+                      ylim(0,10)+
                       labs(y = "Area", fill = "Species", title = "2D Surface Area")+
                       scale_fill_manual(values = myColors)+
-                      scale_x_discrete(guide = guide_axis(angle = )) +
-                      facet_wrap(.~ Site)
+                      facet_wrap(.~ Site, scales = "free_x")
 
 tagStack <- tagStack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
     axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.title.y = element_text(size = 40, face = "bold"),
     axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 30, colour = "black"), 
+    legend.title = element_text(size = 40, face = "bold"),
+    legend.text = element_text(size = 30, colour = "black"),
     panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
-    panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 40, face = "bold"), 
-    axis.line = element_line(colour = "black"), 
-    axis.ticks = element_line(color="black"), 
-    text = element_text(size=40, color="black"), 
+    panel.background = element_rect(fill = '#F5F5F5'),
+    plot.title = element_text(size = 40, face = "bold"),
+    axis.line = element_line(colour = "black"),
+    axis.ticks = element_line(color="black"),
+    text = element_text(size=40, color="black"),
     legend.position = "right")
 tagStack
 
@@ -175,5 +186,3 @@ tagStack
 
 ```
 ![Figure](../figures/tagStackBar.png)
-
-
