@@ -119,6 +119,7 @@ Multiple VPI surveys were conducted in each site, so we are combinging all of th
 
 vpiData2 <- vpiData %>%
   group_by(Site,timePoint, Species, class) %>%
+  filter(class != c("Bare Substrate")) %>% 
   summarise(count = sum(count)) %>%
   group_by(Site,timePoint, Species) %>%
   mutate(totalObservations = sum(count, na.rm = TRUE)) %>%
@@ -182,8 +183,10 @@ set.seed(9999)
 
 
 
-vpiMat1 <- vpiMat %>%
-  select(-c(`Bare Substrate`))
+vpiMat1 <- vpiMat 
+
+# %>%
+#   select(-c(`Bare Substrate`))
   # filter(Site == -c("T-12a", "T-13a", "T-AP-3a"))
 
 
@@ -198,7 +201,7 @@ vpiDist <- vegdist(vpiMat1, method = 'bray')
 
 set.seed(9999)
 
-distPerm <- adonis2(vpiDist ~ timePoint*Species, data = samplesLookupPerm, permutations = 9999, method = 'bray')
+distPerm <- adonis2(vpiDist ~ timePoint*Species*timePoint, data = samplesLookupPerm, permutations = 9999, method = 'bray')
 
 # strata = $Site
 distPerm
@@ -305,8 +308,8 @@ vpiData3.bis <- vpiData2.bis %>%
 
 
 
-vpiStackC<- ggplot(vpiData3.bis, aes(x = timePoint, y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+vpiStackC <- ggplot(vpiData3.bis, aes(x = timePoint, y = abundance))+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+

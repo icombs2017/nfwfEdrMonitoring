@@ -105,10 +105,23 @@ here we are providing some summary stats about the growth and percent cover chan
 
 ```{r, summaryStats, include = TRUE}
 
+sizeOfACER <- 200
+sizeOfAPAL <- 100
 
 
+tagData3 <- tagData2 %>%
+  group_by(Site, Species) %>% 
+  summarise(biomass = sum(Area)/10000)
 
+tagData3AP <- tagData3 %>% 
+  filter(Species == "Acropora palmata") %>% 
+  mutate(percentCover = (biomass/sizeOfAPAL)*100)
 
+tagData3AC <- tagData3 %>% 
+  filter(Species == "Acropora cervicornis") %>% 
+  mutate(percentCover = (biomass/sizeOfACER)*100)
+
+tagData4 <- rbind(tagData3AP, tagData3AC)
 
 ```
 
@@ -126,9 +139,9 @@ myColors <- paletteer_c("pals::ocean.balance", 10, direction = 1)
 
 
 
-tagStack1 <- ggplot(tagApal, aes(x = Date, y = Area, fill = Species))+
+tagStack1 <- ggplot(tagData4, aes(x = Species, y = percentCover, fill = Species))+
                       geom_bar(stat = 'identity', color = 'black', position = position_stack(reverse = TRUE), alpha = 0.8)+
-                      ylim(0,100)+
+                      ylim(0,1)+
                       labs(y = "Area", fill = "Species", title = "2D Surface Area")+
                       scale_fill_manual(values = myColors)+
                       scale_x_discrete(guide = guide_axis(angle = 90)) +
