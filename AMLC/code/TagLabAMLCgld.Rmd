@@ -134,7 +134,9 @@ We are visualizing the data we just tested for.
 
 ```{r, include = TRUE, eval = FALSE}
 
-myColors <- paletteer_c("pals::ocean.balance", 10, direction = 1)
+myColors <-c("#00798c", "#352f6d", "#FFC107", "#ff0fff", "#ff5758")
+  
+  # paletteer_c("pals::ocean.balance", 10, direction = 1)
 
 
 
@@ -144,7 +146,7 @@ tagStack1 <- ggplot(tagData4, aes(x = Species, y = percentCover, fill = Species)
                       ylim(0,1)+
                       labs(y = "Area", fill = "Species", title = "2D Surface Area")+
                       scale_fill_manual(values = myColors)+
-                      scale_x_discrete(guide = guide_axis(angle = 90)) +
+                      scale_x_discrete(guide = guide_axis(angle = )) +
                       facet_wrap(.~ Site)
 
 tagStack <- tagStack1+theme(

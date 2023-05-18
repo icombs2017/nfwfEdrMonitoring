@@ -290,10 +290,13 @@ vpiData2.bis <- vpiData2.apal %>%
 
 
 ```{r}
-# myColors <- paletteer_c("harrypotter::gryffindor", 6, direction = 1 )
+myColors <- c("#d2232a", "#f26522", "#FFC95C", "#85b034", "#007b41", "#00ae9d","#0054a6", "#78779e", "#352f6d")
+# myColors <- paletteer_d("colorBlindness::ModifiedSpectralScheme11Steps")
 #myColors <- paletteer_c("pals::ocean.balance", 6, direction = 1)
 #Color Palette using a selection of Mote's preferred colors
 # myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
+
+# as.character(timePoint)
 
 # Using this just to plot the top 2% of species
 vpiData3.bis <- vpiData2.bis %>%
@@ -311,6 +314,7 @@ vpiData3.bis <- vpiData2.bis %>%
 vpiStackC <- ggplot(vpiData3.bis, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
+                      scale_fill_manual(values = myColors)+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       #scale_y_reverse()+
@@ -344,8 +348,8 @@ ggsave("../figures/apalBISStackPlot2.png", plot = vpiStackC, width = 20, height 
 ```
 
 ```{r}
-# myColors <- paletteer_c("harrypotter::gryffindor", 6, direction = 1 )
-#myColors <- paletteer_c("pals::ocean.balance", 6, direction = 1)
+myColors <- c("#d2232a", "#f26522", "#FFC95C", "#85b034", "#007b41", "#00ae9d","#0054a6", "#003041", "#78779e", "#352f6d")
+# myColors <- c("#", "#352f6d", "#FFC107", "#ff0fff", "#ff5758")
 #Color Palette using a selection of Mote's preferred colors
 # myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
 
@@ -363,8 +367,9 @@ vpiData3.acer <- vpiData2.acer %>%
 
 
 vpiStackA<- ggplot(vpiData3.acer, aes(x = timePoint, y = abundance))+
-                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
+                      geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
+  scale_fill_manual(values = myColors)+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       # scale_y_reverse(limits = c(0,100))+
