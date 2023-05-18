@@ -121,7 +121,19 @@ tagData3AC <- tagData3 %>%
   filter(Species == "Acropora cervicornis") %>% 
   mutate(percentCover = (biomass/sizeOfACER)*100)
 
-tagData4 <- rbind(tagData3AP, tagData3AC)
+tagData4 <- rbind(tagData3AP, tagData3AC) 
+
+
+
+%>% 
+  
+  
+  
+  
+  group_by(Species) %>% 
+  summarise(avgArea = mean(biomass))
+
+
 
 ```
 
@@ -141,11 +153,10 @@ myColors <- paletteer_c("pals::ocean.balance", 10, direction = 1)
 
 tagStack1 <- ggplot(tagData4, aes(x = Species, y = percentCover, fill = Species))+
                       geom_bar(stat = 'identity', color = 'black', position = position_stack(reverse = TRUE), alpha = 0.8)+
-                      ylim(0,1)+
+                      ylim(0,10)+
                       labs(y = "Area", fill = "Species", title = "2D Surface Area")+
                       scale_fill_manual(values = myColors)+
-                      scale_x_discrete(guide = guide_axis(angle = 90)) +
-                      facet_wrap(.~ Site)
+                      facet_wrap(.~ Site, scales = "free_x")
 
 tagStack <- tagStack1+theme(
     axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
