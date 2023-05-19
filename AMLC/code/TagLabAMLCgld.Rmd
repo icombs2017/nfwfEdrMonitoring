@@ -148,9 +148,9 @@ myColors <-c("#007b41", "#00ae9d","#0054a6", "#78779e", "#352f6d")
 tagStack1 <- ggplot(tagData4, aes(x = Species, y = avgArea, fill = Species))+
                       geom_bar(stat = 'identity', color = 'black', position = position_stack(reverse = TRUE), alpha = 0.8)+
                       ylim(0,2.5)+
-                      labs(y = "avgArea", fill = "Species", title = "2D Surface Area")+
-                      scale_fill_manual(values = myColors)+
-                      facet_wrap(.~ Species, scales = "free_x")
+                      labs(y = "Average Area Across Sites", fill = "Species", title = "2D Surface Area")+
+                      scale_fill_manual(values = myColors)
+                      # facet_wrap(.~ Species, scales = "free_x")
 
 tagStack <- tagStack1+theme(
     axis.text.x = element_text(size = 30, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
@@ -161,7 +161,7 @@ tagStack <- tagStack1+theme(
     legend.text = element_text(size = 30, colour = "black"),
     panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
     panel.background = element_rect(fill = '#F5F5F5'),
-    plot.title = element_text(size = 30, face = "bold"),
+    plot.title = element_text(size = 40, face = "bold"),
     axis.line = element_line(colour = "black"),
     axis.ticks = element_line(color="black"),
     text = element_text(size=30, color="black"),
