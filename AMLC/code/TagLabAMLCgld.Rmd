@@ -121,17 +121,9 @@ tagData3AC <- tagData3 %>%
   filter(Species == "Acropora cervicornis") %>%
   mutate(percentCover = (biomass/sizeOfACER)*100)
 
-tagData4 <- rbind(tagData3AP, tagData3AC)
-
-
-
-%>%
-
-
-
-
-  group_by(Species) %>%
-  summarise(avgArea = mean(biomass))
+# tagData4 <- rbind(tagData3AP, tagData3AC)%>%
+#   group_by(Species) %>%
+#   summarise(avgArea = mean(biomass))
 
 
 
@@ -146,37 +138,37 @@ We are visualizing the data we just tested for.
 
 ```{r, include = TRUE, eval = FALSE}
 
-myColors <-c("#00798c", "#352f6d", "#FFC107", "#ff0fff", "#ff5758")
+myColors <-c("#007b41", "#00ae9d","#0054a6", "#78779e", "#352f6d")
 
   # paletteer_c("pals::ocean.balance", 10, direction = 1)
 
 
 
 
-tagStack1 <- ggplot(tagData4, aes(x = Species, y = percentCover, fill = Species))+
+tagStack1 <- ggplot(tagData4, aes(x = Species, y = avgArea, fill = Species))+
                       geom_bar(stat = 'identity', color = 'black', position = position_stack(reverse = TRUE), alpha = 0.8)+
-                      ylim(0,10)+
-                      labs(y = "Area", fill = "Species", title = "2D Surface Area")+
+                      ylim(0,2.5)+
+                      labs(y = "avgArea", fill = "Species", title = "2D Surface Area")+
                       scale_fill_manual(values = myColors)+
-                      facet_wrap(.~ Site, scales = "free_x")
+                      facet_wrap(.~ Species, scales = "free_x")
 
 tagStack <- tagStack1+theme(
-    axis.text.x = element_text(size = 40, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
+    axis.text.x = element_text(size = 30, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
     axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"),
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"),
+    axis.title.y = element_text(size = 30, face = "bold"),
+    axis.text.y = element_text(colour = "black", size = 30, face = "bold"),
+    legend.title = element_text(size = 30, face = "bold"),
     legend.text = element_text(size = 30, colour = "black"),
     panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
     panel.background = element_rect(fill = '#F5F5F5'),
-    plot.title = element_text(size = 40, face = "bold"),
+    plot.title = element_text(size = 30, face = "bold"),
     axis.line = element_line(colour = "black"),
     axis.ticks = element_line(color="black"),
-    text = element_text(size=40, color="black"),
+    text = element_text(size=30, color="black"),
     legend.position = "right")
 tagStack
 
-# ggsave("../figures/tagStackBar.png", plot = tagStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/tagStackBar.png", plot = tagStack, width = 20, height = 15, units = 'in', dpi = 600)
 # ggsave("../figures/tagStackBar.jpeg", plot = tagStack, width = 20, height = 15, units = "in", dpi = 600)
 
 
