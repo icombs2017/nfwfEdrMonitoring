@@ -1,80 +1,80 @@
 timePoint,class,count,%,timePoint
-1 year,None,,,1 year
-1 year,Review,,,1 year
-1 year,Unknown,,,1 year
-1 year,Acropora spp.,,,1 year
-1 year,Acropora cervicornis,,,1 year
-1 year,Acropora palmata,8,0.711111111,1 year
-1 year,Porites spp.,,,1 year
-1 year,Porites porites,1,0.088888889,1 year
-1 year,Porites furcata,,,1 year
-1 year,Porites divaricata,,,1 year
-1 year,Porites astreoides,7,0.622222222,1 year
-1 year,Oculina spp.,,,1 year
-1 year,Oculina robusta,,,1 year
-1 year,Oculina varicosa,,,1 year
-1 year,Oculina diffusa,,,1 year
-1 year,Madracis spp.,,,1 year
-1 year,Madracis auretenra,,,1 year
-1 year,Madracis formosa,,,1 year
-1 year,Madracis decactis,1,0.088888889,1 year
-1 year,Dendrogyra cylindrus,,,1 year
-1 year,Siderastrea spp.,,,1 year
-1 year,Siderastrea siderea,1,0.088888889,1 year
-1 year,Siderastrea radians,,,1 year
-1 year,Stephanocoenia intersepta,,,1 year
-1 year,Montastraea cavernosa,,,1 year
-1 year,Orbicella spp.,,,1 year
-1 year,Orbicella annularis,12,1.066666667,1 year
-1 year,Orbicella faveolata,2,0.177777778,1 year
-1 year,Orbicella franksi,,,1 year
-1 year,Favia fragum,,,1 year
-1 year,Dichocoenia stokesii,,,1 year
-1 year,Solenastraea bournoni,,,1 year
-1 year,Solenastraea hyades,,,1 year
-1 year,Colpophyllia natans,,,1 year
-1 year,Pseudodiploria spp.,1,0.088888889,1 year
-1 year,Pseudodiploria strigosa,,,1 year
-1 year,Pseudodiploria clivosa,,,1 year
-1 year,Diploria labyrinthiformis,,,1 year
-1 year,Manicina areolata,,,1 year
-1 year,Meandrina spp.,,,1 year
-1 year,Meandrina meandrites,,,1 year
-1 year,Meandrina danae,,,1 year
-1 year,Meandrina jacksoni,,,1 year
-1 year,Helioseris cucullata,,,1 year
-1 year,Agaricia spp.,,,1 year
-1 year,Agaricia fragilis,,,1 year
-1 year,Agaricia lamarcki,,,1 year
-1 year, Agaricia agaricites,3,0.266666667,1 year
-1 year,Mycetophyllia spp.,,,1 year
-1 year,Mycetophyllia lamarckiana,,,1 year
-1 year,Mycetophyllia aliciae,,,1 year
-1 year,Mycetophyllia ferox,,,1 year
-1 year,Mycetophyllia reesi,,,1 year
-1 year,Isophyllia spp.,,,1 year
-1 year,Isophyllia sinuosa,,,1 year
-1 year,Isophyllia rigida,,,1 year
-1 year,Scolymia spp.,,,1 year
-1 year,Scolymia cubensis,,,1 year
-1 year,Scolymia wellsi,,,1 year
-1 year,Mussa angulosa,,,1 year
-1 year,Eusmilia fastigiata,,,1 year
-1 year,Octocorallia,40,3.555555556,1 year
-1 year,Gorgonia ventalina,,,1 year
-1 year,Xestospongia muta,,,1 year
-1 year,Thalassia testudinum,,,1 year
-1 year,Halimeda,,,1 year
-1 year,Dictyota spp.,,,1 year
-1 year,Crustose coralline algae,,,1 year
-1 year,Porifera,16,1.422222222,1 year
-1 year,Cnidaria,,,1 year
-1 year,Red algae,,,1 year
-1 year,Green algae,,,1 year
-1 year,Brown algae,,,1 year
-1 year,Palythoa,130,11.55555556,1 year
-1 year,Rubble,637,56.62222222,1 year
-1 year,Turf algae,250,22.22222222,1 year
-1 year,Other,7,0.622222222,1 year
-1 year,Millepora spp.,9,0.8,1 year
-1 year,,,,1 year
+1 year,None,,,12mo
+1 year,Review,,,12mo
+1 year,Unknown,,,12mo
+1 year,Acropora spp.,,,12mo
+1 year,Acropora cervicornis,,,12mo
+1 year,Acropora palmata,8,0.711111111,12mo
+1 year,Porites spp.,,,12mo
+1 year,Porites porites,1,0.088888889,12mo
+1 year,Porites furcata,,,12mo
+1 year,Porites divaricata,,,12mo
+1 year,Porites astreoides,7,0.622222222,12mo
+1 year,Oculina spp.,,,12mo
+1 year,Oculina robusta,,,12mo
+1 year,Oculina varicosa,,,12mo
+1 year,Oculina diffusa,,,12mo
+1 year,Madracis spp.,,,12mo
+1 year,Madracis auretenra,,,12mo
+1 year,Madracis formosa,,,12mo
+1 year,Madracis decactis,1,0.088888889,12mo
+1 year,Dendrogyra cylindrus,,,12mo
+1 year,Siderastrea spp.,,,12mo
+1 year,Siderastrea siderea,1,0.088888889,12mo
+1 year,Siderastrea radians,,,12mo
+1 year,Stephanocoenia intersepta,,,12mo
+1 year,Montastraea cavernosa,,,12mo
+1 year,Orbicella spp.,,,12mo
+1 year,Orbicella annularis,12,1.066666667,12mo
+1 year,Orbicella faveolata,2,0.177777778,12mo
+1 year,Orbicella franksi,,,12mo
+1 year,Favia fragum,,,12mo
+1 year,Dichocoenia stokesii,,,12mo
+1 year,Solenastraea bournoni,,,12mo
+1 year,Solenastraea hyades,,,12mo
+1 year,Colpophyllia natans,,,12mo
+1 year,Pseudodiploria spp.,1,0.088888889,12mo
+1 year,Pseudodiploria strigosa,,,12mo
+1 year,Pseudodiploria clivosa,,,12mo
+1 year,Diploria labyrinthiformis,,,12mo
+1 year,Manicina areolata,,,12mo
+1 year,Meandrina spp.,,,12mo
+1 year,Meandrina meandrites,,,12mo
+1 year,Meandrina danae,,,12mo
+1 year,Meandrina jacksoni,,,12mo
+1 year,Helioseris cucullata,,,12mo
+1 year,Agaricia spp.,,,12mo
+1 year,Agaricia fragilis,,,12mo
+1 year,Agaricia lamarcki,,,12mo
+1 year, Agaricia agaricites,3,0.266666667,12mo
+1 year,Mycetophyllia spp.,,,12mo
+1 year,Mycetophyllia lamarckiana,,,12mo
+1 year,Mycetophyllia aliciae,,,12mo
+1 year,Mycetophyllia ferox,,,12mo
+1 year,Mycetophyllia reesi,,,12mo
+1 year,Isophyllia spp.,,,12mo
+1 year,Isophyllia sinuosa,,,12mo
+1 year,Isophyllia rigida,,,12mo
+1 year,Scolymia spp.,,,12mo
+1 year,Scolymia cubensis,,,12mo
+1 year,Scolymia wellsi,,,12mo
+1 year,Mussa angulosa,,,12mo
+1 year,Eusmilia fastigiata,,,12mo
+1 year,Octocorallia,40,3.555555556,12mo
+1 year,Gorgonia ventalina,,,12mo
+1 year,Xestospongia muta,,,12mo
+1 year,Thalassia testudinum,,,12mo
+1 year,Halimeda,,,12mo
+1 year,Dictyota spp.,,,12mo
+1 year,Crustose coralline algae,,,12mo
+1 year,Porifera,16,1.422222222,12mo
+1 year,Cnidaria,,,12mo
+1 year,Red algae,,,12mo
+1 year,Green algae,,,12mo
+1 year,Brown algae,,,12mo
+1 year,Palythoa,130,11.55555556,12mo
+1 year,Rubble,637,56.62222222,12mo
+1 year,Turf algae,250,22.22222222,12mo
+1 year,Other,7,0.622222222,12mo
+1 year,Millepora spp.,9,0.8,12mo
+1 year,,,,12mo
