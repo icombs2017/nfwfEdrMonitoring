@@ -4,12 +4,12 @@ id,class,count,%,timePoint
 1,Unknown,,,1 year
 2,Acropora spp.,,,1 year
 3,Acropora cervicornis,,,1 year
-4,Acropora palmata,8,1.094391245,1 year
+4,Acropora palmata,6,0.543970988,1 year
 5,Porites spp.,,,1 year
 6,Porites porites,,,1 year
 7,Porites furcata,,,1 year
 8,Porites divaricata,,,1 year
-9,Porites astreoides,73,9.986320109,1 year
+9,Porites astreoides,4,0.362647325,1 year
 10,Oculina spp.,,,1 year
 11,Oculina robusta,,,1 year
 12,Oculina varicosa,,,1 year
@@ -20,13 +20,13 @@ id,class,count,%,timePoint
 17,Madracis decactis,,,1 year
 18,Dendrogyra cylindrus,,,1 year
 19,Siderastrea spp.,,,1 year
-20,Siderastrea siderea,,,1 year
+20,Siderastrea siderea,6,0.543970988,1 year
 21,Siderastrea radians,,,1 year
 22,Stephanocoenia intersepta,,,1 year
 23,Montastraea cavernosa,,,1 year
 24,Orbicella spp.,,,1 year
 25,Orbicella annularis,,,1 year
-26,Orbicella faveolata,,,1 year
+26,Orbicella faveolata,3,0.271985494,1 year
 27,Orbicella franksi,,,1 year
 28,Favia fragum,,,1 year
 29,Dichocoenia stokesii,,,1 year
@@ -60,21 +60,21 @@ id,class,count,%,timePoint
 57,Scolymia wellsi,,,1 year
 58,Mussa angulosa,,,1 year
 59,Eusmilia fastigiata,,,1 year
-60,Octocorallia,35,4.787961696,1 year
+60,Octocorallia,59,5.349048051,1 year
 61,Gorgonia ventalina,,,1 year
 62,Xestospongia muta,,,1 year
 63,Thalassia testudinum,,,1 year
 64,Halimeda,,,1 year
 65,Dictyota spp.,,,1 year
 66,Crustose coralline algae,,,1 year
-67,Porifera,15,2.051983584,1 year
+67,Porifera,12,1.087941976,1 year
 68,Cnidaria,,,1 year
 69,Red algae,,,1 year
 70,Green algae,,,1 year
 71,Brown algae,,,1 year
-72,Palythoa,103,14.09028728,1 year
-73,Rubble,321,43.9124487,1 year
-74,Turf algae,165,22.57181943,1 year
-75,Other,5,0.683994528,1 year
-76,Millepora spp.,6,0.820793434,1 year
+72,Palythoa,84,7.615593835,1 year
+73,Rubble,454,41.16047144,1 year
+74,Turf algae,464,42.06708976,1 year
+75,Other,4,0.362647325,1 year
+76,Millepora spp.,7,0.63463282,1 year
 ,,,,1 year
