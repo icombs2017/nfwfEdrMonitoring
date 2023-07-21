@@ -66,7 +66,7 @@ sites$species <- as.factor(sites$Species)
 levels(sites$site)
 sites$`Date Collected` <- as.Date(sites$`Date Collected` )
 sites <- sites %>% 
-  filter(`Date Collected` > "2022-06-30")
+  filter(`Date Collected` > "2023-02-01")
 
 
 
