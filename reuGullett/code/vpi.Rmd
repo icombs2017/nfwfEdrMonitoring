@@ -112,13 +112,12 @@ vpiData$class <- gsub("None", NA, vpiData$class)
 
 
 # Changing other columns to factors
-#???? Timepoint isn't reading for some
 #, species = factor(species) Taken from vpiData after timepoint, deleted species from select between timepoint and class
 
 vpiData <- vpiData %>% mutate(Site = factor(Site), class = factor(class), timePoint = factor(timePoint)) %>% 
   select(Date, Plot, Mark, timePoint, class, count)
 
-#commented out to get 20mo to include which worked but didn't down the line
+#commented out because we did not need to arrange the timepoints
 # vpiData$timePoint = factor(vpiData$timePoint, levels(vpiData$timePoint)[c(2,1)])
 vpiData
 
@@ -364,7 +363,7 @@ ggsave("../figures/comboPlot.png", plot = comboPlot, width = 20, height = 15, un
 
 vpiMat <- vpiData2 %>% 
   select(-c(abundance)) %>%
-  tidyr::unite(sample, 1:3) %>% 
+  tidyr::unite(sample, 1:2) %>% 
   spread(class,count) %>%
   replace(is.na(.), 0) %>%
   # mutate_at(c('sample'), as.character) %>% 
@@ -382,7 +381,7 @@ samples <- dist_tbl %>%
 
  samples_lookup <- dist_tbl %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("site", "timePoint", "species"), sep = "_", remove = FALSE)
+   separate(col = samples, into = c("Plot", "timePoint", "species"), sep = "_", remove = FALSE)
  
 
 
@@ -443,7 +442,7 @@ pcoaPlot1 <- ggplot() +
   labs(x = labs[1], y = labs[2])
 
 
-pcoaPlot2 <- ggplot(pcoaTbl, aes(x = pcoa1, y = pcoa2, color = species, fill = species)) +
+pcoaPlot2 <- ggplot(pcoaTbl, aes(x = pcoa1, y = pcoa2, color = Plot, fill = Plot)) +
   stat_ellipse(geom = 'polygon', alpha = 0.2, level = 0.75, show.legend = FALSE) +
   geom_point(aes(x = pcoa1, y = pcoa2, shape = timePoint), alpha = 1, size = 3) +
   # geom_point(data = treatmentCentroid, mapping = aes(x = axis1, y = axis2, color = treatment), shape = 15, size = 5) +
