@@ -1,0 +1,79 @@
+id,class,count,%,timePoint
+-1,None,,,0mo
+,Review,,,0mo
+1,Unknown,,,0mo
+2,Acropora spp.,,,0mo
+3,Acropora cervicornis,,,0mo
+4,Acropora palmata,,,0mo
+5,Porites spp.,,,0mo
+6,Porites porites,,,0mo
+7,Porites furcata,,,0mo
+8,Porites divaricata,,,0mo
+9,Porites astreoides,2,0.255754476,0mo
+10,Oculina spp.,,,0mo
+11,Oculina robusta,,,0mo
+12,Oculina varicosa,,,0mo
+13,Oculina diffusa,,,0mo
+14,Madracis spp.,,,0mo
+15,Madracis auretenra,,,0mo
+16,Madracis formosa,,,0mo
+17,Madracis decactis,,,0mo
+18,Dendrogyra cylindrus,,,0mo
+19,Siderastrea spp.,,,0mo
+20,Siderastrea siderea,3,0.383631714,0mo
+21,Siderastrea radians,,,0mo
+22,Stephanocoenia intersepta,,,0mo
+23,Montastraea cavernosa,1,0.127877238,0mo
+24,Orbicella spp.,,,0mo
+25,Orbicella annularis,,,0mo
+26,Orbicella faveolata,2,0.255754476,0mo
+27,Orbicella franksi,,,0mo
+28,Favia fragum,,,0mo
+29,Dichocoenia stokesii,,,0mo
+30,Solenastraea bournoni,,,0mo
+31,Solenastraea hyades,,,0mo
+32,Colpophyllia natans,,,0mo
+33,Pseudodiploria spp.,,,0mo
+34,Pseudodiploria strigosa,,,0mo
+35,Pseudodiploria clivosa,,,0mo
+36,Diploria labyrinthiformis,1,0.127877238,0mo
+37,Manicina areolata,,,0mo
+38,Meandrina spp.,,,0mo
+39,Meandrina meandrites,,,0mo
+40,Meandrina danae,,,0mo
+41,Meandrina jacksoni,,,0mo
+42,Helioseris cucullata,,,0mo
+43,Agaricia spp.,,,0mo
+44,Agaricia fragilis,,,0mo
+45,Agaricia lamarcki,,,0mo
+46, Agaricia agaricites,,,0mo
+47,Mycetophyllia spp.,,,0mo
+48,Mycetophyllia lamarckiana,,,0mo
+49,Mycetophyllia aliciae,,,0mo
+50,Mycetophyllia ferox,,,0mo
+51,Mycetophyllia reesi,,,0mo
+52,Isophyllia spp.,,,0mo
+53,Isophyllia sinuosa,,,0mo
+54,Isophyllia rigida,,,0mo
+55,Scolymia spp.,,,0mo
+56,Scolymia cubensis,,,0mo
+57,Scolymia wellsi,,,0mo
+58,Mussa angulosa,,,0mo
+59,Eusmilia fastigiata,,,0mo
+60,Octocorallia,29,3.708439898,0mo
+61,Gorgonia ventalina,,,0mo
+62,Xestospongia muta,,,0mo
+63,Thalassia testudinum,,,0mo
+64,Halimeda,,,0mo
+65,Dictyota spp.,,,0mo
+66,Crustose coralline algae,,,0mo
+67,Porifera,24,3.069053708,0mo
+68,Cnidaria,,,0mo
+69,Red algae,,,0mo
+70,Green algae,,,0mo
+71,Brown algae,,,0mo
+72,Palythoa,20,2.557544757,0mo
+73,Rubble,254,32.48081841,0mo
+74,Turf algae,440,56.26598465,0mo
+75,Other,1,0.127877238,0mo
+76,Millepora spp.,5,0.639386189,0mo
