@@ -183,7 +183,7 @@ p1OneYr <- p1OneYr %>%
   add_column(plot1) %>%
   add_column(OneYr) %>% 
   select(c("plot1", "OneYr", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot1) %>%
+  rename(plot = plot1) %>%
   rename(time = OneYr) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -195,7 +195,7 @@ p2OneYr <- p2OneYr %>%
   add_column(plot2) %>%
   add_column(OneYr) %>% 
   select(c("plot2", "OneYr", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot2) %>%
+  rename(plot = plot2) %>%
   rename(time = OneYr) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -207,7 +207,7 @@ p3OneYr <- p3OneYr %>%
   add_column(plot3) %>%
   add_column(OneYr) %>% 
   select(c("plot3", "OneYr", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot3) %>%
+  rename(plot = plot3) %>%
   rename(time = OneYr) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -219,7 +219,7 @@ p4OneYr <- p4OneYr %>%
   add_column(plot4) %>%
   add_column(OneYr) %>% 
   select(c("plot4", "OneYr", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot4) %>%
+  rename(plot = plot4) %>%
   rename(time = OneYr) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -231,7 +231,7 @@ p5OneYr <- p5OneYr %>%
   add_column(plot5) %>%
   add_column(OneYr) %>% 
   select(c("plot5", "OneYr", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot5) %>%
+  rename(plot = plot5) %>%
   rename(time = OneYr) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -243,7 +243,7 @@ p6OneYr <- p6OneYr %>%
   add_column(plot6) %>%
   add_column(OneYr) %>% 
   select(c("plot6", "OneYr", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot6) %>%
+  rename(plot = plot6) %>%
   rename(time = OneYr) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -257,7 +257,7 @@ p1TwentyMo <- p1TwentyMo %>%
   add_column(plot1) %>%
   add_column(TwentyMo) %>% 
   select(c("plot1", "TwentyMo", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot1) %>%
+  rename(plot = plot1) %>%
   rename(time = TwentyMo) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -269,7 +269,7 @@ p2TwentyMo <- p2TwentyMo %>%
   add_column(plot2) %>%
   add_column(TwentyMo) %>% 
   select(c("plot2", "TwentyMo", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot2) %>%
+  rename(plot = plot2) %>%
   rename(time = TwentyMo) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -281,7 +281,7 @@ p3TwentyMo <- p3TwentyMo %>%
   add_column(plot3) %>%
   add_column(TwentyMo) %>% 
   select(c("plot3", "TwentyMo", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot3) %>%
+  rename(plot = plot3) %>%
   rename(time = TwentyMo) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -293,7 +293,7 @@ p4TwentyMo <- p4TwentyMo %>%
   add_column(plot4) %>%
   add_column(TwentyMo) %>% 
   select(c("plot4", "TwentyMo", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot4) %>%
+  rename(plot = plot4) %>%
   rename(time = TwentyMo) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -305,7 +305,7 @@ p5TwentyMo <- p5TwentyMo %>%
   add_column(plot5) %>%
   add_column(TwentyMo) %>% 
   select(c("plot5", "TwentyMo", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot5) %>%
+  rename(plot = plot5) %>%
   rename(time = TwentyMo) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -317,7 +317,7 @@ p6TwentyMo <- p6TwentyMo %>%
   add_column(plot6) %>%
   add_column(TwentyMo) %>% 
   select(c("plot6", "TwentyMo", "V2", "V3", "V4", "V5", "V6")) %>%
-  rename(site = plot6) %>%
+  rename(plot = plot6) %>%
   rename(time = TwentyMo) %>% 
   rename(transect = V2) %>%
   rename(point = V3) %>%
@@ -339,6 +339,14 @@ rugo <- bind_rows(p1Base, p2Base, p3Base, p4Base, p5Base, p6Base, p1OneYr, p2One
 rugo <- as_tibble(rugo)
 
 rugo$treatment = if_else(rugo$plot %in% c("p1", "p4"),"Cleaned", "Control") 
+rugo$outplant = as.factor(if_else(rugo$plot %in% c("p1", "p2", "p3"), "T0",
+                        if_else(rugo$plot %in% c("p5", "p6"), "T9", "Control")))
+
+rugo <- rugo %>% 
+  unite("treat", treatment:outplant, remove = FALSE)
+rugo$treat <- as.factor(rugo$treat)
+
+
 #removed reef ??? 
 #rugo$reef = if_else(rugo$site %in% c("p1"), "Plot 1",
                   # if_else(rugo$site %in% c("p2"), "Plot 2", 
@@ -349,6 +357,7 @@ rugo$treatment = if_else(rugo$plot %in% c("p1", "p4"),"Cleaned", "Control")
 
 
 summary(rugo)
+
 
 
 ```
@@ -363,36 +372,40 @@ We have a very large dataset, however, what we are really concerned with is the 
 ```{r, variance, include = TRUE , message = FALSE}
 
 rugoRMS <- rugo %>% 
-  dplyr::select(plot, time, treatment, z) %>%
-  group_by(plot, time, treatment, transect) %>%
+  dplyr::select(plot, time, transect, treatment, outplant,treat, z) %>%
+  group_by(plot, time, treatment, outplant, treat, transect) %>%
   summarise(sd(z), var(z)) %>%
   rename(sd = `sd(z)`) %>% 
   rename(variance = `var(z)`)
 
+# rugo1 <- rugo %>% 
+#   dplyr::select(plot, time, treatment, transect, z) %>%
+#   group_by(plot, time, treatment, transect) %>% 
+#   summarise(mean(z)) %>% 
+#   rename(mean = `mean(z)`)
+# 
+# by(rugoRMS$sd, rugoRMS$treatment, mean)
+# by(rugoRMS$sd, rugoRMS$time, mean)
 
-rugo1 <- rugo %>% 
-  dplyr::select(plot, time, treatment, transect, z) %>%
-  group_by(plot, time, treatment, transect) %>% 
-  summarise(mean(z)) %>% 
-  rename(mean = `mean(z)`)
+set.seed(09081992)
+rugoPerm <- adonis2(rugoRMS$sd ~ time*treat, data = rugoRMS, permutations = 9999, method = 'bray')
 
-by(rugoRMS$sd, rugoRMS$treatment, mean)
-by(rugoRMS$sd, rugoRMS$time, mean)
+rugoPerm
 
 
+ 
+rugoPairwise <- pairwise.adonis(x = rugoRMS$sd, factors = rugo$treat, perm = 9999, sim.method = 'bray', correcti)
 
-
-
-set.seed(999)
-rugoPerm <- adonis(formula = sd ~ plot*time*treatment, data = rugoRMS, method = "euclidian", permutations = 999)
-
-set.seed(999)
-rugoPairTime <- pairwise.adonis(rugoRMS[c(6)],factors=rugoRMS$time,
-                             sim.method='euclidian',p.adjust.m='bonferroni', perm = 999)
-
-set.seed(999)
-rugoPairTreatment <- pairwise.adonis(rugoRMS[c(6)],factors=rugoRMS$treatment,
-                             sim.method='euclidian',p.adjust.m='bonferroni', perm = 999)
+# set.seed(999)
+# rugoPerm <- adonis(formula = sd ~ plot*time*treatment, data = rugoRMS, method = "euclidian", permutations = 999)
+# 
+# set.seed(999)
+# rugoPairTime <- pairwise.adonis(rugoRMS[c(6)],factors=rugoRMS$time,
+#                              sim.method='euclidian',p.adjust.m='bonferroni', perm = 999)
+# 
+# set.seed(999)
+# rugoPairTreatment <- pairwise.adonis(rugoRMS[c(6)],factors=rugoRMS$treatment,
+#                              sim.method='euclidian',p.adjust.m='bonferroni', perm = 999)
 
 #I WANT TO LOOK INTO THIS BELOW
 
@@ -416,6 +429,19 @@ mean(rugoSdOutplanted$sd)
 
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, meanVar, include = TRUE}
 
 
@@ -615,12 +641,12 @@ We are visualizing the standard deviation of elevation (what we tested above) us
 
 
 ```{r, plottingData, include = TRUE, eval = FALSE}
-myColors <- c("#4a83c4", "#badef5")
+myColors <- c("#4a83c4", "#badef5", "purple")
 
 rugoPlot1 <- ggplot(rugoRMS, aes(x = treatment, y = sd))+
-  geom_boxplot(aes(fill = time))+
+  geom_boxplot()+
   scale_fill_manual(values = myColors)+
-  facet_grid(.~reef, scales = 'free')+
+  # facet_grid(.~reef, scales = 'free')+
   labs(y = "Standard Deviation of Elevation", fill = "Time", title = "Changes in Complexity Through Time and Treatment")
 
 rugoPlot <- rugoPlot1+theme(

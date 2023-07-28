@@ -88,6 +88,8 @@ vpiData <- vpiData1 %>%
 # Making a column for Species using the length of each charactr in our Site Column. Note: we are doing this here before we turn that column into a factor below.
 #vpiData$species <- if_else(nchar(vpiData$Site) <= 5, "ACER", "APAL" )
 
+
+
 #### need to add if-else for control, outplant immediate, and outplant delay as well as cleaned vs uncleaned sites???
 #vpiData$plot <- if_
 
@@ -133,6 +135,13 @@ vpiData$Plot = if_else(vpiData$Mark %in% c("mark16-20", "mark48-50", "mark32-36"
                       if_else(vpiData$Mark %in% c("mark12-26", "mark44-36", "mark30-34"), "Plot 6"
                               , ""))))))
 
+vpiData$treatment = if_else(vpiData$Plot %in% c("Plot 1", "Plot 4"), "cleaned", "control")
+
+vpiData$outplant = if_else(vpiData$Plot %in% c("Plot 1", "Plot 2", "Plot 3"), "T0", if_else(vpiData$Plot %in% c("Plot 4"), "control", "T9"))
+
+vpiData <- vpiData %>% 
+  unite("treat", treatment:outplant, remove = FALSE)
+vpiData$treat <- as.factor(vpiData$treat)
 
 head (vpiData)
 
@@ -234,7 +243,7 @@ vpiStack
 #May need to comment out the site t-ap-5, t-14
 vpiData4 <- vpiData2 %>%
   filter(abundance > 1) %>% 
-  filter(Site %in% c("T-AP-5", "T-14")) %>%
+  #filter(Site %in% c("T-AP-5", "T-14")) %>%
   droplevels() %>% 
   arrange(desc(abundance))
 
@@ -249,7 +258,7 @@ vpiStack3<- ggplot(vpiData4, aes(x = timePoint, y = abundance))+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%", x = "Time Point")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       scale_y_reverse()+
-                      facet_wrap(.~Site, scales = 'free')
+                      facet_wrap(.~Plot, scales = 'free')
 
 
 
@@ -271,24 +280,24 @@ vpiStack <- vpiStack3+theme(
     legend.position = "right")
 vpiStack
 
-ggsave("../figures/vpiStackBarSubset.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+#ggsave("../figures/vpiStackBarSubset.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
 
 
 
 
 ```
-
+#separates acer and apal sites but i dont need?
 ```{r}
 
 ACER <- vpiData2 %>% 
-  filter(species == "ACER") %>% 
+  #filter(species == "ACER") %>% 
   filter(abundance > 1) %>% 
   droplevels()
 
-APAL <- vpiData2 %>% 
-  filter(species == "APAL") %>% 
-  filter(abundance > 1) %>% 
-  droplevels()
+#APAL <- vpiData2 %>% 
+ # filter(species == "APAL") %>% 
+ # filter(abundance > 1) %>% 
+  #droplevels()
 
 acerStack1 <- ggplot(ACER, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
@@ -296,7 +305,7 @@ acerStack1 <- ggplot(ACER, aes(x = timePoint, y = abundance))+
                       labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%", x = "Time Point")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       scale_y_reverse()+
-                      facet_wrap(.~Site, scales = 'free')
+                      facet_wrap(.~Plot, scales = 'free')
 
 
 
@@ -450,7 +459,7 @@ pcoaPlot2 <- ggplot(pcoaTbl, aes(x = pcoa1, y = pcoa2, color = Plot, fill = Plot
 
 
 
-ggsave("../figures/pcoaPlot2", plot = comboPlot, width = 20, height = 15, units = 'in', dpi = 600)
+#ggsave("../figures/pcoaPlot2", plot = comboPlot, width = 20, height = 15, units = 'in', dpi = 600)
 
 
 
@@ -488,7 +497,7 @@ ecoMat <- as.matrix(vpiMat)
 samples_lookup <- vpiMat %>%
   rownames_to_column(var = 'samples') %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("site", "timePoint", "species"), sep = "_", remove = FALSE)
+   separate(col = samples, into = c("Plot", "timePoint", "species"), sep = "_", remove = FALSE)
 
 
 set.seed(3008)
@@ -522,7 +531,7 @@ vpiMat1 <- vpiMat %>%
  samplesLookupPerm <- vpiMat1 %>% 
    rownames_to_column(var = "samples") %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("site", "timePoint", "species"), sep = "_", remove = FALSE) %>% 
+   separate(col = samples, into = c("Plot", "timePoint", "species"), sep = "_", remove = FALSE) %>% 
    column_to_rownames(var = "samples")
  
 vpiDist <- vegdist(vpiMat1, method = 'bray')
