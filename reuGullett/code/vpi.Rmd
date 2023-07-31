@@ -160,7 +160,7 @@ Multiple VPI surveys were conducted in each site, so we are combining all of the
 vpiData2 <- vpiData %>% 
   dplyr::filter(class != c("NA")) %>%
   droplevels() %>%
-  group_by(Plot, timePoint,  class) %>% 
+  group_by(timePoint, treatment, outplant, treat, Plot,  class) %>% 
   summarise(count = sum(count)) %>% 
   group_by(Plot,timePoint) %>% 
   mutate(totalObservations = sum(count, na.rm = TRUE)) %>% 
@@ -374,8 +374,8 @@ ggsave("../figures/comboPlot.png", plot = comboPlot, width = 20, height = 15, un
 
 #It's missing the class?
 vpiMat <- vpiData2 %>% 
-  select(-c(abundance)) %>%
-  tidyr::unite(sample, 1:2) %>% 
+  select(-c(abundance, treat)) %>%
+  tidyr::unite(sample, 1:4) %>% 
   spread(class,count) %>%
   replace(is.na(.), 0) %>%
   # mutate_at(c('sample'), as.character) %>% 
@@ -534,12 +534,12 @@ vpiMat1 <- vpiMat %>%
  samplesLookupPerm <- vpiMat1 %>% 
    rownames_to_column(var = "samples") %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("Plot", "timePoint", "species"), sep = "_", remove = FALSE) %>% 
+   separate(col = samples, into = c("timePoint", "treatment", "outplanted", "Plot"), sep = "_", remove = FALSE) %>% 
    column_to_rownames(var = "samples")
  
 vpiDist <- vegdist(vpiMat1, method = 'bray')
 
-distPerm <- adonis2(vpiDist ~ timePoint*species, data = samplesLookupPerm, permutations = 9999, method = 'bray')
+distPerm <- adonis2(vpiDist ~ timePoint*treatment*outplanted, data = samplesLookupPerm, permutations = 9999, method = 'bray')
 
 # strata = $Site
 distPerm
