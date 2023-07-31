@@ -189,7 +189,7 @@ To visualize the data and what our species composition looks like at our sites, 
 # myColors <- paletteer_c("harrypotter::gryffindor", 6, direction = 1 )
 #myColors <- paletteer_c("pals::ocean.balance", 6, direction = 1)
 #Color Palette using a selection of Mote's preferred colors
-# myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
+ #myColors <- c("#d2232a", "#ca581f", "#f26522", "#85b034", "#00ae9d", "#78779e")
 
 # Using this just to plot the top 1% of species, REMOVE site filter (T-AP-12) WHEN COMPLETE
 #   , Site != c("T-AP-12") removed after abundance
@@ -369,7 +369,7 @@ ggsave("../figures/comboPlot.png", plot = comboPlot, width = 20, height = 15, un
 
 ```{r, dissimilarityMatrix, include = TRUE}
 
-
+#It's missing the class?
 vpiMat <- vpiData2 %>% 
   select(-c(abundance)) %>%
   tidyr::unite(sample, 1:2) %>% 
