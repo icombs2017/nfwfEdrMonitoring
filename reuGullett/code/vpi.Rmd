@@ -135,10 +135,13 @@ vpiData$Plot = if_else(vpiData$Mark %in% c("mark16-20", "mark48-50", "mark32-36"
                       if_else(vpiData$Mark %in% c("mark12-26", "mark44-36", "mark30-34"), "Plot 6"
                               , ""))))))
 
+#If else to assign treatments (cleaned, control)
 vpiData$treatment = if_else(vpiData$Plot %in% c("Plot 1", "Plot 4"), "cleaned", "control")
 
+#If else to assign the outplant time (T0 - immediate, T9 - delayed)
 vpiData$outplant = if_else(vpiData$Plot %in% c("Plot 1", "Plot 2", "Plot 3"), "T0", if_else(vpiData$Plot %in% c("Plot 4"), "control", "T9"))
 
+#Combined treatment and outplant times to a new column named treat
 vpiData <- vpiData %>% 
   unite("treat", treatment:outplant, remove = FALSE)
 vpiData$treat <- as.factor(vpiData$treat)
