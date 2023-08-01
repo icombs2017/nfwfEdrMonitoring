@@ -338,7 +338,8 @@ Now we want to merge datasets using the `bind_rows` function in `dplyr`.
 rugo <- bind_rows(p1Base, p2Base, p3Base, p4Base, p5Base, p6Base, p1OneYr, p2OneYr, p3OneYr, p4OneYr, p5OneYr, p6OneYr, p1TwentyMo, p2TwentyMo, p3TwentyMo, p4TwentyMo, p5TwentyMo, p6TwentyMo)
 rugo <- as_tibble(rugo)
 
-rugo$treatment = if_else(rugo$plot %in% c("p1", "p4"),"Cleaned", "Control") 
+rugo$treatment = if_else(rugo$plot %in% c("p1", "p4"),"Cleaned", "Control")
+rugo$treatment <- as.factor(rugo$treatment)
 rugo$outplant = as.factor(if_else(rugo$plot %in% c("p1", "p2", "p3"), "T0",
                         if_else(rugo$plot %in% c("p5", "p6"), "T9", "Control")))
 
@@ -376,7 +377,8 @@ rugoRMS <- rugo %>%
   group_by(plot, time, treatment, outplant, treat, transect) %>%
   summarise(sd(z), var(z)) %>%
   rename(sd = `sd(z)`) %>% 
-  rename(variance = `var(z)`)
+  rename(variance = `var(z)`) %>% 
+  droplevels() 
 
 # rugo1 <- rugo %>% 
 #   dplyr::select(plot, time, treatment, transect, z) %>%
@@ -388,31 +390,14 @@ rugoRMS <- rugo %>%
 # by(rugoRMS$sd, rugoRMS$time, mean)
 
 set.seed(09081992)
-rugoPerm <- adonis2(rugoRMS$sd ~ time*treat, data = rugoRMS, permutations = 9999, method = 'bray')
+rugoPerm <- adonis2(rugoRMS$sd ~ time*treatment*outplant, data = rugoRMS, permutations = 9999, method = 'bray')
 
 rugoPerm
 
 
- 
-rugoPairwise <- pairwise.adonis(x = rugoRMS$sd, factors = rugo$treat, perm = 9999, sim.method = 'bray', correcti)
 
-# set.seed(999)
-# rugoPerm <- adonis(formula = sd ~ plot*time*treatment, data = rugoRMS, method = "euclidian", permutations = 999)
-# 
-# set.seed(999)
-# rugoPairTime <- pairwise.adonis(rugoRMS[c(6)],factors=rugoRMS$time,
-#                              sim.method='euclidian',p.adjust.m='bonferroni', perm = 999)
-# 
-# set.seed(999)
-# rugoPairTreatment <- pairwise.adonis(rugoRMS[c(6)],factors=rugoRMS$treatment,
-#                              sim.method='euclidian',p.adjust.m='bonferroni', perm = 999)
+rugoKW <- kruskal.test(sd ~ treatment, data = rugoRMS)
 
-#I WANT TO LOOK INTO THIS BELOW
-
-# testPerm <- adonis(formula = sd ~ site*time*treatment, data = rugoRMS, method = "euclidian", permutations = 999)
-
-# test <- pairwise.adonis(rugoRMS[c(6)],factors=rugoRMS$site,
-#                              sim.method='euclidian',p.adjust.m='bonferroni', perm = 999)
 
 rugosdBaseline <- subset(rugoRMS, time == "Baseline")
 rugoSdOneYear <- subset(rugoRMS, time == "1 Year")
@@ -446,16 +431,17 @@ mean(rugoSdOutplanted$sd)
 
 
 sumRugoRMS <- rugoRMS %>% 
-  group_by(site, time, treatment, reef) %>% 
+  group_by(plot, time, treat) %>% 
   summarise(meanVar = mean(variance))
 
-rugoPlot1 <- ggplot(sumRugoRMS, aes(x = treatment, y = meanVar))+
+rugoPlot1 <- ggplot(sumRugoRMS, aes(x = treat, y = meanVar))+
   geom_bar(position = 'dodge', stat = 'identity', aes(fill = time))+
   scale_fill_manual(values = myColors)+
-  facet_grid(.~reef, scales = 'free')+
+  facet_grid(.~plot, scales = 'free')+
   labs(y = "Standard Deviation of Elevation", fill = "Time", title = "Changes in Complexity Through Time and Treatment")
 
-ggsave("../figures/rugoMeanVarBoxplot.png", plot = rugoPlot1, width = 15, height = 10, units = "in", dpi = 600)
+rugoPlot1
+#ggsave("../figures/rugoMeanVarBoxplot.png", plot = rugoPlot1, width = 15, height = 10, units = "in", dpi = 600)
 
 
 # rugoPerm <- adonis2(formula = variance ~ class*time*treatment, data = rugoRMS, method = "euclidian", permutations = 999)
@@ -518,21 +504,22 @@ rugoAnovaTab
 
 
 sumRugoRMS <- rugoRMS %>% 
-  group_by(site, time, treatment, reef) %>% 
+  group_by(plot, time, treat) %>% 
   summarise(meanSD = mean(sd))
 
-rugoPlot1 <- ggplot(sumRugoRMS, aes(x = treatment, y = meanSD))+
+rugoPlot1 <- ggplot(sumRugoRMS, aes(x = treat, y = meanSD))+
   geom_bar(position = 'dodge', stat = 'identity', aes(fill = time))+
   scale_fill_manual(values = myColors)+
-  facet_grid(.~reef, scales = 'free')+
+  facet_grid(.~plot, scales = 'free')+
   labs(y = "Standard Deviation of Elevation", fill = "Time", title = "Changes in Complexity Through Time and Treatment")
 
-ggsave("../figures/rugoMeanSDboxplot.png", plot = rugoPlot1, width = 15, height = 10, units = "in", dpi = 600)
+#ggsave("../figures/rugoMeanSDboxplot.png", plot = rugoPlot1, width = 15, height = 10, units = "in", dpi = 600)
+rugoPlot1
 
 
 # rugoPerm <- adonis2(formula = variance ~ class*time*treatment, data = rugoRMS, method = "euclidian", permutations = 999)
 
-changeLM <- lmer(meanSD ~ treatment*time + (1 | site), sumRugoRMS)
+changeLM <- lmer(meanSD ~ treat*time + (1 | plot), sumRugoRMS)
 changeLManova <- anova(changeLM)
 changeLManova
 
@@ -641,40 +628,62 @@ We are visualizing the standard deviation of elevation (what we tested above) us
 
 
 ```{r, plottingData, include = TRUE, eval = FALSE}
-myColors <- c("#4a83c4", "#badef5", "purple")
 
 rugoPlot1 <- ggplot(rugoRMS, aes(x = treatment, y = sd))+
-  geom_boxplot()+
-  scale_fill_manual(values = myColors)+
-  # facet_grid(.~reef, scales = 'free')+
-  labs(y = "Standard Deviation of Elevation", fill = "Time", title = "Changes in Complexity Through Time and Treatment")
+ 
+  geom_boxplot(aes(fill = time))+
+  #scale_x_discrete(labels = c("Baseline", "12 Month", "20 Month"))
+   paletteer::scale_fill_paletteer_d("RColorBrewer::RdBu")+
+  facet_wrap(treatment~plot, scales = 'free_x')+
+  labs(y = "Standard Deviation of Elevation", fill = "Time", title = "Changes in Complexity Through Time and Treatment") 
 
-rugoPlot <- rugoPlot1+theme(
-    axis.text.x = element_text(size = 20, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+
+rugoPlot1 <- rugoPlot1+theme(
+    axis.text.x = element_text(size = 25, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
     axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 30, face = "bold"), 
-    axis.text.y = element_text(colour = "black", size = 40, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 36, face = "bold", colour = "black"), 
+    axis.title.y = element_text(size = 35, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 27, face = "bold"),
+    legend.title = element_text(size = 30, face = "bold"), 
+    legend.text = element_text(size = 25, face = "bold", colour = "black"), 
     panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
     panel.background = element_rect(fill = '#F5F5F5'), 
-    plot.title = element_text(size = 30, face = "bold"), 
+    plot.title = element_text(size = 37, face = "bold"), 
     axis.line = element_line(colour = "black"), 
     axis.ticks = element_line(color="black"), 
     text = element_text(size=40, color="black"), 
     legend.position = "right")
 
-rugoPlot
-ggsave("../figures/rugoSDboxplot.jpeg", plot = rugoPlot, width = 15, height = 10, units = "in", dpi = 600)
-ggsave("../figures/rugoSDboxplot.png", plot = rugoPlot, width = 15, height = 10, units = "in", dpi = 600)
+rugoPlot1
+
+
+ggsave("../figures/rugoSDboxplot.jpeg", plot = rugoPlot1, width = 15, height = 10, units = "in", dpi = 600)
+ggsave("../figures/rugoSDboxplot.png", plot = rugoPlot1, width = 15, height = 10, units = "in", dpi = 600)
 
 
 rugoPlot1 <- ggplot(rugoRMS, aes(x = treatment, y = sd))+
   geom_boxplot(aes(fill = time))+
-  scale_fill_manual(values = myColors)+
+  paletteer::scale_fill_paletteer_d("RColorBrewer::RdBu")+
   facet_grid(scales = 'free')+
   labs(y = "Standard Deviation of Elevation", fill = "Time", title = "Changes in Complexity Through Time and Treatment")
 
+rugoPlot1 <- rugoPlot1+theme(
+    axis.text.x = element_text(size = 25, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 35, face = "bold"), 
+    axis.text.y = element_text(colour = "black", size = 27, face = "bold"),
+    legend.title = element_text(size = 30, face = "bold"), 
+    legend.text = element_text(size = 25, face = "bold", colour = "black"), 
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'), 
+    plot.title = element_text(size = 37, face = "bold"), 
+    axis.line = element_line(colour = "black"), 
+    axis.ticks = element_line(color="black"), 
+    text = element_text(size=40, color="black"), 
+    legend.position = "right")
+
+rugoPlot1
+ggsave("../figures/rugoSDboxplot1.jpeg", plot = rugoPlot1, width = 15, height = 10, units = "in", dpi = 600)
+ggsave("../figures/rugoSDboxplot1.png", plot = rugoPlot, width = 15, height = 10, units = "in", dpi = 600)
 
 ```
 
@@ -703,7 +712,7 @@ c1ggplot <- ggplot(data = c1, aes(x = point, y = z, color = transect))+
   axis.title.x = element_blank()
 )+rremove("legend")
 c1ggplot
-ggsave("../figures/rugoC1Pre.jpeg", plot = c1ggplot, width = 15, height = 10, units = "in", dpi = 600)
+#ggsave("../figures/rugoC1Pre.jpeg", plot = c1ggplot, width = 15, height = 10, units = "in", dpi = 600)
 
 
 

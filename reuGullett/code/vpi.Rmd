@@ -197,7 +197,7 @@ To visualize the data and what our species composition looks like at our sites, 
 # Using this just to plot the top 1% of species, REMOVE site filter (T-AP-12) WHEN COMPLETE
 #   , Site != c("T-AP-12") removed after abundance
 vpiData3 <- vpiData2 %>%
-  filter(abundance > 0.5) %>%
+  filter(abundance > 1) %>%
   droplevels() %>% 
   arrange(desc(abundance))
 
@@ -209,22 +209,23 @@ vpiData3 <- vpiData2 %>%
 vpiStack3<- ggplot(vpiData3, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 0.5%")+
-  scale_x_discrete(labels = c("Baseline", "12 Month", "20 Month"))+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%")+
+  # scale_x_discrete(labels = c("Baseline", "12 Month", "20 Month"))+
                       #scale_y_reverse()+
-                      facet_wrap(.~Plot, scales = 'free')
+                      facet_wrap(treatment~Plot, scales = 'free')+
+  paletteer::scale_fill_paletteer_d("RColorBrewer::RdBu")
 
 
 
 
 
 vpiStack <- vpiStack3+theme(
-    axis.text.x = element_text(size = 15, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
+    axis.text.x = element_text(size = 20, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"), 
     axis.title.x = element_blank(),
-    axis.title.y = element_text(size = 40, face = "bold"), 
+    axis.title.y = element_text(size = 33, face = "bold"), 
     axis.text.y = element_text(colour = "black", size = 20, face = "bold"),
-    legend.title = element_text(size = 40, face = "bold"), 
-    legend.text = element_text(size = 20, face = "bold", colour = "black"), 
+    legend.title = element_text(size = 30, face = "bold"), 
+    legend.text = element_text(size = 25, face = "bold", colour = "black"), 
     panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
     panel.background = element_rect(fill = '#F5F5F5'), 
     plot.title = element_text(size = 40, face = "bold"), 
@@ -234,8 +235,8 @@ vpiStack <- vpiStack3+theme(
     legend.position = "right")
 vpiStack
 
-#ggsave("../figures/vpiStackBar.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
-#ggsave("../figures/nfwfReportFig2.png", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
+ggsave("../figures/vpiStackBar.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/nfwfReportFig2.png", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
 
 
 
@@ -258,10 +259,11 @@ vpiData4 <- vpiData2 %>%
 vpiStack3<- ggplot(vpiData4, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%", x = "Time Point")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%", x = "Time Point")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       scale_y_reverse()+
-                      facet_wrap(.~Plot, scales = 'free')
+                      facet_wrap(.~Plot, scales = 'free')+
+  paletteer::scale_fill_paletteer_d("RColorBrewer::RdBu")
 
 
 
@@ -283,7 +285,7 @@ vpiStack <- vpiStack3+theme(
     legend.position = "right")
 vpiStack
 
-#ggsave("../figures/vpiStackBarSubset.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/vpiStackBarSubset.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
 
 
 
@@ -547,9 +549,10 @@ distPerm
 # distPerm <- adonis2(count ~ treatment*reef*timePoint, data = vpiData, method = "bray", permutations = 9999)
 # 
 # set.seed(999)
-# vpiPairwise1 <- pairwise.adonis(vpi[c(3)], factors = vpi$class, sim.method = 'euclidian', p.adjust.m = 'bonferroni', perm = 999)
 # 
-# vpiPairwise <- vpiPairwise1 %>% filter(p.adjusted < 0.05)
+# vpiPairwise1 <- pairwise.adonis(vpiDist, factors = samplesLookupPerm$outplanted, sim.method = 'euclidian', p.adjust.m = 'bonferroni', perm = 999)
+
+vpiPairwise <- vpiPairwise1 %>% filter(p.adjusted < 0.05)
 
 ```
 
@@ -558,13 +561,13 @@ distPerm
 
 ```{r, PERMANOVAtable, include = TRUE, results = hide}
 
-distPermTab = data.frame("Test" = "PERMANOVA", "Comparison" = "Class", "Df" = distPerm[["aov.tab"]][["Df"]][[1]],"F" = distPerm[["aov.tab"]][["F.Model"]][[1]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[1]]) %>% 
-  add_row("Test" = " ", "Comparison" = "Time", "Df" = distPerm[["aov.tab"]][["Df"]][[2]], "F" = distPerm[["aov.tab"]][["F.Model"]][[2]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[2]]) %>% 
-  add_row("Test" = " ", "Comparison" = "Treatment", "Df" = distPerm[["aov.tab"]][["Df"]][[3]], "F" = distPerm[["aov.tab"]][["F.Model"]][[3]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[3]]) %>% 
-  add_row("Test" = " ", "Comparison" = "Class:Time", "Df" = distPerm[["aov.tab"]][["Df"]][[4]], "F" = distPerm[["aov.tab"]][["F.Model"]][[4]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[4]]) %>% 
-  add_row("Test" = " ", "Comparison" = "Class:Treatment", "Df" = distPerm[["aov.tab"]][["Df"]][[5]], "F" = distPerm[["aov.tab"]][["F.Model"]][[5]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[5]]) %>% 
-  add_row("Test" = " ", "Comparison" = "Time:Treatment", "Df" = distPerm[["aov.tab"]][["Df"]][[6]], "F" = distPerm[["aov.tab"]][["F.Model"]][[6]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[6]]) %>% 
-  add_row("Test" = " ", "Comparison" = "Class:Time:Treatment", "Df" = distPerm[["aov.tab"]][["Df"]][[7]], "F" = distPerm[["aov.tab"]][["F.Model"]][[7]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[7]])
+distPermTab = data.frame("Test" = "PERMANOVA", "Comparison" = "timePoint", "Df" = distPerm[["aov.tab"]][["Df"]][[1]],"F" = distPerm[["aov.tab"]][["F.Model"]][[1]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[1]]) %>% 
+  add_row("Test" = " ", "Comparison" = "treatment", "Df" = distPerm[["aov.tab"]][["Df"]][[2]], "F" = distPerm[["aov.tab"]][["F.Model"]][[2]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[2]]) %>% 
+  add_row("Test" = " ", "Comparison" = "outplanted", "Df" = distPerm[["aov.tab"]][["Df"]][[3]], "F" = distPerm[["aov.tab"]][["F.Model"]][[3]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[3]]) %>% 
+  add_row("Test" = " ", "Comparison" = "timePoint:treatment", "Df" = distPerm[["aov.tab"]][["Df"]][[4]], "F" = distPerm[["aov.tab"]][["F.Model"]][[4]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[4]]) %>% 
+  add_row("Test" = " ", "Comparison" = "timePoint:outplanted", "Df" = distPerm[["aov.tab"]][["Df"]][[5]], "F" = distPerm[["aov.tab"]][["F.Model"]][[5]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[5]]) %>% 
+ add_row("Test" = " ", "Comparison" = "Residual", "Df" = distPerm[["aov.tab"]][["Df"]][[6]], "F" = distPerm[["aov.tab"]][["F.Model"]][[6]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[6]]) %>% 
+ add_row("Test" = " ", "Comparison" = "Total", "Df" = distPerm[["aov.tab"]][["Df"]][[7]], "F" = distPerm[["aov.tab"]][["F.Model"]][[7]], "p.value" = distPerm[["aov.tab"]][["Pr(>F)"]][[7]])
 
 distPermTab <- distPerm %>% 
   rename("p.value" = "Pr(>F)") %>% 
@@ -591,7 +594,7 @@ align(align = "center", j = "p.value")
 
 vpiDoc = read_docx()
 vpiDoc = body_add_flextable(vpiDoc, value = distPermTab)
-print(vpiDoc, target = "../tables/vpiTable.docx")
+#print(vpiDoc, target = "../tables/vpiTable.docx")
 distPermTab
 
 
