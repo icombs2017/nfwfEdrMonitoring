@@ -83,39 +83,40 @@ vpiData <- vpiData1 %>%
       tidyr::drop_na(abundance) %>% 
       arrange(desc(abundance))
 
-
 # Making a column for Species using the length of each character in our Site Column. Note: we are doing this here before we turn that column into a factor below.
 
 vpiData$species <- if_else(nchar(vpiData$Site) <= 5, "ACER", "APAL" )
 
 #Changing the Date to factors
-vpiData$Date<-as.factor(vpiData$Date)
-vpiData$Date<-strptime(vpiData$Date,format="%Y-%m-%d") #defining what is the original format of your date
-vpiData$Date<-as.Date(vpiData$Date,format="%Y-%m-%d")
+vpiData$Date<-as.Date(vpiData$Date)
+# vpiData$Date<-strptime(vpiData$Date,format="%Y-%m-%d") #defining what is the original format of your date
+# vpiData$Date<-as.Date(vpiData$Date,format="%Y-%m-%d")
 
 
 
 #Making some corrections in the naming
-vpiData$class <- gsub("Crustose coralline algae natans","Crustose coralline algae",vpiData$class)
-vpiData$class <- gsub("Cordata", "Chordata", vpiData$class)
-vpiData$class <- gsub("Rubble", "Bare Substrate", vpiData$class)
-vpiData$Site <- gsub("T-AP-13pt2", "T-AP-13", vpiData$Site)
-vpiData$Site <- gsub("T-AP-13pt1", "T-AP-13", vpiData$Site)
-vpiData$Site <- gsub("T-AP-14pt1", "T-AP-14", vpiData$Site)
-vpiData$Site <- gsub("T-AP-14pt2", "T-AP-14", vpiData$Site)
-vpiData$class <- gsub("Other", NA, vpiData$class)
-vpiData$class <- gsub("Review", NA, vpiData$class)
-vpiData$class <- gsub("None", NA, vpiData$class)
+vpiData <- vpiData %>%
+  mutate_all(~gsub("Crustose coralline algae natans", "Crustose coralline algae", .)) %>%
+  mutate_all(~gsub("Cordata", "Chordata", .)) %>%
+  mutate_all(~gsub("Rubble", "Bare Substrate", .)) %>%
+  mutate(Site = gsub("T-AP-13pt2", "T-AP-13", Site),
+         Site = gsub("T-AP-13pt1", "T-AP-13", Site),
+         Site = gsub("T-AP-14pt1", "T-AP-14", Site),
+         Site = gsub("T-AP-14pt2", "T-AP-14", Site)) %>%
+  mutate_all(~gsub("Other|Review|None", NA, .))
 
 
 
 # Changing other columns to factors
 
-vpiData <- vpiData %>% mutate(Site = factor(Site), class = factor(class), timePoint = factor(timePoint), species = factor(species)) %>% 
+vpiData <- vpiData %>%
+  mutate(across(c(Site, class, timePoint, species), as.factor)) %>%
   select(Date, Site, timePoint, species, class, count)
 
 
-vpiData$timePoint = factor(vpiData$timePoint, levels(vpiData$timePoint)[c(2,1)])
+# Changing the factor level of timePoint to be chronological
+vpiData <- vpiData %>%
+  mutate(timePoint = factor(timePoint, levels = levels(timePoint)[c(2,1)]))
 vpiData
 
 ```
@@ -179,13 +180,11 @@ vpiData3 <- vpiData2 %>%
 vpiStack3<- ggplot(vpiData3, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = TRUE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 2%")+
-  scale_x_discrete(labels = c("Baseline", "12 Month"))+
+                      labs(y = "Relative Abundance (%)", fill = "Class", 
+                           title = "Relative Species Abundance > 2%")+
+                      scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       scale_y_reverse()+
                       facet_wrap(species~Site, scales = 'free')
-
-
-
 
 
 vpiStack <- vpiStack3+theme(
@@ -206,10 +205,6 @@ vpiStack
 
 ggsave("../figures/vpiStackBar.png", plot = vpiStack, width = 20, height = 15, units = 'in', dpi = 600)
 ggsave("../figures/nfwfReportFig2.png", plot = vpiStack, width = 20, height = 15, units = "in", dpi = 600)
-
-
-
-
 
 ```
 ```{r, subsetPlot, include = TRUE}
