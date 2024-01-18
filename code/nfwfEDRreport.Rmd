@@ -133,6 +133,49 @@ apalDeliverables <- c(5000, 8000, 11000)
 apalCumulativeDeliverables <- c(5000, 13000, 24000)
 
 
+#creating templates for "weighted survival"
+# 1 month APAL frags
+outplantAPAL$oneMonthNumberSurvived <- outplantAPAL$`# plugs`* outplantAPAL$`1-month Survival`
+oneMonthWeightedAverageSurvival<- (sum(outplantAPAL$oneMonthNumberSurvived))/(sum(outplantAPAL$`# plugs`))*100
+# 1 month APAL clusters
+outplantAPAL$oneMonthClusterSurvived <- (outplantAPAL$`# plugs`/5)* outplantAPAL$`1-month % Plot Survival`
+oneMonthWeightedAverageClusterSurvival<- (sum(outplantAPAL$oneMonthClusterSurvived))/(sum(outplantAPAL$`# plugs`/5))*100
+
+# 12 month APAL plugs
+outplantAPAL$twelveMonthNumberSurvived <- outplantAPAL$`# plugs`* outplantAPAL$`12-month Survival`
+twelveMonthWeightedAverageSurvival<- (sum(outplantAPAL$twelveMonthNumberSurvived))/(sum(outplantAPAL$`# plugs`))*100
+# 12 month APAL clusters
+outplantAPAL$twelveMonthClusterSurvived <- (outplantAPAL$`# plugs`/5)* outplantAPAL$`12-month % Plot Survival`
+twelveMonthWeightedAverageClusterSurvival<- (sum(outplantAPAL$twelveMonthClusterSurvived))/(sum(outplantAPAL$`# plugs`/5))*100
+
+
+
+
+
+
+
+#creating templates for "weighted survival"
+# 1 month ACER frags
+outplantACER$oneMonthNumberSurvived <- outplantACER$`# frags`* outplantACER$`1-month Survival`
+oneMonthWeightedAverageSurvival<- (sum(outplantACER$oneMonthNumberSurvived))/(sum(outplantACER$`# frags`))*100
+# 1 month ACER clusters
+outplantACER$oneMonthClusterSurvived <- (outplantACER$`# frags`/5)* outplantACER$`1-month % Plot Survival`
+oneMonthWeightedAverageClusterSurvival<- (sum(outplantACER$oneMonthClusterSurvived))/(sum(outplantACER$`# frags`/5))*100
+
+# 12 month ACER frags
+outplantACER$twelveMonthNumberSurvived <- outplantACER$`# frags`* outplantACER$`12-month Survival`
+twelveMonthWeightedAverageSurvival<- (sum(outplantACER$twelveMonthNumberSurvived))/(sum(outplantACER$`# frags`))*100
+# 12 month ACER clusters
+outplantACER$twelveMonthClusterSurvived <- (outplantACER$`# frags`/5)* outplantACER$`12-month % Plot Survival`
+twelveMonthWeightedAverageClusterSurvival<- (sum(outplantACER$twelveMonthClusterSurvived))/(sum(outplantACER$`# frags`/5))*100
+
+
+
+
+
+
+
+
 
 ```
 
@@ -193,11 +236,12 @@ Creating a table for number of outplant events
 
 
 ```{r, apalOutplantTable, include = TRUE}
+
 # Wrangling for the table
 
 outplantAPALtab1 <- apalData %>%
-  select(Date, `Site ID`, `# plugs`, Lat, Long, ...28:ncol(.), Deliverable) %>%
-  mutate(numberOfGenotypes = rowSums(!is.na(select(., ...28:ncol(.))))) %>%  # this counts all of the "geno types used" section in this and adds them to a column that is "number of Genotypes"
+  select(Date, `Site ID`, `# plugs`, Lat, Long, `Genotypes represented at the Site`:ncol(.), Deliverable) %>%
+  mutate(numberOfGenotypes = rowSums(!is.na(select(., `Genotypes represented at the Site`:ncol(.))))) %>%  # this counts all of the "geno types used" section in this and adds them to a column that is "number of Genotypes"
   mutate(Date = as.Date(Date)) %>% 
   filter(Deliverable %in% c("NFWF-EDR Yr3", "NFWF-EDR", "NFWF-EDR Yr2")) %>% 
   select(Date, `Site ID`, `# plugs`, Lat, Long, numberOfGenotypes)
@@ -517,6 +561,15 @@ ggsave("../figures/oneMonthSurvivalAPAL.png", plot =apal1MoSurvivalPlot, width =
 ## APAL One Month Monitoring Table
 ```{r, apalOneMonthTable, include = TRUE}
 
+#creating templates for "weighted survival"
+# 1 month APAL frags
+outplantAPAL$oneMonthNumberSurvived <- outplantAPAL$`# plugs`* outplantAPAL$`1-month Survival`
+oneMonthWeightedAverageSurvival<- (sum(outplantAPAL$oneMonthNumberSurvived))/(sum(outplantAPAL$`# plugs`))*100
+# 1 month APAL clusters
+outplantAPAL$oneMonthClusterSurvived <- (outplantAPAL$`# plugs`/5)* outplantAPAL$`1-month % Plot Survival`
+oneMonthWeightedAverageClusterSurvival<- (sum(outplantAPAL$oneMonthClusterSurvived))/(sum(outplantAPAL$`# plugs`/5))*100
+
+
 # Wrangling for the table
 oneMonthAPALtab1 <- outplantAPAL %>%
   select(`Site ID`, `1-month Monitoring?`, `# plugs`, `1-month Survival`, `1-month % Dead`, `1-month % Missing`, `1-month % Plot Survival`, Deliverable) %>%
@@ -546,17 +599,17 @@ oneMonthAPALtab <- oneMonthAPALtab1 %>%
   set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
   add_footer_row(values = 
     list(
-      `Site ID` = "Averages:",
+      `Site ID` = "Weighted Averages:",
       "",
       "",
-      `1-month Survival` = round(mean(oneMonthAPALtab1$`1-month Survival`), 2),
-      `1-month % Dead` = round(mean(oneMonthAPALtab1$`1-month % Dead`), 2),
-      `1-month % Missing` = round(mean(oneMonthAPALtab1$`1-month % Missing`), 2),
-      `1-month % Plot Survival` = round(mean(oneMonthAPALtab1$`1-month % Plot Survival`),2)),
+      `1-month Survival` = round(oneMonthWeightedAverageSurvival, 2),
+      "",
+      "",
+      `1-month % Plot Survival` = round(oneMonthWeightedAverageClusterSurvival,2)),
     colwidths = c(1, 1, 1, 1, 1, 1, 1))
 
  
-averages <- c("Averages:", "", "", mean(oneMonthAPALtab1$`1-month Survival`), mean(oneMonthAPALtab1$`1-month % Dead`), mean(oneMonthAPALtab1$`1-month % Missing`), mean(oneMonthAPALtab1$`1-month % Plot Survival`))
+# averages <- c("Weighted Averages:", "", "", mean(oneMonthAPALtab1$`1-month Survival`), mean(oneMonthAPALtab1$`1-month % Dead`), mean(oneMonthAPALtab1$`1-month % Missing`), mean(oneMonthAPALtab1$`1-month % Plot Survival`))
 
 oneMonthAPALDoc = read_docx()
 oneMonthAPALDoc = body_add_flextable(oneMonthAPALDoc, value = oneMonthAPALtab)
@@ -580,6 +633,7 @@ twelveMoSurvivalAPAL2 <- outplantAPAL %>%
   # pivot_longer(cols = c("1-month Survival", "1-month % Dead", "1-month % Missing"), names_to = "1 month", values_to = "1 mo percentage") %>%
   pivot_longer(cols = c("12-month Survival", "12-month % Dead", "12-month % Missing"), names_to = "12 month", values_to = "12 mo percentage") %>% 
   select(Year, Date, `Site ID`, Deliverable, `12 month`, `12 mo percentage`) %>% 
+    filter(!`Site ID` %in% c("T_AP_23", "T_AP_24", "T_AP_25", "T_AP_26")) %>% 
   na.omit() %>% 
   mutate_at(c("12 month"), as.factor) %>% 
     mutate(`Site ID` = factor(`Site ID`, levels = mixedsort(levels(`Site ID`))))
@@ -633,20 +687,29 @@ ggsave("../figures/12MonthSurvivalPlotAPAL.png", plot =apal12MoSurvivalPlot, wid
 ## APAL 12 Month Monitoring Table
 ```{r, apalTwelveMonthTable, include = TRUE}
 
+
 # Wrangling for the table
 twelveMonthAPALtab1 <- outplantAPAL %>%
   select(`Site ID`, `12-month Monitoring?`, `# plugs`, `12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`, Deliverable) %>%
   mutate(`12-month Monitoring?` = as.Date(`12-month Monitoring?`, `12-month % Plot Survival` = as.numeric(`12-month % Plot Survival`))) %>% 
+    filter(!`Site ID` %in% c("T_AP_21","T_AP_22", "T_AP_23", "T_AP_24", "T_AP_25", "T_AP_26")) %>%
   filter(Deliverable %in% c("NFWF-EDR Yr3", "NFWF-EDR", "NFWF-EDR Yr2")) %>% 
   select(`Site ID`, `12-month Monitoring?`, `# plugs`, `12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`) %>% 
+   mutate(twelveMonthNumberSurvived = `# plugs` * `12-month Survival`,
+         twelveMonthClusterSurvived = (`# plugs`/4) * `12-month % Plot Survival`) %>% # these are for the weighted frag and cluster surivval below
   mutate_at(vars(`12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`), ~ round(. * 100, 2)) %>% 
   na.omit()
 
+# 12 month APAL plugs
+twelveMonthWeightedAverageSurvival<- (sum(twelveMonthAPALtab1$twelveMonthNumberSurvived))/(sum(twelveMonthAPALtab1$`# plugs`))*100
 
+# 12 month APAL clusters
+twelveMonthWeightedAverageClusterSurvival<- (sum(twelveMonthAPALtab1$twelveMonthClusterSurvived))/(sum(twelveMonthAPALtab1$`# plugs`/4))*100
 
 
 # Making the table
-twelveMonthAPALtab <- twelveMonthAPALtab1 %>% 
+twelveMonthAPALtab <- twelveMonthAPALtab1 %>%
+  select(`Site ID`, `12-month Monitoring?`,`# plugs`,`12-month Survival`,`12-month % Dead`, `12-month % Missing`,`12-month % Plot Survival`) %>% 
   flextable() %>%
   set_header_labels(Data.set = "Data set") %>% 
   flextable::compose(part = "header", j = "12-month Monitoring?", value = as_paragraph("12-Month Monitoring Date")) %>%
@@ -663,17 +726,17 @@ twelveMonthAPALtab <- twelveMonthAPALtab1 %>%
   set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
   add_footer_row(values = 
     list(
-      `Site ID` = "Averages:",
+      `Site ID` = "Weighted Averages:",
       "",
       "",
-      `12-month Survival` = round(mean(twelveMonthAPALtab1$`12-month Survival`), 2),
-      `12-month % Dead` = round(mean(twelveMonthAPALtab1$`12-month % Dead`), 2),
-      `12-month % Missing` = round(mean(twelveMonthAPALtab1$`12-month % Missing`), 2),
-      `12-month % Plot Survival` = round(mean(twelveMonthAPALtab1$`12-month % Plot Survival`),2)),
+      `12-month Survival` = round(twelveMonthWeightedAverageSurvival, 2),
+      "",
+      "",
+      `12-month % Plot Survival` = round(twelveMonthWeightedAverageClusterSurvival,2)),
     colwidths = c(1, 1, 1, 1, 1, 1, 1))
 
  
-averages <- c("Averages:", "", "", mean(twelveMonthAPALtab1$`12-month Survival`), mean(twelveMonthAPALtab1$`12-month % Dead`), mean(twelveMonthAPALtab1$`12-month % Missing`), mean(twelveMonthAPALtab1$`12-month % Plot Survival`))
+# averages <- c("Averages:", "", "", mean(twelveMonthAPALtab1$`12-month Survival`), mean(twelveMonthAPALtab1$`12-month % Dead`), mean(twelveMonthAPALtab1$`12-month % Missing`), mean(twelveMonthAPALtab1$`12-month % Plot Survival`))
 
 twelveMonthAPALDoc = read_docx()
 twelveMonthAPALDoc = body_add_flextable(twelveMonthAPALDoc, value = twelveMonthAPALtab)
@@ -749,6 +812,13 @@ ggsave("../figures/oneMonthSurvivalACER.png", plot = acer1MoSurvivalPlot, width 
 
 ## ACER One Month Monitoring Table
 ```{r, acerOneMonthTable, include = TRUE}
+#creating templates for "weighted survival"
+# 1 month ACER frags
+outplantACER$oneMonthNumberSurvived <- outplantACER$`# frags`* outplantACER$`1-month Survival`
+oneMonthWeightedAverageSurvivalACER<- (sum(outplantACER$oneMonthNumberSurvived))/(sum(outplantACER$`# frags`))*100
+# 1 month ACER clusters
+outplantACER$oneMonthClusterSurvived <- (outplantACER$`# frags`/5)* outplantACER$`1-month % Plot Survival`
+oneMonthWeightedAverageClusterSurvivalACER<- (sum(outplantACER$oneMonthClusterSurvived))/(sum(outplantACER$`# frags`/5))*100
 
 # Wrangling for the table
 oneMonthACERtab1 <- outplantACER %>%
@@ -777,19 +847,19 @@ oneMonthACERtab <- oneMonthACERtab1 %>%
   bold(part = "header") %>%
   align(align = "center", j = "# frags") %>% 
   set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
-  add_footer_row(values = 
+   add_footer_row(values = 
     list(
-      `Site ID` = "Averages:",
+      `Site ID` = "Weighted Averages:",
       "",
       "",
-      `1-month Survival` = round(mean(oneMonthAPALtab1$`1-month Survival`), 2),
-      `1-month % Dead` = round(mean(oneMonthAPALtab1$`1-month % Dead`), 2),
-      `1-month % Missing` = round(mean(oneMonthAPALtab1$`1-month % Missing`), 2),
-      `1-month % Plot Survival` = round(mean(oneMonthAPALtab1$`1-month % Plot Survival`),2)),
+      `1-month Survival` = round(oneMonthWeightedAverageSurvivalACER, 2),
+      "",
+      "",
+      `1-month % Plot Survival` = round(oneMonthWeightedAverageClusterSurvivalACER,2)),
     colwidths = c(1, 1, 1, 1, 1, 1, 1))
 
  
-averages <- c("Averages:", "", "", mean(oneMonthACERtab1$`1-month Survival`), mean(oneMonthACERtab1$`1-month % Dead`), mean(oneMonthACERtab1$`1-month % Missing`), mean(oneMonthACERtab1$`1-month % Plot Survival`))
+# averages <- c("Averages:", "", "", mean(oneMonthACERtab1$`1-month Survival`), mean(oneMonthACERtab1$`1-month % Dead`), mean(oneMonthACERtab1$`1-month % Missing`), mean(oneMonthACERtab1$`1-month % Plot Survival`))
 
 oneMonthACERdoc = read_docx()
 oneMonthACERdoc = body_add_flextable(oneMonthACERdoc, value = oneMonthACERtab)
@@ -864,15 +934,26 @@ ggsave("../figures/12MonthSurvivalPlotACER.png", plot = acer12MoSurvivalPlot, wi
 
 ## ACER Twelve Month Monitoring Table
 ```{r, acerOneMonthTable, include = TRUE}
-
 # Wrangling for the table
 twelveMonthACERtab1 <- outplantACER %>%
   select(`Site ID`, `12-month Monitoring`, `# frags`, `12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`, Deliverable) %>%
   mutate(`12-month Monitoring` = as.Date(`12-month Monitoring`, `12-month % Plot Survival` = as.numeric(`12-month % Plot Survival`))) %>% 
   filter(Deliverable %in% c("NFWF-EDR Yr3", "NFWF-EDR", "NFWF-EDR Yr2")) %>% 
   select(`Site ID`, `12-month Monitoring`, `# frags`, `12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`) %>% 
-  mutate_at(vars(`12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`), ~ round(. * 100, 2)) %>% 
-  filter(!(`Site ID` %in% c("T_23", "T_24", "T_25")))
+  filter(!(`Site ID` %in% c("T_23", "T_24", "T_25"))) %>% 
+  mutate(twelveMonthNumberSurvived = `# frags` * `12-month Survival`,
+         twelveMonthClusterSurvived = (`# frags`/5) * `12-month % Plot Survival`) %>%          
+  mutate_at(vars(`12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`), ~ round(. * 100, 2))
+
+
+
+
+
+# 12 month ACER plugs
+twelveMonthWeightedAverageSurvivalACER <- (sum(twelveMonthACERtab1$twelveMonthNumberSurvived))/(sum(twelveMonthACERtab1$`# frags`))*100
+# 12 month ACER clusters
+twelveMonthWeightedAverageClusterSurvivalACER<- (sum(twelveMonthACERtab1$twelveMonthClusterSurvived))/(sum(twelveMonthACERtab1$`# frags`/5))*100 
+
 
 
 
@@ -881,6 +962,7 @@ twelveMonthACERtab1 <- outplantACER %>%
 
 # Making the table
 twelveMonthACERtab <- twelveMonthACERtab1 %>% 
+    select(`Site ID`, `12-month Monitoring`,`# frags`,`12-month Survival`,`12-month % Dead`, `12-month % Missing`,`12-month % Plot Survival`) %>% 
   flextable() %>%
   set_header_labels(Data.set = "Data set") %>% 
   flextable::compose(part = "header", j = "12-month Monitoring", value = as_paragraph("12-Month Monitoring Date")) %>%
@@ -897,24 +979,24 @@ twelveMonthACERtab <- twelveMonthACERtab1 %>%
   set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
   add_footer_row(values = 
     list(
-      `Site ID` = "Averages:",
+      `Site ID` = "Weighted Averages:",
       "",
       "",
-      `12-month Survival` = round(mean(twelveMonthACERtab1$`12-month Survival`), 2),
-      `12-month % Dead` = round(mean(twelveMonthACERtab1$`12-month % Dead`), 2),
-      `12-month % Missing` = round(mean(twelveMonthACERtab1$`12-month % Missing`), 2),
-      `12-month % Plot Survival` = round(mean(twelveMonthACERtab1$`12-month % Plot Survival`),2)),
+      `12-month Survival` = round(twelveMonthWeightedAverageSurvivalACER, 2),
+      "",
+      "",
+      `12-month % Plot Survival` = round(twelveMonthWeightedAverageClusterSurvivalACER,2)),
     colwidths = c(1, 1, 1, 1, 1, 1, 1))
 
+
  
-averages <- c("Averages:", "", "", mean(twelveMonthACERtab1$`12-month Survival`), mean(twelveMonthACERtab1$`12-month % Dead`), mean(twelveMonthACERtab1$`12-month % Missing`), mean(twelveMonthACERtab1$`12-month % Plot Survival`))
+# averages <- c("Averages:", "", "", mean(twelveMonthACERtab1$`12-month Survival`), mean(twelveMonthACERtab1$`12-month % Dead`), mean(twelveMonthACERtab1$`12-month % Missing`), mean(twelveMonthACERtab1$`12-month % Plot Survival`))
 
 twelveMonthACERdoc = read_docx()
 twelveMonthACERdoc = body_add_flextable(twelveMonthACERdoc, value = twelveMonthACERtab)
 print(twelveMonthACERdoc, target = "../tables/twelveMonthACERtable.docx")
 twelveMonthACERtab
 ```
-
 
 
 

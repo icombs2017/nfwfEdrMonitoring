@@ -73,6 +73,9 @@ sites <- sites %>%
 # Now I'm making sure I'm just including the EDR sites
 sites <- sites %>% filter(Project == "NFWF")
 drop.levels(sites)
+sites <- sites %>% filter(`Date Collected` > "2023-06-30") %>% 
+        drop.levels()
+  
 
 sites$reef <- sites$`Iconic Reef?`    
 
@@ -166,18 +169,17 @@ edrSites <- ggplot() +
 
 # edr_legend <- cowplot::get_legend(edrSites)
 # edr_legend <- ggpubr::as_ggplot(edr_legend)
-
-
-#In order for this to work... you have to change legend.position = "none" to legend.position = "right" (or wve direction you want) the legend from EDR sites above... working to make this better
+# In order for this to work... you have to change legend.position = "none" to legend.position = "right" (or wve direction you want) the legend from EDR sites above... working to make this better
 leg <- get_legend(edrSites)
 edrLeg <- as_ggplot(leg)
-
+# #
 edrMap = ggdraw() +
-  draw_plot(mainKeys) +
-  draw_plot(floridaMap, x = .08, y = 0.6, width = 0.25, height = 0.25) +
-  draw_plot(edrSites, x =.28, y = .25, width = 0.4, height = 0.4)
+draw_plot(mainKeys) +
+draw_plot(floridaMap, x = .08, y = 0.6, width = 0.25, height = 0.25) +
+draw_plot(edrSites, x =.28, y = .25, width = 0.4, height = 0.4)
+# 
+edrNew <- edrMap / edrLeg + plot_layout(heights = unit(c(5,1), c('cm')))
 
-# edrNew <- edrMap / edrLeg + plot_layout(heights = unit(c(5,1), c('cm')))
 
 ggsave("../figures/figure1Jitter.png", plot = edrMap, width = 16, height = 16, units = "cm", dpi = 600)
 

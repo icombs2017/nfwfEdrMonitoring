@@ -1,0 +1,180 @@
+---
+title: "TagLab"
+author: "Ian Combs -- icombs@mote.org"
+output:
+  html_document:
+    theme: flatly
+    code_folding: show
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_doctument:
+    toc: yes
+    toc_depth: 3
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r, setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, fig.align = 'left')
+library(magrittr)
+```
+
+### version: `r Sys.Date() %>% format(format="%B %d, %Y")`
+
+<!-- this is where the DOI would go  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3675991.svg)](https://doi.org/10.5281/zenodo.3675991)
+-->
+
+
+#### [GitHub repository](https://github.com/icombs2017/photogrammetryNOAA.git){target="_blank"}
+
+###
+***
+This is the analysis pipeline for data generated from TagLab annotations of our 6 10x10m plots.
+
+
+***
+### All analyses performe with R verion `r getRversion()`
+# Basic setup of R environment
+***
+## Loading required packages
+
+For the following analyses we will require the use of a number of different R packages. Most of which can be sourced from CRAN, but some must be downloaded from GitHub. We can use the following code to load in the packages and install any packages not previously installed in the R console.
+
+```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "patchwork", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "paletteer", "purrr", "readr")
+```
+
+
+<br><br>
+
+# Loading and Manipulating data
+***
+
+We have loaded a lot of individual data into R and we want to combine the data and create one cohesive dataframe with which to work. In order to do that we have to add a few identifiers to our data frames to when combining we can differentiate between the two, but this is also a good time to add other columns like **treatment** and **time** as well. The majority of this is done using various functions from the package `dplyr`.
+
+```{r, loading, include = TRUE, message = FALSE}
+read_plus <- function(flnm) {
+    read_csv(flnm) %>%
+      mutate_all(as.character) %>%
+        mutate(filename = flnm)
+}
+
+tagData1 <-
+    list.files(path = "../data/TagLab", pattern = "*.csv",
+               full.names = T) %>%
+    map_df(~read_plus(.)) %>%
+  as_tibble()
+
+tagData <- tagData1 %>%
+      tidyr::separate(filename, into=c("remove", "Site"),extra = 'merge',sep = 18) %>%
+      tidyr::separate(Site, into=c("Site", "remove"),sep = "TagLab.csv") %>%
+      dplyr::select(-c(remove)) %>%
+    mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
+  dplyr::rename(Species = `TagLab Class name`, Date = `TagLab Date`, Area = `TagLab Area`) %>%
+      mutate_at(c("Date", "Site", "Species"), as.factor) %>%
+      mutate_at(c("Area"), as.numeric) %>%
+      select(Date, Site, Species, Area) %>%
+  group_by(Date, Site) %>%
+  filter(Species == c("Acropora cervicornis", "Acropora palmata")) %>%
+  droplevels()
+
+tagApal <- tagData %>%
+  filter(Species == "Acropora palmata") %>%
+  droplevels() %>%
+  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 7) %>%
+  mutate_at(c("Site"), as.factor) %>%
+  select(-c("remove"))
+
+tagAcer <- tagData %>%
+  filter(Species == "Acropora cervicornis") %>%
+  droplevels() %>%
+  tidyr::separate(Site, into = c("Site", "remove"), extra = 'merge', sep = 5) %>%
+  mutate_at(c("Site"), as.factor) %>%
+  select(-c("remove"))
+
+tagData2 <- rbind(tagApal, tagAcer)
+
+
+```
+
+here we are providing some summary stats about the growth and percent cover changes of APAL and ACER. We're assuming APAL spurs are 50m2 (closer to 100m2) and ACER are 200m2
+
+
+```{r, summaryStats, include = TRUE}
+
+sizeOfACER <- 200
+sizeOfAPAL <- 100
+
+
+tagData3 <- tagData2 %>%
+  group_by(Site, Species) %>%
+  summarise(biomass = sum(Area)/10000)
+
+tagData3AP <- tagData3 %>%
+  filter(Species == "Acropora palmata") %>%
+  mutate(percentCover = (biomass/sizeOfAPAL)*100)
+
+tagData3AC <- tagData3 %>%
+  filter(Species == "Acropora cervicornis") %>%
+  mutate(percentCover = (biomass/sizeOfACER)*100)
+
+# tagData4 <- rbind(tagData3AP, tagData3AC)%>%
+#   group_by(Species) %>%
+#   summarise(avgArea = mean(biomass))
+
+
+
+```
+
+
+<br><br>
+
+# Visualizing Data
+***
+We are visualizing the data we just tested for.
+
+```{r, include = TRUE, eval = FALSE}
+
+myColors <-c("#007b41", "#00ae9d","#0054a6", "#78779e", "#352f6d")
+
+  # paletteer_c("pals::ocean.balance", 10, direction = 1)
+
+
+
+
+tagStack1 <- ggplot(tagData4, aes(x = Species, y = avgArea, fill = Species))+
+                      geom_bar(stat = 'identity', color = 'black', position = position_stack(reverse = TRUE), alpha = 0.8)+
+                      ylim(0,2.5)+
+                      labs(y = "Average Area Across Sites", fill = "Species", title = "2D Surface Area")+
+                      scale_fill_manual(values = myColors)
+                      # facet_wrap(.~ Species, scales = "free_x")
+
+tagStack <- tagStack1+theme(
+    axis.text.x = element_text(size = 30, colour = "black", vjust = 0.5, hjust = 0.5, face= "bold"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 30, face = "bold"),
+    axis.text.y = element_text(colour = "black", size = 30, face = "bold"),
+    legend.title = element_text(size = 30, face = "bold"),
+    legend.text = element_text(size = 30, colour = "black"),
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = "white"),
+    panel.background = element_rect(fill = '#F5F5F5'),
+    plot.title = element_text(size = 40, face = "bold"),
+    axis.line = element_line(colour = "black"),
+    axis.ticks = element_line(color="black"),
+    text = element_text(size=30, color="black"),
+    legend.position = "right")
+tagStack
+
+ggsave("../figures/tagStackBar.png", plot = tagStack, width = 20, height = 15, units = 'in', dpi = 600)
+# ggsave("../figures/tagStackBar.jpeg", plot = tagStack, width = 20, height = 15, units = "in", dpi = 600)
+
+
+
+
+
+
+```
+![Figure](../figures/tagStackBar.png)
