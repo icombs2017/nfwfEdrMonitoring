@@ -154,20 +154,20 @@ twelveMonthWeightedAverageClusterSurvival<- (sum(outplantAPAL$twelveMonthCluster
 
 
 
-#creating templates for "weighted survival"
-# 1 month ACER frags
-outplantACER$oneMonthNumberSurvived <- outplantACER$`# frags`* outplantACER$`1-month Survival`
-oneMonthWeightedAverageSurvival<- (sum(outplantACER$oneMonthNumberSurvived))/(sum(outplantACER$`# frags`))*100
-# 1 month ACER clusters
-outplantACER$oneMonthClusterSurvived <- (outplantACER$`# frags`/5)* outplantACER$`1-month % Plot Survival`
-oneMonthWeightedAverageClusterSurvival<- (sum(outplantACER$oneMonthClusterSurvived))/(sum(outplantACER$`# frags`/5))*100
-
-# 12 month ACER frags
-outplantACER$twelveMonthNumberSurvived <- outplantACER$`# frags`* outplantACER$`12-month Survival`
-twelveMonthWeightedAverageSurvival<- (sum(outplantACER$twelveMonthNumberSurvived))/(sum(outplantACER$`# frags`))*100
-# 12 month ACER clusters
-outplantACER$twelveMonthClusterSurvived <- (outplantACER$`# frags`/5)* outplantACER$`12-month % Plot Survival`
-twelveMonthWeightedAverageClusterSurvival<- (sum(outplantACER$twelveMonthClusterSurvived))/(sum(outplantACER$`# frags`/5))*100
+# #creating templates for "weighted survival"
+# # 1 month ACER frags
+# outplantACER$oneMonthNumberSurvived <- outplantACER$`# frags`* outplantACER$`1-month Survival`
+# oneMonthWeightedAverageSurvival<- (sum(outplantACER$oneMonthNumberSurvived))/(sum(outplantACER$`# frags`))*100
+# # 1 month ACER clusters
+# outplantACER$oneMonthClusterSurvived <- (outplantACER$`# frags`/5)* outplantACER$`1-month % Plot Survival`
+# oneMonthWeightedAverageClusterSurvival<- (sum(outplantACER$oneMonthClusterSurvived))/(sum(outplantACER$`# frags`/5))*100
+# 
+# # 12 month ACER frags
+# outplantACER$twelveMonthNumberSurvived <- outplantACER$`# frags`* outplantACER$`12-month Survival`
+# twelveMonthWeightedAverageSurvival<- (sum(outplantACER$twelveMonthNumberSurvived))/(sum(outplantACER$`# frags`))*100
+# # 12 month ACER clusters
+# outplantACER$twelveMonthClusterSurvived <- (outplantACER$`# frags`/5)* outplantACER$`12-month % Plot Survival`
+# twelveMonthWeightedAverageClusterSurvival<- (sum(outplantACER$twelveMonthClusterSurvived))/(sum(outplantACER$`# frags`/5))*100
 
 
 
@@ -522,7 +522,7 @@ Plotting One Month Survival Using a stacked bar graph
 
 apal1MoSurvivalPlot1<- ggplot(OneMoSurvivalAPAL2, aes(x = `Site ID`, y = `1 mo percentage`, fill = `1 month`, color = I('black')))+
   geom_bar(position = "stack", stat = 'identity', width = 1)+
-  ggtitle(expression("1 Month Percent Surival of "*italic("Acropora palmata")*"  Outplants"))+
+  ggtitle(expression("1 Month Percent Survival of "*italic("Acropora palmata")*"  Outplants"))+
   xlab("Site")+
   ylab("% Survival")+
   scale_fill_manual(values = myColors)
@@ -648,7 +648,7 @@ twelveMoSurvivalAPAL2 <- outplantAPAL %>%
 ```{r, 12MonthSurvivalPlotAPAL, include = TRUE}
 apal12MoSurvivalPlot1<- ggplot(twelveMoSurvivalAPAL2, aes(x = `Site ID`, y = `12 mo percentage`, fill = `12 month`, color = I('black')))+
   geom_bar(position = "stack", stat = 'identity', width = 1)+
-ggtitle(expression("12 Month Percent Surival of "*italic("Acropora palmata")*" Outplants"))+
+ggtitle(expression("12 Month Percent Survival of "*italic("Acropora palmata")*" Outplants"))+
   xlab("Year")+
   ylab("Percent Survival")+
   scale_fill_manual(values = myColors)
@@ -773,7 +773,7 @@ OneMoSurvivalACER2 <- outplantACER %>%
 
 acer1MoSurvivalPlot1<- ggplot(OneMoSurvivalACER2, aes(x = `Site ID`, y = `1 mo percentage`, fill = `1 month`, color = I('black')))+
   geom_bar(position = "stack", stat = 'identity', width = 1)+
-ggtitle(expression("1 Month Percent Surival of "*italic("Acropora cervicornis")* " Outplants"))+
+ggtitle(expression("1 Month Percent Survival of "*italic("Acropora cervicornis")* " Outplants"))+
   xlab("Site")+
   ylab("Percent Survival")+
   scale_fill_manual(values = myColors)
@@ -896,7 +896,7 @@ twelveMoSurvivalACER2 <- outplantACER %>%
 
 acer12MoSurvivalPlot1<- ggplot(twelveMoSurvivalACER2, aes(x = `Site ID`, y = `12 mo percentage`, fill = `12 month`, color = I('black')))+
   geom_bar(position = "stack", stat = 'identity', width = 1)+
-  ggtitle(expression("12 Month Percent Surival of "*italic("Acropora cervicornis")*"  Outplants"))+
+  ggtitle(expression("12 Month Percent Survival of "*italic("Acropora cervicornis")*"  Outplants"))+
   xlab("Site")+
   ylab("Percent Survival")+
   scale_fill_manual(values = myColors)
