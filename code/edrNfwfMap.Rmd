@@ -240,14 +240,15 @@ sites <- sites %>%
 
 
 siteTable <- sites %>% 
-  select(Site, Species, `Area Surveyed (m^2)`, `Date Collected`, TimePoint, lat_y, long_x) %>%
+  select(Site, Species, `Area Surveyed (m^2)`, `Date Collected`, lat_y, long_x) %>%
   filter(between(`Date Collected`, as.Date('2022-01-01'), as.Date('2024-08-01'))) %>%
-  arrange(`Date Collected`) %>% 
+  arrange(`Date Collected`) %>%
+  select(Site,Species, `Area Surveyed (m^2)`, lat_y, long_x) %>% 
+  distinct(Site, .keep_all = TRUE) %>% 
   flextable() %>% 
   set_header_labels(Data.set = "Data set") %>% 
   flextable::compose(part = "header", j = "lat_y", value = as_paragraph("Latitude")) %>% 
   flextable::compose(part = "header", j = "long_x", value = as_paragraph("Longitude")) %>% 
-  flextable::compose(part = "header", j = "TimePoint", value = as_paragraph("Time Point")) %>% 
   autofit() %>%
   flextable::font(fontname = "Times New Roman", part = "all") %>%
   flextable::fontsize(size = 12, part = "all") %>%
@@ -263,18 +264,6 @@ siteDoc = read_docx()
 siteDoc = body_add_flextable(siteDoc, value = siteTable)
 print(siteDoc, target = "../tables/Table2.docx")
 siteTable
-
-
-
-
-
-
-
-
-
-
-
-
 
 ```
 
