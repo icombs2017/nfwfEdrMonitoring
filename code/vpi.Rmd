@@ -197,7 +197,7 @@ APAL <- vpiData2 %>%
 acerStack1 <- ggplot(ACER, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%", x = "Time Point")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Abundance > 1%", x = "Time Point")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       # scale_y_reverse()+
                       facet_wrap(.~Site, scales = 'free')
@@ -235,7 +235,7 @@ acerStack
 apalStack1 <- ggplot(APAL, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Species Abundance > 1%", x = "Time Point")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Abundance > 1%", x = "Time Point")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       # scale_y_reverse()+
                       facet_wrap(.~Site, scales = 'free')
