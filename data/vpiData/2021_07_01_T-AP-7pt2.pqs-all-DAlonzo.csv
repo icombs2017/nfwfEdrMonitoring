@@ -3,13 +3,13 @@ id,class,count,%,timePoint
 ,Review,,,baseline
 1,Unknown,,,baseline
 2,Acropora spp.,,,baseline
-3,Acropora cervicornis,8,0.529801325,baseline
+3,Acropora cervicornis,,,baseline
 4,Acropora palmata,,,baseline
 5,Porites spp.,,,baseline
 6,Porites porites,,,baseline
 7,Porites furcata,,,baseline
 8,Porites divaricata,,,baseline
-9,Porites astreoides,2,0.132450331,baseline
+9,Porites astreoides,11,3.047091413,baseline
 10,Oculina spp.,,,baseline
 11,Oculina robusta,,,baseline
 12,Oculina varicosa,,,baseline
@@ -20,13 +20,13 @@ id,class,count,%,timePoint
 17,Madracis decactis,,,baseline
 18,Dendrogyra cylindrus,,,baseline
 19,Siderastrea spp.,,,baseline
-20,Siderastrea siderea,2,0.132450331,baseline
+20,Siderastrea siderea,,,baseline
 21,Siderastrea radians,,,baseline
-22,Stephanocoenia intersepta,1,0.066225166,baseline
-23,Montastraea cavernosa,1,0.066225166,baseline
+22,Stephanocoenia intersepta,,,baseline
+23,Montastraea cavernosa,,,baseline
 24,Orbicella spp.,,,baseline
 25,Orbicella annularis,,,baseline
-26,Orbicella faveolata,,,baseline
+26,Orbicella faveolata,3,0.831024931,baseline
 27,Orbicella franksi,,,baseline
 28,Favia fragum,,,baseline
 29,Dichocoenia stokesii,,,baseline
@@ -60,21 +60,20 @@ id,class,count,%,timePoint
 57,Scolymia wellsi,,,baseline
 58,Mussa angulosa,,,baseline
 59,Eusmilia fastigiata,,,baseline
-60,Octocorallia,94,6.225165563,baseline
+60,Octocorallia,37,10.24930748,baseline
 61,Gorgonia ventalina,,,baseline
 62,Xestospongia muta,,,baseline
 63,Thalassia testudinum,,,baseline
 64,Halimeda,,,baseline
 65,Dictyota spp.,,,baseline
 66,Crustose coralline algae,,,baseline
-67,Porifera,19,1.258278146,baseline
+67,Porifera,9,2.493074792,baseline
 68,Cnidaria,,,baseline
 69,Red algae,,,baseline
 70,Green algae,,,baseline
 71,Brown algae,,,baseline
-72,Palythoa,36,2.38410596,baseline
-73,Rubble,637,42.18543046,baseline
-74,Turf algae,692,45.82781457,baseline
-75,Other,8,0.529801325,baseline
-76,Millepora spp.,10,0.662251656,baseline
-,,,,baseline
+72,Palythoa,59,16.3434903,baseline
+73,Rubble,176,48.7534626,baseline
+74,Turf algae,61,16.89750693,baseline
+75,Other,4,1.108033241,baseline
+76,Millepora spp.,1,0.27700831,baseline

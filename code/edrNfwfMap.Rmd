@@ -60,22 +60,30 @@ drive_download(
 
 
 
-sites = read_excel("../data/metadata/siteCoordinates.xlsx", sheet = 2)
+sites = read_excel("../data/metadata/siteCoordinates.xlsx", sheet = "NFWF")
 sites$site <- as.factor(sites$Site)
 sites$species <- as.factor(sites$Species)
-levels(sites$site)
+levels(sites$Site)
 sites$`Date Collected` <- as.Date(sites$`Date Collected` )
-sites <- sites %>% 
-  filter(`Date Collected` > "2023-02-01")
+# sites <- sites %>% 
+#   filter(`Date Collected` > "2023-02-01")
 
 
 
 # Now I'm making sure I'm just including the EDR sites
 sites <- sites %>% filter(Project == "NFWF")
 drop.levels(sites)
+# sites <- sites %>% filter(`Date Collected` > "2023-06-30") %>% 
+#         drop.levels()
+  
 
-sites$reef <- sites$`Iconic Reef?`    
-
+sites$reef <- sites$`Iconic Reef?`
+sites <- sites %>%
+  mutate(Site = as.factor(Site)) %>% 
+  mutate(Site = gsub(" plot.*", "", Site),
+         Site = as.factor(Site)) %>% 
+    distinct(Site, .keep_all = TRUE) %>% 
+  drop.levels()
 
 
 #this is a cheap way of doing this, but i just needed a single coordinate for the site as a whole, so subsetting one site from EDR and using that for my "EDR" designation
@@ -146,7 +154,7 @@ edrSites <- ggplot() +
   geom_sf(data = flKeys$geometry, fill = "white", color = "gray30") +
     geom_sf(data = fknmsBounds, fill = "black", alpha = 0.2) +
   geom_sf(data = bathy$geometry, color = "grey30", size = 0.25) +
-  geom_point(data = sites, aes(x = long_x, y = lat_y, fill = site, shape = species), size = 2, alpha = 1) +
+  geom_point(data = sites, aes(x = long_x, y = lat_y, fill = Site, shape = species), size = 2, alpha = 1) +
   scale_shape_manual(values = c(21,22), name = "Species", labels = c("ACER", "APAL")) +
   guides(fill = guide_legend(override.aes = list(shape = 22, color = NA, size = 4), ncol = 2, order = 1), shape = guide_legend(override.aes = list(size = 3), order = 2), color = guide_legend(override.aes = list(fill = "black", alpha = 0.1), order = 3)) +
   coord_sf(xlim = c(-81.8459, -81.8427), ylim = c(24.45856,  24.4601)) +
@@ -166,24 +174,23 @@ edrSites <- ggplot() +
 
 # edr_legend <- cowplot::get_legend(edrSites)
 # edr_legend <- ggpubr::as_ggplot(edr_legend)
-
-
-#In order for this to work... you have to change legend.position = "none" to legend.position = "right" (or wve direction you want) the legend from EDR sites above... working to make this better
+# In order for this to work... you have to change legend.position = "none" to legend.position = "right" (or wve direction you want) the legend from EDR sites above...and then change it BACK to none once you run the below code, working to make this better
 leg <- get_legend(edrSites)
 edrLeg <- as_ggplot(leg)
-
+# #
 edrMap = ggdraw() +
-  draw_plot(mainKeys) +
-  draw_plot(floridaMap, x = .08, y = 0.6, width = 0.25, height = 0.25) +
-  draw_plot(edrSites, x =.28, y = .25, width = 0.4, height = 0.4)
+draw_plot(mainKeys) +
+draw_plot(floridaMap, x = .08, y = 0.6, width = 0.25, height = 0.25) +
+draw_plot(edrSites, x =.28, y = .25, width = 0.4, height = 0.4)
+# 
+edrNew <- edrMap / edrLeg + plot_layout(heights = unit(c(5,1), c('cm')))
 
-# edrNew <- edrMap / edrLeg + plot_layout(heights = unit(c(5,1), c('cm')))
 
 ggsave("../figures/figure1Jitter.png", plot = edrMap, width = 16, height = 16, units = "cm", dpi = 600)
 
 ggsave("../figures/figure1.png", plot = edrMap, width = 16, height = 16, units = "cm", dpi = 600)
 
-ggsave("../figures/figure1Legend.png", plot = edrLeg, width = 16, height = 16, units = "cm", dpi = 600)
+ggsave("../figures/figure1Legend.png", plot = edrLeg, width = 16, height = 20, units = "cm", dpi = 600)
 
 
 ```
@@ -197,41 +204,51 @@ ggsave("../figures/figure1Legend.png", plot = edrLeg, width = 16, height = 16, u
 
 ```{r, siteTable, include = TRUE}
 
-friedTab = data.frame("Test" = "Total Colony Size", "Comparison" = " ", "Statistic" = fried.total[["statistic"]][["Friedman chi-squared"]], "p.value" = fried.total$p.value[1]) %>% 
-  add_row("Test" = " ", "Comparison" = c("T1 - T2", "T1 - T3", "T1 - T4", "T2 - T3", "T2 - T4", "T3 - T4"), "Statistic" = post.total.statistic.melt$value, "p.value" = p.total.melt$value) %>% 
-  add_row("Test" = "Healthy Tissue Area", "Comparison" = " ", "Statistic" =  fried.healthy[["statistic"]][["Friedman chi-squared"]], "p.value" = fried.healthy$p.value[1]) %>% 
-  add_row("Test" = " ", "Comparison" = c("T1 - T2", "T1 - T3", "T1 - T4", "T2 - T3", "T2 - T4", "T3 - T4"), "Statistic" = post.healthy.statistic.melt$value, "p.value" = p.healthy.melt$value) %>% 
-  add_row("Comparison" = " ", "Test" = "Disease Lesion Area", "Statistic" =  fried.disease[["statistic"]][["Friedman chi-squared"]], "p.value" = fried.disease$p.value[1]) %>% 
-  add_row("Test" = " ", "Comparison" = c("T1 - T2", "T1 - T3", "T1 - T4", "T2 - T3", "T2 - T4", "T3 - T4"), "Statistic" = post.disease.statistic.melt$value, "p.value" = p.disease.melt$value) %>% 
 
-mutate_if(is.numeric, round, digits = 3) %>%     
-mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
-mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>% 
-mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–") %>%
-flextable() %>%
-set_header_labels(Data.set = "Data set") %>% 
-flextable::compose(part = "header", j = "Statistic", value = as_paragraph("Test Statistic")) %>%
-flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
-autofit() %>%
-font(fontname = "Times New Roman", part = "all") %>%
-fontsize(size = 12, part = "all") %>%
-bold(part = "header") %>% 
-colformat_num(j = "Statistic", digits = 2) %>%
-colformat_num(j = "p.value", digits = 4, na_str = "ns") %>% 
-align_nottext_col(align = "center", header = TRUE, footer = TRUE) %>% 
-align(align = "center", j = "p.value")
+drive_download(
+  as_id("1aXcmLPSRHAlh7N6XhM0g9GKJb4JtOpdJL35dL3Vd678"),
+  path = "../data/metadata/siteCoordinates.xlsx", 
+  overwrite = TRUE)
+
+
+
+sites = read_excel("../data/metadata/siteCoordinates.xlsx", sheet = "NFWF")
+sites$site <- as.factor(sites$Site)
+sites$species <- as.factor(sites$Species)
+levels(sites$Site)
+sites$`Date Collected` <- as.Date(sites$`Date Collected` )
+# sites <- sites %>% 
+#   filter(`Date Collected` > "2023-02-01")
+
+
+
+# Now I'm making sure I'm just including the EDR sites
+sites <- sites %>% filter(Project == "NFWF")
+drop.levels(sites)
+# sites <- sites %>% filter(`Date Collected` > "2023-06-30") %>% 
+#         drop.levels()
+  
+
+sites$reef <- sites$`Iconic Reef?`
+sites <- sites %>%
+  mutate(Site = as.factor(Site)) %>% 
+  mutate(Site = gsub(" plot.*", "", Site),
+         Site = as.factor(Site)) %>% 
+    # distinct(Site, .keep_all = TRUE) %>% 
+  drop.levels()
 
 
 
 siteTable <- sites %>% 
-  select(Site, Species, `Area Surveyed (m^2)`, `Date Collected`, TimePoint, lat_y, long_x) %>%
-  filter(between(`Date Collected`, as.Date('2022-01-01'), as.Date('2022-06-30'))) %>%
-  arrange(`Date Collected`) %>% 
+  select(Site, Species, `Area Surveyed (m^2)`, `Date Collected`, lat_y, long_x) %>%
+  filter(between(`Date Collected`, as.Date('2022-01-01'), as.Date('2024-08-01'))) %>%
+  arrange(`Date Collected`) %>%
+  select(Site,Species, `Area Surveyed (m^2)`, lat_y, long_x) %>% 
+  distinct(Site, .keep_all = TRUE) %>% 
   flextable() %>% 
   set_header_labels(Data.set = "Data set") %>% 
   flextable::compose(part = "header", j = "lat_y", value = as_paragraph("Latitude")) %>% 
   flextable::compose(part = "header", j = "long_x", value = as_paragraph("Longitude")) %>% 
-  flextable::compose(part = "header", j = "TimePoint", value = as_paragraph("Time Point")) %>% 
   autofit() %>%
   flextable::font(fontname = "Times New Roman", part = "all") %>%
   flextable::fontsize(size = 12, part = "all") %>%
@@ -247,18 +264,6 @@ siteDoc = read_docx()
 siteDoc = body_add_flextable(siteDoc, value = siteTable)
 print(siteDoc, target = "../tables/Table2.docx")
 siteTable
-
-
-
-
-
-
-
-
-
-
-
-
 
 ```
 
