@@ -68,7 +68,7 @@ vpiData1 <-
 
 #Sort out data to have proper columns for all the info i want, this might need to be changed to figure out the Marks vs Plot thing
 
-vpiData <- vpiData1 %>% 
+vpiData2 <- vpiData1 %>% 
       tidyr::separate(filename, into=c("Date", "Site"),extra = 'merge',sep = "(?=T)") %>%
       tidyr::separate(Date, into=c("remove", "Date"),sep = "../data/vpiData/") %>% 
       tidyr::separate(Site, into = c("Site", "delete"),sep = ".pqs") %>% 
@@ -88,12 +88,12 @@ vpiData <- vpiData1 %>%
 
 
 #Changing the Date to factors
-vpiData$Date<-as.Date(vpiData$Date)
+vpiData2$Date<-as.Date(vpiData2$Date)
 
 
 
 #Making some corrections in the naming
-vpiData <- vpiData %>%
+vpiData3 <- vpiData2 %>%
   mutate_all(~gsub("Crustose coralline algae natans", "Crustose coralline algae", .)) %>%
   mutate_all(~gsub("Cordata", "Chordata", .)) %>%
   mutate_all(~gsub("Rubble", "Bare Substrate", .)) %>%
@@ -116,7 +116,9 @@ vpiData <- vpiData %>%
          Site = gsub("T-12b", "T-12", Site),
          Site = gsub("T-13a", "T-13", Site),
          Site = gsub("T-13b", "T-13", Site),
-         Site = gsub("T-AP-3a", "T-AP-3", Site)
+         Site = gsub("T-AP-3a", "T-AP-3", Site),
+         Site = gsub("T-18pt1", "T-18", Site),
+         Site = gsub("T-18pt2", "T-18", Site)
 ) %>%
   mutate_all(~gsub("Other|Review|None", NA, .))
 
@@ -124,7 +126,7 @@ vpiData <- vpiData %>%
 
 # Changing other columns to factors
 
-vpiData <- vpiData %>%
+vpiData4 <- vpiData3 %>%
   mutate(across(c(Site, class, timePoint, species), as.factor)) %>%
   mutate(Date = as.Date(Date)) %>%
   mutate(count = as.numeric(count)) %>% 
@@ -132,7 +134,7 @@ vpiData <- vpiData %>%
 
 
 # Changing the factor level of timePoint to be chronological
-vpiData <- vpiData %>%
+vpiData <- vpiData4 %>%
   mutate(timePoint = factor(timePoint, levels = levels(timePoint)[c(2,1)]))
 vpiData
 
