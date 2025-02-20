@@ -1,79 +1,79 @@
-id,class,count,%
--1,None,,
-,Review,,
-1,Unknown,,
-2,Acropora spp.,,
-3,Acropora cervicornis,13,3.25
-4,Acropora palmata,,
-5,Porites spp.,,
-6,Porites porites,,
-7,Porites furcata,,
-8,Porites divaricata,,
-9,Porites astreoides,,
-10,Oculina spp.,,
-11,Oculina robusta,,
-12,Oculina varicosa,,
-13,Oculina diffusa,,
-14,Madracis spp.,,
-15,Madracis auretenra,,
-16,Madracis formosa,,
-17,Madracis decactis,2,0.5
-18,Dendrogyra cylindrus,,
-19,Siderastrea spp.,,
-20,Siderastrea siderea,1,0.25
-21,Siderastrea radians,1,0.25
-22,Stephanocoenia intersepta,,
-23,Montastraea cavernosa,,
-24,Orbicella spp.,,
-25,Orbicella annularis,,
-26,Orbicella faveolata,6,1.5
-27,Orbicella franksi,,
-28,Favia fragum,,
-29,Dichocoenia stokesii,,
-30,Solenastraea bournoni,,
-31,Solenastraea hyades,,
-32,Colpophyllia natans,,
-33,Pseudodiploria spp.,,
-34,Pseudodiploria strigosa,,
-35,Pseudodiploria clivosa,,
-36,Diploria labyrinthiformis,,
-37,Manicina areolata,,
-38,Meandrina spp.,,
-39,Meandrina meandrites,,
-40,Meandrina danae,,
-41,Meandrina jacksoni,,
-42,Helioseris cucullata,,
-43,Agaricia spp.,,
-44,Agaricia fragilis,,
-45,Agaricia lamarcki,,
-46, Agaricia agaricites,,
-47,Mycetophyllia spp.,,
-48,Mycetophyllia lamarckiana,,
-49,Mycetophyllia aliciae,,
-50,Mycetophyllia ferox,,
-51,Mycetophyllia reesi,,
-52,Isophyllia spp.,,
-53,Isophyllia sinuosa,,
-54,Isophyllia rigida,,
-55,Scolymia spp.,,
-56,Scolymia cubensis,,
-57,Scolymia wellsi,,
-58,Mussa angulosa,,
-59,Eusmilia fastigiata,,
-60,Octocorallia,8,2
-61,Gorgonia ventalina,1,0.25
-62,Xestospongia muta,,
-63,Thalassia testudinum,,
-64,Halimeda,,
-65,Dictyota spp.,,
-66,Crustose coralline algae,,
-67,Porifera,4,1
-68,Cnidaria,,
-69,Red algae,,
-70,Green algae,,
-71,Brown algae,,
-72,Palythoa,2,0.5
-73,Rubble,49,12.25
-74,Turf algae,312,78
-75,Other,,
-76,Millepora spp.,1,0.25
+id,class,count,%,12mo
+-1,None,,,12mo
+,Review,,,12mo
+1,Unknown,,,12mo
+2,Acropora spp.,,,12mo
+3,Acropora cervicornis,13,3.25,12mo
+4,Acropora palmata,,,12mo
+5,Porites spp.,,,12mo
+6,Porites porites,,,12mo
+7,Porites furcata,,,12mo
+8,Porites divaricata,,,12mo
+9,Porites astreoides,,,12mo
+10,Oculina spp.,,,12mo
+11,Oculina robusta,,,12mo
+12,Oculina varicosa,,,12mo
+13,Oculina diffusa,,,12mo
+14,Madracis spp.,,,12mo
+15,Madracis auretenra,,,12mo
+16,Madracis formosa,,,12mo
+17,Madracis decactis,2,0.5,12mo
+18,Dendrogyra cylindrus,,,12mo
+19,Siderastrea spp.,,,12mo
+20,Siderastrea siderea,1,0.25,12mo
+21,Siderastrea radians,1,0.25,12mo
+22,Stephanocoenia intersepta,,,12mo
+23,Montastraea cavernosa,,,12mo
+24,Orbicella spp.,,,12mo
+25,Orbicella annularis,,,12mo
+26,Orbicella faveolata,6,1.5,12mo
+27,Orbicella franksi,,,12mo
+28,Favia fragum,,,12mo
+29,Dichocoenia stokesii,,,12mo
+30,Solenastraea bournoni,,,12mo
+31,Solenastraea hyades,,,12mo
+32,Colpophyllia natans,,,12mo
+33,Pseudodiploria spp.,,,12mo
+34,Pseudodiploria strigosa,,,12mo
+35,Pseudodiploria clivosa,,,12mo
+36,Diploria labyrinthiformis,,,12mo
+37,Manicina areolata,,,12mo
+38,Meandrina spp.,,,12mo
+39,Meandrina meandrites,,,12mo
+40,Meandrina danae,,,12mo
+41,Meandrina jacksoni,,,12mo
+42,Helioseris cucullata,,,12mo
+43,Agaricia spp.,,,12mo
+44,Agaricia fragilis,,,12mo
+45,Agaricia lamarcki,,,12mo
+46, Agaricia agaricites,,,12mo
+47,Mycetophyllia spp.,,,12mo
+48,Mycetophyllia lamarckiana,,,12mo
+49,Mycetophyllia aliciae,,,12mo
+50,Mycetophyllia ferox,,,12mo
+51,Mycetophyllia reesi,,,12mo
+52,Isophyllia spp.,,,12mo
+53,Isophyllia sinuosa,,,12mo
+54,Isophyllia rigida,,,12mo
+55,Scolymia spp.,,,12mo
+56,Scolymia cubensis,,,12mo
+57,Scolymia wellsi,,,12mo
+58,Mussa angulosa,,,12mo
+59,Eusmilia fastigiata,,,12mo
+60,Octocorallia,8,2,12mo
+61,Gorgonia ventalina,1,0.25,12mo
+62,Xestospongia muta,,,12mo
+63,Thalassia testudinum,,,12mo
+64,Halimeda,,,12mo
+65,Dictyota spp.,,,12mo
+66,Crustose coralline algae,,,12mo
+67,Porifera,4,1,12mo
+68,Cnidaria,,,12mo
+69,Red algae,,,12mo
+70,Green algae,,,12mo
+71,Brown algae,,,12mo
+72,Palythoa,2,0.5,12mo
+73,Rubble,49,12.25,12mo
+74,Turf algae,312,78,12mo
+75,Other,,,12mo
+76,Millepora spp.,1,0.25,12mo
