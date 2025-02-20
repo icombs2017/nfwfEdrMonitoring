@@ -74,8 +74,8 @@ apalData <- read_excel("../data/outplantData.xlsx", sheet = "ex-situ Apal outpla
 acerData <- read_excel("../data/outplantdata.xlsx", sheet = "in-situ Acer outplants", na = c("", "N/A", "NA", 'no data', "Not Monitored"))
 
 
-reportingMin <- "2023-07-01"
-reportingMax <- "2024-08-01"
+reportingMin <- "2021-03-01"
+reportingMax <- "2025-01-31"
 
 
 
@@ -193,7 +193,7 @@ outplantAPALplot1<- ggplot(outplantAPAL, aes(x = Date, y = cum_sum))+
   geom_hline(aes(yintercept = apalCumulativeDeliverables[2], linetype = 'Year 2 Outplant Goal (In-situ Apal)', color = 'Year 2 Outplant Goal (In-situ Apal)'), linewidth = 3) +
   geom_hline(aes(yintercept = apalCumulativeDeliverables[3], linetype = 'Year 3 Outplant Goal (In-situ Apal', color = 'Year 3 Outplant Goal (In-situ Apal)'), linewidth = 3) +
   geom_segment(aes(x = as.Date("2023-05-09"), y = 19363,
-                   xend = as.Date("2024-08-01"), yend = 19363),
+                   xend = as.Date("2025-01-31"), yend = 19363),
                linetype = 'solid', color = 'blue', size = 3)+ # remove this with full dataset
   scale_y_continuous(limits = c(0, 30000), breaks = seq(0, 30000, by = 2000))+
   ggtitle(expression("Number of "*italic("Acropora palmata")*" Fragments Outplanted per Year"))+
@@ -201,10 +201,11 @@ outplantAPALplot1<- ggplot(outplantAPAL, aes(x = Date, y = cum_sum))+
   ylab("Number of fragments outplanted")+
   scale_color_manual(values = c('blue', 'grey', "green3", 'gold'), name = " ") +
   scale_linetype_manual(name = " ", values = c('solid', 'dashed', 'dashed', 'dashed'), guide = "none")+
-  scale_x_date(date_labels = "%b-%Y", date_breaks = "1 month")
+scale_x_date(limits = c(as.Date("2021-03-01"), as.Date("2025-01-31")), 
+             date_labels = "%b-%Y", date_breaks = "3 month", expand = c(0, 0))
 
-
-
+# reportingMin
+# reportingMax
 
 outplantAPALplot <- outplantAPALplot1 + theme(
     # Title
@@ -397,7 +398,7 @@ outplantACERplot1<- ggplot(outplantACER, aes(x = Date, y = cum_sum))+
   geom_hline(aes(yintercept = acerCumulativeDeliverables[2], linetype = 'Year 2 Outplant Goal (In-situ Acer)', color = 'Year 2 Outplant Goal (In-situ Acer)'), linewidth = 2) +
   geom_hline(aes(yintercept = acerCumulativeDeliverables[3], linetype = 'Year 3 Outplant Goal (In-situ Acer)', color = 'Year 3 Outplant Goal (In-situ Acer)'), linewidth = 2) +
   geom_segment(aes(x = as.Date("2023-05-30"), y = 8100,
-                   xend = as.Date("2024-08-01"), yend = 8100),
+                   xend = as.Date("2025-01-31"), yend = 8100),
                linetype = 'solid', color = 'blue', size = 3)+ # remove this with full dataset
   scale_y_continuous(limits = c(0, 10000), breaks = seq(0, 10000, by = 1000))+
   ggtitle(expression("Number of "*italic("Acropora cervicornis")*" Fragments Outplanted per Year"))+
@@ -405,7 +406,9 @@ outplantACERplot1<- ggplot(outplantACER, aes(x = Date, y = cum_sum))+
   ylab("Number of fragments outplanted")+
   scale_color_manual(values = c('blue', 'grey', "green3", 'gold'), name = " ") +
   scale_linetype_manual(name = " ", values = c('solid', 'dashed', 'dashed', 'dashed'), guide = "none")+
-  scale_x_date(date_labels = "%b-%Y", date_breaks = "1 month")+theme()
+  scale_x_date(limits = c(as.Date("2021-03-01"), as.Date("2025-01-31")), 
+             date_labels = "%b-%Y", date_breaks = "3 month", expand = c(0, 0))
+
 
  
 outplantACERplot <- outplantACERplot1 + theme(
@@ -431,6 +434,7 @@ outplantACERplot <- outplantACERplot1 + theme(
     text = element_text(size=20, color="black"))
 
 ggsave("../figures/cumulativeACERoutplantPlot.png", plot =outplantACERplot, width = 20, height = 15, units = 'in', dpi = 600)
+
 
 
 
@@ -942,7 +946,7 @@ twelveMonthACERtab1 <- outplantACER %>%
   mutate(`12-month Monitoring` = as.Date(`12-month Monitoring`, `12-month % Plot Survival` = as.numeric(`12-month % Plot Survival`))) %>% 
   filter(Deliverable %in% c("NFWF-EDR Yr3", "NFWF-EDR", "NFWF-EDR Yr2")) %>% 
   select(`Site ID`, `12-month Monitoring`, `# frags`, `12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`) %>% 
-  filter(!(`Site ID` %in% c("T_23", "T_24", "T_25"))) %>% 
+  # filter(!(`Site ID` %in% c("T_23", "T_24", "T_25"))) %>% 
   mutate(twelveMonthNumberSurvived = `# frags` * `12-month Survival`,
          twelveMonthClusterSurvived = (`# frags`/5) * `12-month % Plot Survival`) %>%          
   mutate_at(vars(`12-month Survival`, `12-month % Dead`, `12-month % Missing`, `12-month % Plot Survival`), ~ round(. * 100, 2))
