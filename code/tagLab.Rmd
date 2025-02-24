@@ -68,18 +68,37 @@ tagData1 <-
     map_df(~read_plus(.)) %>%
   as_tibble()
 
-tagData <- tagData1 %>%
-      tidyr::separate(filename, into=c("remove", "Site"),extra = 'merge',sep = 18) %>%
-      tidyr::separate(Site, into=c("Site", "remove"),sep = "TagLab.csv") %>%
-      dplyr::select(-c(remove)) %>%
-    mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
-  dplyr::rename(Species = `TagLab Class name`, Date = `TagLab Date`, Area = `TagLab Area`) %>%
+
+tagData2 <- tagData1 %>% 
+      tidyr::separate(filename, into=c("remove", "Date"),extra = 'merge',sep = "TagLab/") %>%
+      tidyr::separate(Date, into=c("Date", "Site"),sep = "(?=T)") %>% 
+      tidyr::separate(Site, into = c("Site", "delete"),sep = ".csv") %>% 
+      dplyr::select(-c(remove, delete)) %>% 
+      mutate_if(is.character, str_replace_all, pattern = "_", replacement = "-") %>%
+      tidyr::separate(Date, into = c("Date", "remove"), sep = 10) %>% 
+      dplyr::select(-c(remove, Date)) %>% 
+      tidyr::separate(Site, into = c("Site", "Plot"), sep = "(?=plot)", extra = "merge") %>% 
+      tidyr::separate(Site, into = c("Site", "Mark"), sep = "(?=mark)", extra = "merge") %>% 
+      tidyr::separate(Plot, into = c("Plot", "Mark"), sep = "(?=mark)", extra = "merge" ) %>%
+      mutate(species = if_else(grepl("AP", Site), "APAL", "ACER")) %>% 
+      dplyr::rename(Species = `TagLab Class name`, Date = `TagLab Date`, Area = `TagLab Area`) %>%
       mutate_at(c("Date", "Site", "Species"), as.factor) %>%
       mutate_at(c("Area"), as.numeric) %>%
       select(Date, Site, Species, Area) %>%
   group_by(Date, Site) %>%
-  filter(Species == c("Acropora cervicornis", "Acropora palmata")) %>%
+  filter(Species %in% c("Acropora cervicornis", "Acropora palmata")) %>%
   droplevels()
+  
+
+
+
+
+
+
+
+
+
+
 
 tagApal <- tagData %>%
   filter(Species == "Acropora palmata") %>%
@@ -121,9 +140,9 @@ tagData3AC <- tagData3 %>%
   filter(Species == "Acropora cervicornis") %>%
   mutate(percentCover = (biomass/sizeOfACER)*100)
 
-# tagData4 <- rbind(tagData3AP, tagData3AC)%>%
-#   group_by(Species) %>%
-#   summarise(avgArea = mean(biomass))
+tagData4 <- rbind(tagData3AP, tagData3AC)%>%
+  group_by(Species) %>%
+  summarise(avgArea = mean(biomass))
 
 
 

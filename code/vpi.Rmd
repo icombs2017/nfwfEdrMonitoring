@@ -41,7 +41,7 @@ For the following analyses we will require the use of a number of different R pa
 
 ```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr", "data.table", "ecodist", "glue", "gtools", "patchwork")
+pacman::p_load("ggplot2","officer","ggpubr", "rcompanion", "RColorBrewer", "magrittr","reshape2", "stringr", "plyr", "dplyr", "flextable", "tidyr", "tibble", "vegan", "forcats", "readr", "metafolio", "FSA","viridis", "paletteer", "purrr", "data.table", "ecodist", "glue", "gtools", "patchwork", "lme4", "lmerTest")
 pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 ```
 
@@ -120,6 +120,7 @@ vpiData3 <- vpiData2 %>%
          Site = gsub("T-18pt1", "T-18", Site),
          Site = gsub("T-18pt2", "T-18", Site)
 ) %>%
+  filter(!Site %in% c("T-19")) %>% 
   mutate_all(~gsub("Other|Review|None", NA, .))
 
 
@@ -159,7 +160,7 @@ vpiData2 <- vpiData %>%
   dplyr::mutate(totalObservations = sum(totalCount, na.rm = TRUE)) %>%
   ungroup() %>% 
   group_by(Site,timePoint, class) %>% 
-  dplyr::mutate(abundance = ((totalCount/totalObservations)+100))
+  dplyr::mutate(abundance = ((totalCount/totalObservations)*100))
 
 
 vpiData2 <- data.table(vpiData2)
@@ -181,17 +182,61 @@ To visualize the data and what our species composition looks like at our sites, 
 
 ```{r, stackedBarGraphs, include = TRUE}
 
-ACER <- vpiData2 %>% 
-  filter(species == "ACER") %>% 
-  filter(abundance > 1) %>% 
-  droplevels() %>% 
+ACER <- vpiData2 %>%
+  filter(species == "ACER") %>%
+  filter(abundance > 1) %>%
+  droplevels() %>%
   mutate(Site = factor(Site, levels = rev(mixedsort(levels(Site)))))
 
-APAL <- vpiData2 %>% 
-  filter(species == "APAL") %>% 
-  filter(abundance > 1) %>% 
-  droplevels() %>% 
+APAL <- vpiData2 %>%
+  filter(species == "APAL") %>%
+  filter(abundance > 1) %>%
+  droplevels() %>%
+  group_by(Site,timePoint, class) %>%
+  dplyr::mutate(abundance = ((totalCount/totalObservations)*100)) %>%
   mutate(Site = factor(Site, levels = rev(mixedsort(levels(Site)))))
+
+
+
+ACER <- vpiData %>% 
+  dplyr::filter(class != c("NA")) %>%
+  filter(species == "ACER") %>% 
+  # filter(!class == "Bare Substrate") %>% 
+  droplevels() %>%
+  group_by(Site,timePoint, species, class) %>% 
+  dplyr::summarise(totalCount = sum(count)) %>%
+  ungroup() %>% 
+  group_by(Site,timePoint) %>% 
+  dplyr::mutate(totalObservations = sum(totalCount, na.rm = TRUE)) %>%
+  ungroup() %>% 
+  group_by(Site,timePoint, class) %>% 
+  dplyr::mutate(abundance = ((totalCount/totalObservations)*100)) %>% 
+  filter(abundance >1) %>% 
+  mutate(Site = factor(Site, levels = rev(mixedsort(levels(Site))))) %>% 
+  mutate(class = fct_reorder(class, desc(abundance)))
+
+
+
+
+
+APAL <- vpiData %>% 
+  dplyr::filter(class != c("NA")) %>%
+  filter(species == "APAL") %>% 
+  # filter(!class == "Bare Substrate") %>% 
+  droplevels() %>%
+  group_by(Site,timePoint, species, class) %>% 
+  dplyr::summarise(totalCount = sum(count)) %>%
+  ungroup() %>% 
+  group_by(Site,timePoint) %>% 
+  dplyr::mutate(totalObservations = sum(totalCount, na.rm = TRUE)) %>%
+  ungroup() %>% 
+  group_by(Site,timePoint, class) %>% 
+  dplyr::mutate(abundance = ((totalCount/totalObservations)*100)) %>% 
+  filter(abundance >1) %>% 
+  droplevels() %>% 
+  mutate(Site = factor(Site, levels = rev(mixedsort(levels(Site))))) %>% 
+  mutate(class = fct_reorder(class, desc(abundance)))
+
 
 
 
@@ -199,7 +244,7 @@ APAL <- vpiData2 %>%
 acerStack1 <- ggplot(ACER, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Abundance > 1%", x = "Time Point")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Cover > 1%", x = "Time Point")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       # scale_y_reverse()+
                       facet_wrap(.~Site, scales = 'free')
@@ -237,7 +282,7 @@ acerStack
 apalStack1 <- ggplot(APAL, aes(x = timePoint, y = abundance))+
                       geom_bar(aes(fill = factor(class)), position = position_stack(reverse = FALSE), stat = 'identity', color = 'black', alpha = 0.8)+
                       ylim(0,100)+
-                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Abundance > 1%", x = "Time Point")+
+                      labs(y = "Relative Abundance (%)", fill = "Class", title = "Relative Cover > 1%", x = "Time Point")+
   scale_x_discrete(labels = c("Baseline", "12 Month"))+
                       # scale_y_reverse()+
                       facet_wrap(.~Site, scales = 'free')
@@ -274,8 +319,8 @@ apalStack
 
 # ggsave("../figures/comboPlot.png", plot = comboPlot, width = 20, height = 15, units = 'in', dpi = 600)
 
-ggsave("../figures/acerStackVPI.png", plot = acerStack, width = 20, height = 15, units = 'in', dpi = 600)
-ggsave("../figures/apalStackVPI.png", plot = apalStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/acerStackVPI.jpg", plot = acerStack, width = 20, height = 15, units = 'in', dpi = 600)
+ggsave("../figures/apalStackVPI.jpg", plot = apalStack, width = 20, height = 15, units = 'in', dpi = 600)
 
 
 
@@ -518,14 +563,6 @@ distDoc = body_add_flextable(distDoc, value = distPermTab)
 print(distDoc, target = "../tables/distTableVpi.docx")
 distPermTab
 
-
-
-
-
-
-
-
-
 ```
 
 
@@ -533,98 +570,88 @@ distPermTab
 
 
 
-```{r}
+```{r, data wrangling for lmm for all species, include = TRUE}
 
 
-indexMatrix <- vpiData2 %>% 
-  select(Site, timePoint, species, class, totalCount) %>% 
-  group_by(Site, timePoint, species, class) %>%
-  # dplyr::summarise(totalCount = sum(count)) %>%
-  na.omit(class)
+# indexMatrix <- vpiData2 %>% 
+#   filter(!class %in% c("Bare Substrate")) %>% 
+#   select(Site, timePoint, species, class, totalCount) %>% 
+#   group_by(Site, timePoint, species, class) %>%
+#   # dplyr::summarise(totalCount = sum(count)) %>%
+#   na.omit(class)
 
 
-richness <- specnumber(vpiMat)  # Count of non-zero species per row
+indexMat <- vpiMat %>% 
+  select(-c(`Bare Substrate`))
+
+richness <- specnumber(indexMat)  # Count of non-zero species per row
 print(richness)
 
 
-shannon <- diversity(vpiMat, index = "shannon")  # Shannon index (H')
+shannon <- diversity(indexMat, index = "shannon")  # Shannon index (H')
 evenness <- shannon / log(richness)  # Pielou's evenness (J')
 
-simpson <- diversity(vpiMat, index = "simpson")
+simpson <- diversity(indexMat, index = "simpson")
 print(simpson)
 
-inv_simpson <- diversity(vpiMat, index = "invsimpson")
+inv_simpson <- diversity(indexMat, index = "invsimpson")
 print(inv_simpson)
 
 
 
 diversityDF <- data.frame(
-  Sample = rownames(vpiMat),  # Keep row names
+  Sample = rownames(indexMat),  # Keep row names
   Richness = richness,
   Shannon = shannon,
   Simpson = simpson,
   InvSimpson = inv_simpson,
   Evenness = evenness,
-  row.names = rownames(vpiMat)  # Assign row names back
+  row.names = rownames(indexMat)  # Assign row names back
 ) %>% 
   separate(col = Sample, into = c("site", "timePoint", "species"), sep = "_", remove = FALSE) %>% 
   mutate(across(c(site, timePoint, species), as.factor))
 
-aov(Richness ~ timePoint+species+site, data = diversityDF)
 
 
-# Fit the ANOVA model for Richness
-richness_aov <- aov(Richness ~ timePoint + species + site, data = diversityDF)
-
-# Summarize the ANOVA table
-anova_richness <- anova(richness_aov)
-anova_richness
-
-# Fit the ANOVA model for Shannon
-shannon_aov <- aov(Shannon ~ timePoint + species + site, data = diversityDF)
-
-# Summarize the ANOVA table
-anova_shannon <- anova(shannon_aov)
-anova_shannon
-
-
-# Fit the ANOVA model for Simpson
-simpson_aov <- aov(Simpson ~ timePoint + species + site, data = diversityDF)
-
-# Summarize the ANOVA table
-anova_simpson <- anova(simpson_aov)
-anova_simpson
-
-
-# Fit the ANOVA model for Evenness
-evenness_aov <- aov(Evenness ~ timePoint + species + site, data = diversityDF)
-
-# Summarize the ANOVA table
-anova_evenness <- anova(evenness_aov)
-anova_evenness
+indexSummary <- diversityDF %>% 
+  group_by(timePoint, species) %>% 
+  dplyr::summarize(meanRichness = mean(Richness),
+            meanShannon = mean(Shannon), 
+            meanEvenness = mean(Evenness))
 
 ```
 
 
 
-```{r}
-# Richness ANOVA
-richness_aov <- aov(Richness ~ timePoint + species + site, data = diversityDF)
-anova_richness <- anova(richness_aov)
 
-# Convert the ANOVA result to tibble
-# Assuming anova_richness is your ANOVA result object
-richness_tab <- as_tibble(anova_richness) %>%
-  as_tibble(rownames = "Comparison") %>%
-  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
-  select(Comparison, Df, Pseudo.F, p.value) %>%
+```{r, richness LMM and Table for all species, include = TRUE}
+set.seed(999)
+
+# Fit the linear mixed-effects model for Richness
+richness_lmm <- lmer(Richness ~ timePoint + species + (1 | site), data = diversityDF)
+
+# Get the summary of the model
+richnessSum <- summary(richness_lmm)
+
+# Extract fixed effects from the model summary
+fixed_effects <- richnessSum$coefficients
+
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+richness_tab <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
   mutate_if(is.numeric, round, digits = 3) %>%
-  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
   mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
   mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
 
-# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species", "site")
-richness_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+richness_tab$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
 
 # Print the updated table
 print(richness_tab)
@@ -632,170 +659,507 @@ print(richness_tab)
 # Create the flextable for Richness
 richness_flextable <- richness_tab %>%
   flextable() %>%
-  set_header_labels(Data.set = "Data set") %>% 
-  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
-  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
-  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
   autofit() %>%
   flextable::font(fontname = "Times New Roman", part = "all") %>%
   fontsize(size = 12, part = "all") %>%
   bold(part = "header") %>%
-  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
   align(align = 'center', part = "footer")
 
 # View the flextable for Richness
 richness_flextable
 
-richnessDoc = read_docx()
-richnessDoc = body_add_flextable(richnessDoc, value = richness_flextable)
+# Save the table to a Word document
+richnessDoc <- read_docx()  
+richnessDoc <- body_add_flextable(richnessDoc, value = richness_flextable)  
 print(richnessDoc, target = "../tables/richnessTable.docx")
-richness_flextable
+
+
 
 ```
 
-```{r, shannon, include = TRUE}
+```{r, shannon for all species, include = TRUE}
+set.seed(999)
 
+# Fit the linear mixed-effects model for shannon
+shannon_lmm <- lmer(Shannon ~ timePoint + species + (1 | site), data = diversityDF)
 
-# Shannon ANOVA
-shannon_aov <- aov(Shannon ~ timePoint + species + site, data = diversityDF)
-anova_shannon <- anova(shannon_aov)
+# Get the summary of the model
+shannonSum <- summary(shannon_lmm)
 
+# Extract fixed effects from the model summary
+fixed_effects <- shannonSum$coefficients
 
-# Convert the ANOVA result to tibble
-shannon_tab <- as_tibble(anova_shannon) %>%
-  as_tibble(rownames = "Comparison") %>%
-  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
-  select(Comparison, Df, Pseudo.F, p.value) %>%
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+shannon_tab <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
   mutate_if(is.numeric, round, digits = 3) %>%
-  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
   mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
   mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
 
-shannon_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+shannon_tab$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
 
-# Create the flextable for Shannon
+# Print the updated table
+print(shannon_tab)
+
+# Create the flextable for shannon
 shannon_flextable <- shannon_tab %>%
   flextable() %>%
-  set_header_labels(Data.set = "Data set") %>% 
-  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
-  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
-  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
   autofit() %>%
   flextable::font(fontname = "Times New Roman", part = "all") %>%
   fontsize(size = 12, part = "all") %>%
   bold(part = "header") %>%
-  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
   align(align = 'center', part = "footer")
 
-# View the flextable for Shannon
+# View the flextable for shannon
 shannon_flextable
 
-
-shannonDoc = read_docx()
-shannonDoc = body_add_flextable(shannonDoc, value = shannon_flextable)
-print(shannonDoc, target = "../tables/ShannonTable.docx")
-shannon_flextable
-
-
+# Save the table to a Word document
+shannonDoc <- read_docx()  
+shannonDoc <- body_add_flextable(shannonDoc, value = shannon_flextable)  
+print(shannonDoc, target = "../tables/shannonTable.docx")
 ```
 
 
 
 
-```{r, Simpson, include = TRUE}
+```{r, Simpson for all species, include = TRUE}
+set.seed(999)
+# Fit the linear mixed-effects model for simpson
+simpson_lmm <- lmer(Simpson ~ timePoint + species + (1 | site), data = diversityDF)
 
+# Get the summary of the model
+simpsonSum <- summary(simpson_lmm)
 
-# Simpson ANOVA
-simpson_aov <- aov(Simpson ~ timePoint + species + site, data = diversityDF)
-anova_simpson <- anova(simpson_aov)
+# Extract fixed effects from the model summary
+fixed_effects <- simpsonSum$coefficients
 
-# Convert the ANOVA result to tibble
-simpson_tab <- as_tibble(anova_simpson) %>%
-  as_tibble(rownames = "Comparison") %>%
-  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
-  select(Comparison, Df, Pseudo.F, p.value) %>%
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+simpson_tab <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
   mutate_if(is.numeric, round, digits = 3) %>%
-  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
   mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
   mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
 
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+simpson_tab$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
 
-simpson_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+# Print the updated table
+print(simpson_tab)
 
-
-# Create the flextable for Simpson
+# Create the flextable for simpson
 simpson_flextable <- simpson_tab %>%
   flextable() %>%
-  set_header_labels(Data.set = "Data set") %>% 
-  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
-  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
-  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
   autofit() %>%
   flextable::font(fontname = "Times New Roman", part = "all") %>%
   fontsize(size = 12, part = "all") %>%
   bold(part = "header") %>%
-  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
   align(align = 'center', part = "footer")
 
-# View the flextable for Simpson
+# View the flextable for simpson
 simpson_flextable
 
-
-
-simpsonDoc = read_docx()
-simpsonDoc = body_add_flextable(simpsonDoc, value = simpson_flextable)
+# Save the table to a Word document
+simpsonDoc <- read_docx()  
+simpsonDoc <- body_add_flextable(simpsonDoc, value = simpson_flextable)  
 print(simpsonDoc, target = "../tables/simpsonTable.docx")
-simpson_flextable
 ```
 
-```{r, evenness, include = TRUE}
+```{r, evenness for all species, include = TRUE}
+set.seed(999)
+# Fit the linear mixed-effects model for evenness
+evenness_lmm <- lmer(Evenness ~ timePoint + species + (1 | site), data = diversityDF)
 
-# Evenness ANOVA
-evenness_aov <- aov(Evenness ~ timePoint + species + site, data = diversityDF)
-anova_evenness <- anova(evenness_aov)
+# Get the summary of the model
+evennessSum <- summary(evenness_lmm)
 
-# Convert the ANOVA result to tibble
-evenness_tab <- as_tibble(anova_evenness) %>%
-  as_tibble(rownames = "Comparison") %>%
-  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
-  # select(Comparison, Df, Pseudo.F, p.value) %>%
+# Extract fixed effects from the model summary
+fixed_effects <- evennessSum$coefficients
+
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+evenness_tab <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
   mutate_if(is.numeric, round, digits = 3) %>%
-  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
   mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
   mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
 
-evenness_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+evenness_tab$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
 
-# Create the flextable for Evenness
+# Print the updated table
+print(evenness_tab)
+
+# Create the flextable for evenness
 evenness_flextable <- evenness_tab %>%
   flextable() %>%
-  set_header_labels(Data.set = "Data set") %>% 
-  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
-  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
-  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
   autofit() %>%
   flextable::font(fontname = "Times New Roman", part = "all") %>%
   fontsize(size = 12, part = "all") %>%
   bold(part = "header") %>%
-  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
   align(align = 'center', part = "footer")
 
-# View the flextable for Evenness
+# View the flextable for evenness
 evenness_flextable
 
-
-
-
-evennessDoc = read_docx()
-evennessDoc = body_add_flextable(evennessDoc, value = evenness_flextable)
+# Save the table to a Word document
+evennessDoc <- read_docx()  
+evennessDoc <- body_add_flextable(evennessDoc, value = evenness_flextable)  
 print(evennessDoc, target = "../tables/evennessTable.docx")
-evenness_flextable
+
+
+
+```
+
+
+```{r, data wrangling for lmm for just coral, include = TRUE}
+
+indexMatCoral <- vpiMat %>% 
+  select(-c(`Bare Substrate`, `Cnidaria`, Chordata, `Gorgonia ventalina`, Halimeda, Porifera, Octocorallia, Palythoa, `Turf algae`))
+
+
+
+
+
+richnessCoral <- specnumber(indexMatCoral)  # Count of non-zero species per row
+print(richnessCoral)
+
+
+shannonCoral <- diversity(indexMatCoral, index = "shannon")  # Shannon index (H')
+evennessCoral <- shannonCoral / log(richnessCoral)  # Pielou's evenness (J')
+
+simpsonCoral <- diversity(indexMatCoral, index = "simpson")
+print(simpsonCoral)
+
+inv_simpsonCoral <- diversity(indexMatCoral, index = "invsimpson")
+print(inv_simpsonCoral)
+
+
+diversityDFCoral <- data.frame(
+  Sample = rownames(indexMatCoral),  # Keep row names
+  Richness = richnessCoral,
+  Shannon = shannonCoral,
+  Simpson = simpsonCoral,
+  InvSimpson = inv_simpsonCoral,
+  Evenness = evennessCoral,
+  row.names = rownames(indexMat)  # Assign row names back
+) %>% 
+  separate(col = Sample, into = c("site", "timePoint", "species"), sep = "_", remove = FALSE) %>% 
+  mutate(across(c(site, timePoint, species), as.factor))
+
+
+
+indexSummaryCoral<- diversityDFCoral %>% 
+  group_by(timePoint, species) %>% 
+  dplyr::summarize(meanRichness = mean(Richness),
+            meanShannon = mean(Shannon), 
+            meanEvenness = mean(Evenness))
+
+```
+
+
+
+
+```{r, richness LMM and Table for just coral, include = TRUE}
+set.seed(999)
+
+# Fit the linear mixed-effects model for Richness
+richness_lmmCoral <- lmer(Richness ~ timePoint + species + (1 | site), data = diversityDFCoral)
+
+# Get the summary of the model
+richnessSumCoral <- summary(richness_lmmCoral)
+
+# Extract fixed effects from the model summary
+fixed_effects <- richnessSumCoral$coefficients
+
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+richness_tabCoral <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+richness_tabCoral$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
+
+# Print the updated table
+print(richness_tabCoral)
+
+# Create the flextable for Richness
+richness_flextableCoral <- richness_tabCoral %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
+  align(align = 'center', part = "footer")
+
+# View the flextable for Richness
+richness_flextableCoral
+
+# Save the table to a Word document
+richnessDocCoral <- read_docx()  
+richnessDocCoral <- body_add_flextable(richnessDocCoral, value = richness_flextableCoral)  
+print(richnessDocCoral, target = "../tables/richnessTableCoral.docx")
+
+
+
+```
+
+```{r, shannon for just coral, include = TRUE}
+set.seed(999)
+
+# Fit the linear mixed-effects model for shannon
+shannon_lmmCoral <- lmer(Shannon ~ timePoint + species + (1 | site), data = diversityDFCoral)
+
+# Get the summary of the model
+shannonSumCoral <- summary(shannon_lmmCoral)
+
+# Extract fixed effects from the model summary
+fixed_effects <- shannonSumCoral$coefficients
+
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+shannon_tabCoral <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+shannon_tabCoral$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
+
+# Print the updated table
+print(shannon_tabCoral)
+
+# Create the flextable for shannon
+shannon_flextableCoral <- shannon_tabCoral %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
+  align(align = 'center', part = "footer")
+
+# View the flextable for shannon
+shannon_flextableCoral
+
+# Save the table to a Word document
+shannonDocCoral <- read_docx()  
+shannonDocCoral <- body_add_flextable(shannonDocCoral, value = shannon_flextableCoral)  
+print(shannonDocCoral, target = "../tables/shannonTableCoral.docx")
+```
+
+
+
+
+```{r, Simpson for just coral, include = TRUE}
+set.seed(999)
+# Fit the linear mixed-effects model for simpson
+simpson_lmmCoral <- lmer(Simpson ~ timePoint + species + (1 | site), data = diversityDFCoral)
+
+# Get the summary of the model
+simpsonSumCoral <- summary(simpson_lmmCoral)
+
+# Extract fixed effects from the model summary
+fixed_effects <- simpsonSumCoral$coefficients
+
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+simpson_tabCoral <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+simpson_tabCoral$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
+
+# Print the updated table
+print(simpson_tabCoral)
+
+# Create the flextable for simpson
+simpson_flextableCoral <- simpson_tabCoral %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
+  align(align = 'center', part = "footer")
+
+# View the flextable for simpson
+simpson_flextableCoral
+
+# Save the table to a Word document
+simpsonDocCoral <- read_docx()  
+simpsonDocCoral <- body_add_flextable(simpsonDocCoral, value = simpson_flextableCoral)  
+print(simpsonDoc, target = "../tables/simpsonTableCoral.docx")
+```
+
+```{r, evenness for just coral, include = TRUE}
+set.seed(999)
+# Fit the linear mixed-effects model for evenness
+evenness_lmmCoral <- lmer(Evenness ~ timePoint + species + (1 | site), data = diversityDFCoral)
+
+# Get the summary of the model
+evennessSumCoral <- summary(evenness_lmmCoral)
+
+# Extract fixed effects from the model summary
+fixed_effects <- evennessSumCoral$coefficients
+
+# Check the actual structure of the fixed effects
+print(fixed_effects)
+
+# Assuming column names in fixed_effects are: "Estimate", "Std.Error", "t value", and "Pr(>|t|)"
+
+# Convert the fixed effects to tibble and format
+evenness_tabCoral <- as_tibble(fixed_effects, rownames = "Comparison") %>%
+  dplyr::rename(Estimate = `Estimate`, Std.Error = `Std. Error`, t.value = `t value`, p.value = `Pr(>|t|)`) %>%
+  select(Comparison, Estimate, Std.Error, t.value, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  # mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species")
+evenness_tabCoral$Comparison <- c("Intercept", "Time Point:baseline", "Species:APAL")
+
+# Print the updated table
+print(evenness_tabCoral)
+
+# Create the flextable for evenness
+evenness_flextableCoral <- evenness_tabCoral %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>%
+  flextable::compose(part = "header", j = "Estimate", value = as_paragraph("Estimate")) %>%
+  flextable::compose(part = "header", j = "Std.Error", value = as_paragraph("Std. Error")) %>%
+  flextable::compose(part = "header", j = "t.value", value = as_paragraph("t value")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>%
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
+  align(align = 'center', part = "footer")
+
+# View the flextable for evenness
+evenness_flextableCoral
+
+# Save the table to a Word document
+evennessDocCoral <- read_docx()  
+evennessDocCoral <- body_add_flextable(evennessDocCoral, value = evenness_flextableCoral)  
+print(evennessDocCoral, target = "../tables/evennessTableCoral.docx")
+
+
+
+```
+
+
+```{r}
+meanAcer <- ACER %>% 
+  filter(class %in% "Acropora cervicornis") %>%
+  group_by(timePoint) %>% 
+  dplyr::summarize(meanAbundance = mean(abundance))
+
+indexSummaryTabCoral <- indexSummaryCoral %>% 
+  flextable() %>% 
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%
+  align(align = 'center', part = "footer")
+
+indexSummaryDocCoral <- read_docx()  
+indexSummaryDocCoral <- body_add_flextable(indexSummaryDocCoral, value = indexSummaryTabCoral)  
+print(indexSummaryDocCoral, target = "../tables/indexSummaryTabCoral.docx")
 
 
 
 
 
 ```
+
 
 
 
