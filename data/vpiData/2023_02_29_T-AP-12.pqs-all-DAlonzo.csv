@@ -1,0 +1,79 @@
+id,class,count,%,timePoint
+-1,None,,,12mo
+,Review,,,12mo
+1,Unknown,,,12mo
+2,Acropora spp.,,,12mo
+3,Acropora cervicornis,,,12mo
+4,Acropora palmata,3,0.201748487,12mo
+5,Porites spp.,,,12mo
+6,Porites porites,,,12mo
+7,Porites furcata,,,12mo
+8,Porites divaricata,,,12mo
+9,Porites astreoides,88,5.917955615,12mo
+10,Oculina spp.,,,12mo
+11,Oculina robusta,,,12mo
+12,Oculina varicosa,,,12mo
+13,Oculina diffusa,,,12mo
+14,Madracis spp.,,,12mo
+15,Madracis auretenra,,,12mo
+16,Madracis formosa,,,12mo
+17,Madracis decactis,,,12mo
+18,Dendrogyra cylindrus,,,12mo
+19,Siderastrea spp.,,,12mo
+20,Siderastrea siderea,2,0.134498991,12mo
+21,Siderastrea radians,,,12mo
+22,Stephanocoenia intersepta,,,12mo
+23,Montastraea cavernosa,,,12mo
+24,Orbicella spp.,,,12mo
+25,Orbicella annularis,11,0.739744452,12mo
+26,Orbicella faveolata,1,0.067249496,12mo
+27,Orbicella franksi,,,12mo
+28,Favia fragum,,,12mo
+29,Dichocoenia stokesii,,,12mo
+30,Solenastraea bournoni,,,12mo
+31,Solenastraea hyades,,,12mo
+32,Colpophyllia natans,,,12mo
+33,Pseudodiploria spp.,,,12mo
+34,Pseudodiploria strigosa,,,12mo
+35,Pseudodiploria clivosa,,,12mo
+36,Diploria labyrinthiformis,,,12mo
+37,Manicina areolata,,,12mo
+38,Meandrina spp.,,,12mo
+39,Meandrina meandrites,,,12mo
+40,Meandrina danae,,,12mo
+41,Meandrina jacksoni,,,12mo
+42,Helioseris cucullata,,,12mo
+43,Agaricia spp.,,,12mo
+44,Agaricia fragilis,,,12mo
+45,Agaricia lamarcki,,,12mo
+46, Agaricia agaricites,,,12mo
+47,Mycetophyllia spp.,,,12mo
+48,Mycetophyllia lamarckiana,,,12mo
+49,Mycetophyllia aliciae,,,12mo
+50,Mycetophyllia ferox,,,12mo
+51,Mycetophyllia reesi,,,12mo
+52,Isophyllia spp.,,,12mo
+53,Isophyllia sinuosa,,,12mo
+54,Isophyllia rigida,,,12mo
+55,Scolymia spp.,,,12mo
+56,Scolymia cubensis,,,12mo
+57,Scolymia wellsi,,,12mo
+58,Mussa angulosa,,,12mo
+59,Eusmilia fastigiata,,,12mo
+60,Octocorallia,112,7.53194351,12mo
+61,Gorgonia ventalina,,,12mo
+62,Xestospongia muta,,,12mo
+63,Thalassia testudinum,,,12mo
+64,Halimeda,,,12mo
+65,Dictyota spp.,,,12mo
+66,Crustose coralline algae,,,12mo
+67,Porifera,6,0.403496974,12mo
+68,Cnidaria,,,12mo
+69,Red algae,,,12mo
+70,Green algae,,,12mo
+71,Brown algae,,,12mo
+72,Palythoa,132,8.876933423,12mo
+73,Rubble,966,64.96301278,12mo
+74,Turf algae,151,10.15467384,12mo
+75,Other,2,0.134498991,12mo
+76,Millepora spp.,13,0.874243443,12mo
