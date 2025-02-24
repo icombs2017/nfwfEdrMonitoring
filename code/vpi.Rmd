@@ -27,14 +27,14 @@ library(magrittr)
 #### [GitHub repository](https://github.com/icombs2017/photogrammetryNOAA.git){target="_blank"}
 
 ###
-***
++++
 This is the analysis pipeline for data generated from TagLab annotations of our EDR outplant sites as part of the NWFW project.
 
 
-***
++++
 ### All analyses performed with R verion `r getRversion()`
 # Basic setup of R environment
-***
++++
 ## Loading required packages
 
 For the following analyses we will require the use of a number of different R packages. Most of which can be sourced from CRAN, but some must be downloaded from GitHub. We can use the following code to load in the packages and install any packages not previously installed in the R console. 
@@ -48,10 +48,10 @@ pacman::p_load_gh("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 <br><br>
 
 # Loading Data
-***
++++
 
 Data is exported from Viscore's VPI scriplet as a .csv file and named according to the file. 
-Since Viscore puts the "percent" column as a percentage sign (**%**) R cannot read it in  we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data. Before we manipulate the data I am first making a vector called **myColors** using the function `gg_color_hue()` from the package `metafolio` that will save a vector of colors to the number of factors I have, this is so in our later plots, all the color palettes will be the same. I am also adding **site** and **time** columns to each subset, combining all subsets into one large dataframe using `bind_rows()`, adding a **treatment** column and using the `gsub()` to rename some 
+Since Viscore puts the "percent" column as a percentage sign (++%++) R cannot read it in  we are using `dplyr`'s `rename` function to change it to something R can read and that is easier to call and read when we are handling the data. Before we manipulate the data I am first making a vector called ++myColors++ using the function `gg_color_hue()` from the package `metafolio` that will save a vector of colors to the number of factors I have, this is so in our later plots, all the color palettes will be the same. I am also adding ++site++ and ++time++ columns to each subset, combining all subsets into one large dataframe using `bind_rows()`, adding a ++treatment++ column and using the `gsub()` to rename some 
 ```{r, load data, include = TRUE, results = 'hide'}
 
 
@@ -61,7 +61,7 @@ read_plus <- function(flnm) {
 }
 
 vpiData1 <-
-    list.files(path = "../data/vpiData", pattern = "*.csv", 
+    list.files(path = "../data/vpiData", pattern = "+.csv", 
                full.names = T) %>% 
     map_dfr(~read_plus(.))
 
@@ -145,7 +145,7 @@ vpiData
 
 <br><br>
 # Combining Data
-***
++++
 Multiple VPI surveys were conducted in each site, so we are combining all of the sites and creating a new abundance column from that
 ```{r}
 
@@ -159,7 +159,7 @@ vpiData2 <- vpiData %>%
   dplyr::mutate(totalObservations = sum(totalCount, na.rm = TRUE)) %>%
   ungroup() %>% 
   group_by(Site,timePoint, class) %>% 
-  dplyr::mutate(abundance = ((totalCount/totalObservations)*100))
+  dplyr::mutate(abundance = ((totalCount/totalObservations)+100))
 
 
 vpiData2 <- data.table(vpiData2)
@@ -173,7 +173,7 @@ vpiData2[, `:=`(class, reorder(class, abundance))]
 
 <br><br>
 # Plotting the data
-***
++++
 
 To visualize the data and what our species composition looks like at our sites, we are going to plot the data in a few different ways. First we are going to just plot those with >1% abundance at our sites.
 
@@ -341,7 +341,7 @@ pcoa <- cmdscale(dist_matrix, k = 2, eig = TRUE, add = TRUE) # add k = 3, k = 5 
 positions <- pcoa$points
 colnames(positions) <- c("pcoa1", 'pcoa2')
 # calculating the amount of variation explained by each dimension
-percentExplained <- 100 * (pcoa$eig / sum(pcoa$eig))
+percentExplained <- 100 + (pcoa$eig / sum(pcoa$eig))
 
 #rounding and trimming to add to labels
 RoundPercentExplained <- format(round(percentExplained[1:2], digits = 1), nsmall = 1, trim = TRUE)
@@ -439,7 +439,7 @@ ecoMat <- as.matrix(vpiMat)
 samples_lookup <- vpiMat %>%
   rownames_to_column(var = 'samples') %>% 
    select(samples) %>% 
-   separate(col = samples, into = c("date", "site", "timePoint", "species"), sep = "_", remove = FALSE)
+   separate(col = samples, into = c("site", "timePoint", "species"), sep = "_", remove = FALSE)
 
 
 set.seed(3008)
@@ -477,7 +477,7 @@ vpiMat1 <- vpiMat %>%
  
 vpiDist <- vegdist(vpiMat1, method = 'bray')
 
-distPerm <- adonis2(vpiDist ~ timePoint*species, data = samplesLookupPerm, permutations = 9999, method = 'bray')
+distPerm <- adonis2(vpiDist ~ timePoint+species, data = samplesLookupPerm, permutations = 9999, method = 'bray')
 
 distPerm
 
@@ -517,6 +517,281 @@ distDoc = read_docx()
 distDoc = body_add_flextable(distDoc, value = distPermTab)
 print(distDoc, target = "../tables/distTableVpi.docx")
 distPermTab
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+
+indexMatrix <- vpiData2 %>% 
+  select(Site, timePoint, species, class, totalCount) %>% 
+  group_by(Site, timePoint, species, class) %>%
+  # dplyr::summarise(totalCount = sum(count)) %>%
+  na.omit(class)
+
+
+richness <- specnumber(vpiMat)  # Count of non-zero species per row
+print(richness)
+
+
+shannon <- diversity(vpiMat, index = "shannon")  # Shannon index (H')
+evenness <- shannon / log(richness)  # Pielou's evenness (J')
+
+simpson <- diversity(vpiMat, index = "simpson")
+print(simpson)
+
+inv_simpson <- diversity(vpiMat, index = "invsimpson")
+print(inv_simpson)
+
+
+
+diversityDF <- data.frame(
+  Sample = rownames(vpiMat),  # Keep row names
+  Richness = richness,
+  Shannon = shannon,
+  Simpson = simpson,
+  InvSimpson = inv_simpson,
+  Evenness = evenness,
+  row.names = rownames(vpiMat)  # Assign row names back
+) %>% 
+  separate(col = Sample, into = c("site", "timePoint", "species"), sep = "_", remove = FALSE) %>% 
+  mutate(across(c(site, timePoint, species), as.factor))
+
+aov(Richness ~ timePoint+species+site, data = diversityDF)
+
+
+# Fit the ANOVA model for Richness
+richness_aov <- aov(Richness ~ timePoint + species + site, data = diversityDF)
+
+# Summarize the ANOVA table
+anova_richness <- anova(richness_aov)
+anova_richness
+
+# Fit the ANOVA model for Shannon
+shannon_aov <- aov(Shannon ~ timePoint + species + site, data = diversityDF)
+
+# Summarize the ANOVA table
+anova_shannon <- anova(shannon_aov)
+anova_shannon
+
+
+# Fit the ANOVA model for Simpson
+simpson_aov <- aov(Simpson ~ timePoint + species + site, data = diversityDF)
+
+# Summarize the ANOVA table
+anova_simpson <- anova(simpson_aov)
+anova_simpson
+
+
+# Fit the ANOVA model for Evenness
+evenness_aov <- aov(Evenness ~ timePoint + species + site, data = diversityDF)
+
+# Summarize the ANOVA table
+anova_evenness <- anova(evenness_aov)
+anova_evenness
+
+```
+
+
+
+```{r}
+# Richness ANOVA
+richness_aov <- aov(Richness ~ timePoint + species + site, data = diversityDF)
+anova_richness <- anova(richness_aov)
+
+# Convert the ANOVA result to tibble
+# Assuming anova_richness is your ANOVA result object
+richness_tab <- as_tibble(anova_richness) %>%
+  as_tibble(rownames = "Comparison") %>%
+  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
+  select(Comparison, Df, Pseudo.F, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+# Manually add factor names to the 'Comparison' column (e.g., "timePoint", "species", "site")
+richness_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+
+# Print the updated table
+print(richness_tab)
+
+# Create the flextable for Richness
+richness_flextable <- richness_tab %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>% 
+  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
+  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  align(align = 'center', part = "footer")
+
+# View the flextable for Richness
+richness_flextable
+
+richnessDoc = read_docx()
+richnessDoc = body_add_flextable(richnessDoc, value = richness_flextable)
+print(richnessDoc, target = "../tables/richnessTable.docx")
+richness_flextable
+
+```
+
+```{r, shannon, include = TRUE}
+
+
+# Shannon ANOVA
+shannon_aov <- aov(Shannon ~ timePoint + species + site, data = diversityDF)
+anova_shannon <- anova(shannon_aov)
+
+
+# Convert the ANOVA result to tibble
+shannon_tab <- as_tibble(anova_shannon) %>%
+  as_tibble(rownames = "Comparison") %>%
+  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
+  select(Comparison, Df, Pseudo.F, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+shannon_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+
+# Create the flextable for Shannon
+shannon_flextable <- shannon_tab %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>% 
+  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
+  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  align(align = 'center', part = "footer")
+
+# View the flextable for Shannon
+shannon_flextable
+
+
+shannonDoc = read_docx()
+shannonDoc = body_add_flextable(shannonDoc, value = shannon_flextable)
+print(shannonDoc, target = "../tables/ShannonTable.docx")
+shannon_flextable
+
+
+```
+
+
+
+
+```{r, Simpson, include = TRUE}
+
+
+# Simpson ANOVA
+simpson_aov <- aov(Simpson ~ timePoint + species + site, data = diversityDF)
+anova_simpson <- anova(simpson_aov)
+
+# Convert the ANOVA result to tibble
+simpson_tab <- as_tibble(anova_simpson) %>%
+  as_tibble(rownames = "Comparison") %>%
+  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
+  select(Comparison, Df, Pseudo.F, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+
+simpson_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+
+
+# Create the flextable for Simpson
+simpson_flextable <- simpson_tab %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>% 
+  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
+  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  align(align = 'center', part = "footer")
+
+# View the flextable for Simpson
+simpson_flextable
+
+
+
+simpsonDoc = read_docx()
+simpsonDoc = body_add_flextable(simpsonDoc, value = simpson_flextable)
+print(simpsonDoc, target = "../tables/simpsonTable.docx")
+simpson_flextable
+```
+
+```{r, evenness, include = TRUE}
+
+# Evenness ANOVA
+evenness_aov <- aov(Evenness ~ timePoint + species + site, data = diversityDF)
+anova_evenness <- anova(evenness_aov)
+
+# Convert the ANOVA result to tibble
+evenness_tab <- as_tibble(anova_evenness) %>%
+  as_tibble(rownames = "Comparison") %>%
+  dplyr::rename(Pseudo.F = `F value`, p.value = `Pr(>F)`) %>%
+  # select(Comparison, Df, Pseudo.F, p.value) %>%
+  mutate_if(is.numeric, round, digits = 3) %>%
+  mutate(p.value = replace(p.value, p.value >= 0.05, "ns")) %>%
+  mutate(p.value = replace(p.value, p.value < 0.001, "< 0.001")) %>%
+  mutate_if(is.character, str_replace_all, pattern = "-", replacement = "–")
+
+evenness_tab$Comparison <- c("Time Point", "Species", "Site", "Residuals")
+
+# Create the flextable for Evenness
+evenness_flextable <- evenness_tab %>%
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>% 
+  flextable::compose(part = "header", j = "Df", value = as_paragraph("Df")) %>% 
+  flextable::compose(part = "header", j = "Pseudo.F", value = as_paragraph("Pseudo-F")) %>%
+  flextable::compose(part = "header", j = "p.value", value = as_paragraph(as_i("p"), "-value")) %>% 
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit") %>%  
+  align(align = 'center', part = "footer")
+
+# View the flextable for Evenness
+evenness_flextable
+
+
+
+
+evennessDoc = read_docx()
+evennessDoc = body_add_flextable(evennessDoc, value = evenness_flextable)
+print(evennessDoc, target = "../tables/evennessTable.docx")
+evenness_flextable
+
+
 
 
 

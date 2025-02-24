@@ -1,0 +1,114 @@
+---
+title: "NFWF Inventory"
+author: "Ian Combs"
+date: "2025-02-23"
+output: html_document:
+    theme: flatly
+    code_folding: show
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_doctument:
+      toc: yes
+      toc_depth: 3
+---
+```{r, setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, fig.align = 'left')
+knitr::opts_knit$set(root.dir = "../data")
+options(width = 88)
+library(magrittr)
+```
+
+
+
+
+
+### version: `r Sys.Date() %>% format(format="%B %d, %Y")`
+
+<!-- this is where the DOI would go  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3675991.svg)](https://doi.org/10.5281/zenodo.3675991)
+-->
+
+
+#### [GitHub repository](https://github.com/icombs2017/nfwfEdrMonitoring){target="_blank"}
+###
+
+***
+This is the working analysis pipeline to analyze data generated from in situ inventories for the NFWF EDR grant
+
+***
+
+### All analyses performed with R version `r getRversion()`
+
+
+# Basic setup of R environment
+***
+## Loading required packages
+For the following analyses we will require the use of a number of different R packages. Most of which can be sourced from CRAN, but some must be downloaded from GitHub. We can use the following code to load in the packages and install any packages not previously installed in the R console. 
+
+
+```{r,packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("ggplot2", "googlesheets4", "dplyr", "officer","reshape2", "stringr", "flextable", "gridExtra", "ggpubr", "Rmisc", "rcompanion", "RColorBrewer", "googledrive", "gdata", "readxl", "DescTools","patchwork", "FSA", "rstatix", "tidyverse", "lme4", 'PMCRMplus', "EnvStats", "emmeans", "MuMIn", "sjstats", "lmerTest", "gargle", "FSA", "vegan", "gtools", "lubridate")
+
+```
+
+
+# Importing Data
+***
+## We are downloading this dataset from our GoogleDrive folder. We will be using the package `googledrive`. Each GoogleDrive file has a unique ID that does not change throughout the lifespan of the document, even if the file name is changed. This ID is housed in the file's URL. 
+Example: docs.google.com/spreadsheets/d/FILE_ID_GOES_HERE/other_information/. Below you will copy and paste that into the function `drive_download` within `as_id`. This will save the file locally in the specified path (in this case our data folder) and you will import the folder as you normally would. Downloading it this way decreases the potential human error when downloading, moving folders, renaming, saving etc and ensures that the most up to date file is being utilized. 
+
+# Here we are importing data for our plug counts from google drive
+
+```{r, plugLoadingData, include = TRUE}
+
+ 
+
+inventory1 <- read_excel("../data/State Yr 8 in situ nurseries.xlsx", sheet = 2)
+
+
+
+
+acerInventory <- inventory1 %>% 
+  filter(Species %in% c("ACER"))
+
+
+reportingMin <- "2021-03-01"
+reportingMax <- "2025-01-31"
+
+
+
+```
+
+Inventory Table
+
+
+```{r, inventoryTable, include = TRUE}
+
+inventoryACERtab <- acerInventory %>% 
+  flextable() %>%
+  set_header_labels(Data.set = "Data set") %>% 
+  flextable::compose(part = "header", j = "Site", value = as_paragraph("Nursery")) %>%
+  flextable::compose(part = "header", j = "# of Putative Genotypes", value = as_paragraph("Number of Putative Genotypes")) %>% 
+  flextable::compose(part = "header", j = "Total", value = as_paragraph("Total Fragments")) %>%
+  flextable::compose(part = "header", j = "TLE", value = as_paragraph("Total Linear Extension")) %>%
+  autofit() %>%
+  flextable::font(fontname = "Times New Roman", part = "all") %>%
+  fontsize(size = 12, part = "all") %>%
+  bold(part = "header") %>%
+  set_table_properties(width = 1, align = "center", layout = "autofit")
+  
+
+inventoryACERdoc = read_docx()
+inventoryACERdoc = body_add_flextable(inventoryACERdoc, value = inventoryACERtab)
+print(inventoryACERdoc, target = "../tables/inventoryTable.docx")
+inventoryACERtab
+
+
+
+
+
+
+
+```
+
